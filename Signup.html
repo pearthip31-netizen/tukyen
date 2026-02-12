@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Nail It By Rabbitz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, button, nav, label, footer { font-family: 'Kanit', sans-serif; }
+        
+        /* ปรับเงาของ Input ให้ดูนุ่มนวลเหมือนในรูป (Soft Shadow) */
+        .input-soft-shadow {
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-white min-h-screen flex flex-col">
+
+    <header class="flex justify-between items-center px-10 py-6 border-b border-gray-100">
+        <div class="flex items-center">
+            <img src="logo_rabbitz.png" alt="Nail It By Rabbitz" class="h-10">
+        </div>
+        <nav class="space-x-12 text-sm font-medium text-gray-700">
+            <a href="#" class="hover:text-red-900 transition-colors">Homepage</a>
+            <a href="#" class="hover:text-red-900 transition-colors">Contact</a>
+        </nav>
+    </header>
+
+    <main class="flex-grow flex flex-col items-center justify-center px-4 py-12">
+        <h1 class="text-3xl font-bold text-[#800000] mb-10 tracking-[0.2em] drop-shadow-[0_2px_2px_rgba(128,0,0,0.3)]">SIGN UP</h1>
+        
+        <form class="w-full max-w-[340px] space-y-5" onsubmit="return validatePasswords()">
+            
+            <div class="group">
+                <label for="username" class="block text-xs font-bold mb-2 ml-1 text-black tracking-wider">USERNAME</label>
+                <input type="text" id="username" required
+                    class="w-full px-5 py-3 bg-[#FFFCF5] border border-gray-200 rounded-[2rem] focus:outline-none focus:ring-2 focus:ring-red-800 transition-all input-soft-shadow">
+            </div>
+
+            <div>
+                <label for="tel" class="block text-xs font-bold mb-2 ml-1 text-black tracking-wider">NUMBER</label>
+                <input type="tel" id="tel" required pattern="[0-9]{10}"
+                    class="w-full px-5 py-3 bg-[#FFFCF5] border border-gray-200 rounded-[2rem] focus:outline-none focus:ring-2 focus:ring-red-800 transition-all input-soft-shadow">
+            </div>
+
+            <div>
+                <label for="email" class="block text-xs font-bold mb-2 ml-1 text-black tracking-wider">EMAIL</label>
+                <input type="email" id="email" required
+                    class="w-full px-5 py-3 bg-[#FFFCF5] border border-gray-200 rounded-[2rem] focus:outline-none focus:ring-2 focus:ring-red-800 transition-all input-soft-shadow">
+            </div>
+
+            <div>
+                <label for="password" class="block text-xs font-bold mb-2 ml-1 text-black tracking-wider">PASSWORD</label>
+                <input type="password" id="password" required
+                    class="w-full px-5 py-3 bg-[#FFFCF5] border border-gray-200 rounded-[2rem] focus:outline-none focus:ring-2 focus:ring-red-800 transition-all input-soft-shadow">
+            </div>
+
+            <div>
+                <label for="confirm_password" class="block text-xs font-bold mb-2 ml-1 text-black tracking-wider">CONFIRM PASSWORD</label>
+                <input type="password" id="confirm_password" required
+                    class="w-full px-5 py-3 bg-[#FFFCF5] border border-gray-200 rounded-[2rem] focus:outline-none focus:ring-2 focus:ring-red-800 transition-all input-soft-shadow">
+            </div>
+
+            <div class="pt-6 flex justify-center">
+                <button type="submit" 
+                    class="bg-[#7A0012] text-white text-sm font-bold py-3 px-14 rounded-full hover:bg-black transition-all shadow-md active:scale-95 tracking-widest uppercase">
+                    CONTINUE
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <footer class="py-3 border-t border-gray-100 text-center text-[10px] font-medium text-gray-500 tracking-[0.1em]">
+        NAIL IT BY RABBITZ (สาขาหน้ามหาวิทยาลัยพะเยา)
+    </footer>
+
+    <script>
+        function validatePasswords() {
+            const pass = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm_password').value;
+            if (pass !== confirm) {
+                alert("Passwords do not match!");
+                return false;
+            }
+            return true;
+        }
+    </script>
+
+</body>
+</html>
