@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change Password - Nail It By Rabbitz</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Kanit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: { 900: '#7f1d1d' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 font-sans">
+
+    <header>
+        <nav class="border-b border-red-900 px-4 py-2.5 fixed left-0 right-0 top-0 z-50 bg-red-900 w-full md:w-auto">
+            <div class="flex flex-wrap items-center justify-between mx-auto max-w-[1600px]">
+                <div class="flex items-center justify-start">
+                    <a href="#" class="flex items-center mr-6">
+                        <img src="logo rabbitz.svg" class="size-20 mr-3 bg-white rounded-full" alt="Rabbitz Logo" />
+                        <span class="self-center text-2xl font-semibold whitespace-nowrap text-red-900"></span>
+                    </a>
+                    <div class="hidden md:block relative mr-4"> 
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg class="w-5 h-5 text-red-900" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
+                        </div>
+                        <input type="text" class="block w-64 p-2 pl-10 text-sm text-red-900 bg-gray-200 border border-red-900 rounded-lg placeholder-gray-400 focus:ring-white focus:border-white" placeholder="Search">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between w-auto">
+                    <ul class="flex flex-row space-x-6 text-sm font-medium border-0 mr-8">
+                        <li><a href="Homepage.html" class="text-white hover:text-red-900 bg-red-900 hover:bg-white p-2 rounded-lg transition">Homepage</a></li>
+                        <div class="hidden lg:block w-px h-6 bg-white mr-4"></div> 
+                        <li><a href="#" class="text-white hover:text-red-900 bg-red-900 hover:bg-white p-2 rounded-lg transition">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="min-h-screen flex items-center justify-center pt-28 pb-10 px-4">
+        
+        <div class="bg-gray-200 p-8 rounded-2xl shadow-xl w-full max-w-md border-t-4 border-red-900 relative">
+            
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-red-900 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg border-2 border-white">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h1 class="text-2xl font-bold text-red-900 uppercase tracking-wide">Reset Password</h1>
+                <p class="text-gray-600 text-sm mt-1">ตั้งรหัสผ่านใหม่เพื่อความปลอดภัย</p>
+            </div>
+
+            <form id="resetForm" class="space-y-5">
+                
+                <div>
+                    <label class="block text-sm font-bold text-red-900 mb-1">New Password</label>
+                    <input type="password" id="new_password" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-900 focus:border-transparent outline-none transition" 
+                        placeholder="••••••••">
+                    
+                    <div class="mt-3 bg-white p-3 rounded-lg border border-gray-300 text-xs space-y-1 shadow-sm">
+                        <p class="font-bold text-gray-500 mb-1">Password must contain:</p>
+                        <p id="req-length" class="flex items-center text-gray-400 transition-colors duration-200"><span class="w-4 mr-1">○</span> อย่างน้อย 8 ตัวอักษร</p>
+                        <p id="req-upper" class="flex items-center text-gray-400 transition-colors duration-200"><span class="w-4 mr-1">○</span> ตัวพิมพ์ใหญ่ (A-Z)</p>
+                        <p id="req-lower" class="flex items-center text-gray-400 transition-colors duration-200"><span class="w-4 mr-1">○</span> ตัวพิมพ์เล็ก (a-z)</p>
+                        <p id="req-number" class="flex items-center text-gray-400 transition-colors duration-200"><span class="w-4 mr-1">○</span> ตัวเลข (0-9)</p>
+                        <p id="req-special" class="flex items-center text-gray-400 transition-colors duration-200"><span class="w-4 mr-1">○</span> อักขระพิเศษ (!@#$%^&*)</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-red-900 mb-1">Confirm New Password</label>
+                    <input type="password" id="confirm_password" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-900 focus:border-transparent outline-none transition" 
+                        placeholder="••••••••">
+                    <p id="match-msg" class="text-red-600 font-bold text-xs mt-1 hidden">* รหัสผ่านไม่ตรงกัน</p>
+                </div>
+
+                <button type="button" id="submitBtn" onclick="submitChange()" disabled 
+                    class="w-full bg-red-900 hover:bg-red-800 text-white font-bold py-3 rounded-xl shadow-md transition duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                    CONFIRM CHANGE
+                </button>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const newPassInput = document.getElementById('new_password');
+        const confirmPassInput = document.getElementById('confirm_password');
+        const submitBtn = document.getElementById('submitBtn');
+        const matchMsg = document.getElementById('match-msg');
+
+        // ฟังก์ชันตรวจสอบเงื่อนไข
+        function validatePassword() {
+            const val = newPassInput.value;
+            const confirmVal = confirmPassInput.value;
+
+            // 1. Regex Checks
+            const hasLength = val.length >= 8;
+            const hasUpper = /[A-Z]/.test(val);
+            const hasLower = /[a-z]/.test(val);
+            const hasNumber = /[0-9]/.test(val);
+            const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(val);
+
+            // Update UI Colors
+            updateRequirement('req-length', hasLength);
+            updateRequirement('req-upper', hasUpper);
+            updateRequirement('req-lower', hasLower);
+            updateRequirement('req-number', hasNumber);
+            updateRequirement('req-special', hasSpecial);
+
+            // 2. Check Matching
+            const isMatch = val === confirmVal && val !== '';
+
+            if (!isMatch && confirmVal !== '') {
+                matchMsg.classList.remove('hidden');
+                confirmPassInput.classList.add('border-red-500', 'ring-1', 'ring-red-500');
+            } else {
+                matchMsg.classList.add('hidden');
+                confirmPassInput.classList.remove('border-red-500', 'ring-1', 'ring-red-500');
+                if(isMatch) confirmPassInput.classList.add('border-green-500', 'ring-1', 'ring-green-500');
+                else confirmPassInput.classList.remove('border-green-500', 'ring-1', 'ring-green-500');
+            }
+
+            // 3. Enable Button ?
+            if (hasLength && hasUpper && hasLower && hasNumber && hasSpecial && isMatch) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        // Helper Function เปลี่ยนสี Checklist
+        function updateRequirement(id, isValid) {
+            const el = document.getElementById(id);
+            const icon = el.querySelector('span');
+            
+            if (isValid) {
+                el.classList.remove('text-gray-400');
+                el.classList.add('text-green-700', 'font-bold');
+                icon.innerText = '✓';
+            } else {
+                el.classList.add('text-gray-400');
+                el.classList.remove('text-green-700', 'font-bold');
+                icon.innerText = '○';
+            }
+        }
+
+        // Action เมื่อกดปุ่ม
+        function submitChange() {
+            // จำลองการเปลี่ยนรหัส
+            submitBtn.innerHTML = 'CHANGING...';
+            setTimeout(() => {
+                alert("เปลี่ยนรหัสผ่านสำเร็จ!");
+                window.location.href = 'Rolechoosen.html'; // กลับไปหน้า Sign In
+            }, 1000);
+        }
+
+        // Event Listeners
+        newPassInput.addEventListener('input', validatePassword);
+        confirmPassInput.addEventListener('input', validatePassword);
+    </script>
+
+</body>
+</html>
