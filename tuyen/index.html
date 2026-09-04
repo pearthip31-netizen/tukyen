@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tuyen - My Fridge (Desktop)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 min-h-screen text-slate-800 flex flex-col">
+
+    <!-- Navbar ด้านบนสุดสำหรับเดสก์ท็อป -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 px-8 py-4 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-3">
+            <!-- 🖼️ ตรงนี้สามารถเปลี่ยนลิงก์รูปภาพโลโก้ของคุณเองได้ที่ src="..." -->
+            <img src="โลโก้ตู้เย็น.png" alt="tuyen logo" class="w-10 h-10 rounded-xl object-cover border border-violet-100 shadow-sm bg-violet-50">
+            <div>
+                <h1 class="font-bold text-slate-900 text-lg leading-tight">TUYEN</h1>
+                <p class="text-xs text-slate-400">Dorm Fridge Expiry Tracker</p>
+            </div>
+        </div>
+
+        <!-- เมนูบาร์บนเดสก์ท็อป -->
+        <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+            <a href="#" class="text-violet-600 flex items-center gap-1.5 bg-violet-50 px-3 py-1.5 rounded-lg">🧊 ตู้เย็นของฉัน</a>
+            <a href="#" class="text-slate-600 hover:text-violet-600 flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition">🔔 แจ้งเตือน</a>
+            <a href="#" class="text-slate-600 hover:text-violet-600 flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition">📦 โซนตู้เย็น</a>
+            <a href="#" class="text-slate-600 hover:text-violet-600 flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition">⚙️ ตั้งค่า</a>
+        </nav>
+
+        <!-- ค้นหาและโปรไฟล์ -->
+        <div class="flex items-center gap-4">
+            <div class="relative hidden sm:block">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">🔍</span>
+                <input type="text" placeholder="ค้นหาวัตถุดิบในตู้..." class="pl-9 pr-4 py-1.5 text-xs bg-slate-100 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-violet-500 w-60">
+            </div>
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt="profile" class="w-9 h-9 rounded-full object-cover border-2 border-violet-200 shadow-sm">
+        </div>
+    </header>
+
+    <!-- เนื้อหาหลักของเว็บไซต์ (Desktop Container) -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-6 lg:p-8 flex flex-col gap-6">
+        
+        <!-- ส่วนหัวข้อหน้า & อุณหภูมิ -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900">ตู้เย็นของฉัน (Dorm Fridge)</h2>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-4 py-2 rounded-xl font-semibold shadow-md shadow-violet-200 transition flex items-center gap-1.5">
+                    + เพิ่มรายการอาหาร
+                </button>
+            </div>
+        </div>
+
+        <!-- แถวบน: แจ้งเตือนด่วน & การ์ดสรุปสถิติ -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- กล่องแจ้งเตือนด่วน -->
+            <div class="lg:col-span-2 bg-amber-50 border border-amber-200/80 rounded-2xl p-5 flex flex-col justify-between shadow-sm">
+                <div class="flex gap-3 items-start">
+                    <span class="text-2xl">🔔</span>
+                    <div class="flex-1">
+                        <p class="text-sm font-bold text-amber-900">เตือนด่วน • ปรุงด่วนก่อนเสีย</p>
+                        <p class="text-xs text-amber-700 mt-1">นมสดและโยเกิร์ตสดจะหมดอายุใน 2 วัน รีบนำมาทำเมนูด่วนก่อนที่จะเสียนะครับ!</p>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-end">
+                    <button class="bg-amber-900 hover:bg-amber-950 text-white text-xs px-4 py-2 rounded-xl font-medium transition shadow">
+                        🎥 ดูเมนูแนะนำ (3 สูตรเด็ด)
+                    </button>
+                </div>
+            </div>
+
+            <!-- การ์ดสรุปสถานะ 3 ช่อง -->
+            <div class="grid grid-cols-3 lg:grid-cols-1 gap-3">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400 font-medium">ทั้งหมด (ชิ้น)</p>
+                        <p class="text-violet-600 font-bold text-xl mt-0.5">24</p>
+                    </div>
+                    <span class="text-xl">📊</span>
+                </div>
+                <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-100 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-amber-700 font-medium">ใกล้หมดอายุ</p>
+                        <p class="text-amber-600 font-bold text-xl mt-0.5">3</p>
+                    </div>
+                    <span class="text-xl">⚠️</span>
+                </div>
+                <div class="bg-rose-50/70 p-4 rounded-2xl border border-rose-100 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-rose-700 font-medium">หมดอายุแล้ว</p>
+                        <p class="text-rose-600 font-bold text-xl mt-0.5">1</p>
+                    </div>
+                    <span class="text-xl">❌</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Filter หมวดหมู่ย่อย -->
+        <div class="flex gap-3 text-xs">
+            <button class="bg-violet-600 text-white px-4 py-2 rounded-xl font-medium shadow-sm">ทั้งหมด (24)</button>
+            <button class="bg-white hover:bg-slate-100 text-slate-600 px-4 py-2 rounded-xl font-medium border border-slate-200 transition">ช่องแช่เย็น (Chiller)</button>
+            <button class="bg-white hover:bg-slate-100 text-slate-600 px-4 py-2 rounded-xl font-medium border border-slate-200 transition">ผักและผลไม้ (Crisper)</button>
+        </div>
+
+        <!-- ส่วนรายการอาหาร -->
+        <div class="flex flex-col gap-4">
+            <div class="flex justify-between items-center text-sm px-1">
+                <span class="font-bold text-slate-300 flex items-center gap-1.5">⏱️ ต้องรีบใช้ (Urgent)</span>
+                <span class="text-slate-400 text-xs">3 รายการ</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:border-violet-200 transition">
+                    <div class="w-14 h-14 bg-slate-100 rounded-xl flex items-center justify-center text-2xl shrink-0">🥛</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-bold text-slate-800 text-sm truncate">โยเกิร์ตธรรมชาติ</h3>
+                            <span class="bg-rose-100 text-rose-700 text-[10px] font-semibold px-2.5 py-0.5 rounded-full">● หมดอายุวันนี้</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1">ช่องแช่เย็น - 1 ถ้วย</p>
+                        <div class="w-full bg-slate-100 h-2 rounded-full mt-2.5 overflow-hidden">
+                            <div class="bg-rose-500 h-full w-full rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:border-violet-200 transition">
+                    <div class="w-14 h-14 bg-slate-100 rounded-xl flex items-center justify-center text-2xl shrink-0">🥩</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-bold text-slate-800 text-sm truncate">อกไก่สด 500g</h3>
+                            <span class="bg-amber-100 text-amber-700 text-[10px] font-semibold px-2.5 py-0.5 rounded-full">● เหลือ 1 วัน</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1">ช่องแช่เย็น - 1 แพ็ค</p>
+                        <div class="w-full bg-slate-100 h-2 rounded-full mt-2.5 overflow-hidden">
+                            <div class="bg-amber-500 h-full w-2/3 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400 mt-10">
+        © 2026 tuyen - Dorm Fridge Expiry Tracker. All rights reserved.
+    </footer>
+
+    <!-- โหลด Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+</body>
+</html>
