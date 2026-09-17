@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>เข้าสู่ระบบ – TUYEN</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-900 min-h-screen text-slate-800 flex flex-col">
+
+    <!-- =========================
+         Navbar
+    ========================== -->
+
+    <header
+        class="bg-white border-b border-slate-200 sticky top-0 z-50 px-8 py-4 flex justify-between items-center shadow-sm"
+    >
+
+        <div class="flex items-center gap-3">
+
+            <img
+                src="โลโก้ตู้เย็น.png"
+                alt="TUYEN logo"
+                class="w-10 h-10 rounded-xl object-cover border border-violet-100 shadow-sm bg-violet-50"
+            >
+
+            <div>
+
+                <h1 class="font-bold text-slate-900 text-lg leading-tight">
+                    TUYEN
+                </h1>
+
+                <p class="text-xs text-slate-400">
+                    Dorm Fridge Expiry Tracker
+                </p>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         Main
+    ========================== -->
+
+    <main class="flex-1 w-full flex items-center justify-center p-6">
+
+        <div class="w-full max-w-md">
+
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+
+                <h2 class="text-lg font-bold text-slate-900">
+                    Welcome to TUYEN
+                </h2>
+
+                <p class="text-xs text-slate-400 mt-1 mb-6">
+                    เข้าสู่ระบบหรือสมัครสมาชิกเพื่อจัดการตู้เย็นของคุณ
+                </p>
+
+
+                <!-- =========================
+                     Login / Register Tabs
+                ========================== -->
+
+                <div class="flex bg-slate-100 rounded-xl p-1 mb-6 text-sm font-medium">
+
+                    <button
+                        id="tab-login"
+                        type="button"
+                        class="flex-1 py-2 rounded-lg text-violet-700 bg-white shadow transition"
+                    >
+                        เข้าสู่ระบบ
+                    </button>
+
+                    <button
+                        id="tab-signup"
+                        type="button"
+                        class="flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-700 transition"
+                    >
+                        สมัครสมาชิก
+                    </button>
+
+                </div>
+
+
+                <!-- =========================
+                     Form
+                ========================== -->
+
+                <form id="auth-form" class="flex flex-col gap-4">
+
+                    <!-- Email -->
+
+                    <div>
+
+                        <label
+                            for="auth-email"
+                            class="block text-xs font-semibold text-slate-600 mb-1"
+                        >
+                            อีเมล
+                        </label>
+
+                        <input
+                            id="auth-email"
+                            type="email"
+                            required
+                            placeholder="you@example.com"
+                            class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500"
+                        >
+
+                    </div>
+
+
+                    <!-- Password -->
+
+                    <div>
+
+                        <label
+                            for="auth-password"
+                            id="password-label"
+                            class="block text-xs font-semibold text-slate-600 mb-1"
+                        >
+                            รหัสผ่าน
+                        </label>
+
+                        <div class="relative">
+
+                            <input
+                                id="auth-password"
+                                type="password"
+                                required
+                                minlength="6"
+                                placeholder="อย่างน้อย 6 ตัวอักษร"
+                                class="w-full px-3 py-2.5 pr-16 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500"
+                            >
+
+                            <button
+                                type="button"
+                                id="toggle-password"
+                                class="absolute inset-y-0 right-0 px-3 text-xs font-semibold text-violet-600 hover:text-violet-800"
+                            >
+                                ดู
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =========================
+                         Error / Success Message
+                    ========================== -->
+
+                    <p
+                        id="auth-message"
+                        class="hidden text-xs font-medium rounded-xl px-3 py-2"
+                    ></p>
+
+
+                    <!-- =========================
+                         Submit
+                    ========================== -->
+
+                    <button
+                        type="submit"
+                        id="auth-submit"
+                        class="w-full bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold py-3 rounded-xl shadow-md shadow-violet-200 transition"
+                    >
+                        เข้าสู่ระบบ
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <p class="text-center text-slate-500 text-xs mt-6">
+                เปิดผ่าน http://localhost:3000 หรือ server ใดก็ได้
+            </p>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================
+         Supabase Library
+    ========================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        // ==================================================
+        // SUPABASE CONFIG
+        // ==================================================
+
+        const SUPABASE_URL =
+            "https://cllhshpbtsyyujhaouid.supabase.co";
+
+        const SUPABASE_ANON_KEY =
+            "sb_publishable_Lp-Gu3pQd8aHOiGZ-FpVcg_dF11Ks0f";
+
+
+        // สร้าง Supabase Client
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_ANON_KEY
+            );
+
+
+        // ==================================================
+        // ELEMENTS
+        // ==================================================
+
+        let mode = "login";
+
+        const tabLogin =
+            document.getElementById("tab-login");
+
+        const tabSignup =
+            document.getElementById("tab-signup");
+
+        const form =
+            document.getElementById("auth-form");
+
+        const submitBtn =
+            document.getElementById("auth-submit");
+
+        const message =
+            document.getElementById("auth-message");
+
+        const passwordInput =
+            document.getElementById("auth-password");
+
+        const passwordLabel =
+            document.getElementById("password-label");
+
+        const togglePassword =
+            document.getElementById("toggle-password");
+
+
+        // ==================================================
+        // SHOW / HIDE PASSWORD
+        // ==================================================
+
+        togglePassword.addEventListener("click", () => {
+
+            const isPassword =
+                passwordInput.type === "password";
+
+            passwordInput.type =
+                isPassword ? "text" : "password";
+
+            togglePassword.textContent =
+                isPassword ? "ซ่อน" : "ดู";
+
+        });
+
+
+        // ==================================================
+        // CHANGE LOGIN / REGISTER
+        // ==================================================
+
+        function setMode(newMode) {
+
+            mode = newMode;
+
+            const isLogin =
+                newMode === "login";
+
+
+            // เปลี่ยนข้อความรหัสผ่านตามหน้า
+
+            if (isLogin) {
+
+                passwordLabel.textContent =
+                    "รหัสผ่าน";
+
+                passwordInput.placeholder =
+                    "อย่างน้อย 6 ตัวอักษร";
+
+            } else {
+
+                passwordLabel.textContent =
+                    "ตั้งรหัสผ่านใหม่";
+
+                passwordInput.placeholder =
+                    "ตั้งรหัสผ่านอย่างน้อย 6 ตัวอักษร";
+
+            }
+
+
+            // เปลี่ยนข้อความปุ่ม
+
+            submitBtn.textContent =
+                isLogin
+                    ? "เข้าสู่ระบบ"
+                    : "สมัครสมาชิก";
+
+
+            // เปลี่ยนสี Tab
+
+            if (isLogin) {
+
+                tabLogin.className =
+                    "flex-1 py-2 rounded-lg text-violet-700 bg-white shadow transition";
+
+                tabSignup.className =
+                    "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-700 transition";
+
+            } else {
+
+                tabLogin.className =
+                    "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-700 transition";
+
+                tabSignup.className =
+                    "flex-1 py-2 rounded-lg text-violet-700 bg-white shadow transition";
+
+            }
+
+
+            // ล้างข้อความแจ้งเตือน
+
+            message.classList.add("hidden");
+
+            message.textContent = "";
+
+        }
+
+
+        tabLogin.addEventListener("click", () => {
+
+            setMode("login");
+
+        });
+
+
+        tabSignup.addEventListener("click", () => {
+
+            setMode("signup");
+
+        });
+
+
+        // ==================================================
+        // SHOW MESSAGE
+        // ==================================================
+
+        function showMessage(text, isError = true) {
+
+            message.textContent = text;
+
+            message.classList.remove("hidden");
+
+            message.className =
+                "text-xs font-medium rounded-xl px-3 py-2 " +
+                (
+                    isError
+                        ? "bg-rose-50 text-rose-600"
+                        : "bg-emerald-50 text-emerald-600"
+                );
+
+        }
+
+
+        // ==================================================
+        // ERROR MESSAGE
+        // ==================================================
+
+        function thaiError(error) {
+
+            const msg =
+                String(error?.message || "");
+
+
+            // Email / Password ผิด
+
+            if (
+                /invalid login credentials/i.test(msg)
+            ) {
+
+                return "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
+
+            }
+
+
+            // Email ยังไม่ยืนยัน
+
+            if (
+                /email not confirmed/i.test(msg)
+            ) {
+
+                return "อีเมลยังไม่ได้รับการยืนยัน กรุณาตรวจสอบอีเมลก่อน";
+
+            }
+
+
+            // Email ซ้ำ
+
+            if (
+                /already registered|already exists/i.test(msg)
+            ) {
+
+                return "อีเมลนี้สมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบแทน";
+
+            }
+
+
+            // Password สั้น
+
+            if (
+                /at least 6 characters/i.test(msg) ||
+                /password.*6/i.test(msg)
+            ) {
+
+                return "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร";
+
+            }
+
+
+            // Email ผิดรูปแบบ
+
+            if (
+                /invalid email/i.test(msg)
+            ) {
+
+                return "รูปแบบอีเมลไม่ถูกต้อง";
+
+            }
+
+
+            // Network
+
+            if (
+                /network|fetch/i.test(msg)
+            ) {
+
+                return "ไม่สามารถเชื่อมต่อได้ กรุณาตรวจสอบอินเทอร์เน็ต";
+
+            }
+
+
+            return msg ||
+                "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
+
+        }
+
+
+        // ==================================================
+        // LOGIN
+        // ==================================================
+
+        async function login(email, password) {
+
+            const { data, error } =
+                await supabaseClient.auth.signInWithPassword({
+
+                    email: email,
+
+                    password: password
+
+                });
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            return data;
+
+        }
+
+
+        // ==================================================
+        // REGISTER
+        // ==================================================
+
+        async function register(email, password) {
+
+            const { data, error } =
+                await supabaseClient.auth.signUp({
+
+                    email: email,
+
+                    password: password
+
+                });
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            return data;
+
+        }
+
+
+        // ==================================================
+        // SUBMIT FORM
+        // ==================================================
+
+        form.addEventListener("submit", async (event) => {
+
+            event.preventDefault();
+
+
+            const email =
+                document
+                    .getElementById("auth-email")
+                    .value
+                    .trim();
+
+
+            const password =
+                passwordInput.value;
+
+
+            message.classList.add("hidden");
+
+            submitBtn.disabled = true;
+
+
+            if (mode === "login") {
+
+                submitBtn.textContent =
+                    "กำลังเข้าสู่ระบบ...";
+
+            } else {
+
+                submitBtn.textContent =
+                    "กำลังสมัครสมาชิก...";
+
+            }
+
+
+            try {
+
+                // ==========================================
+                // LOGIN
+                // ==========================================
+
+                if (mode === "login") {
+
+                    await login(
+                        email,
+                        password
+                    );
+
+
+                    showMessage(
+                        "เข้าสู่ระบบสำเร็จ กำลังเข้าสู่หน้าหลัก...",
+                        false
+                    );
+
+
+                    setTimeout(() => {
+
+                        window.location.href =
+                            "index.html";
+
+                    }, 500);
+
+                }
+
+
+                // ==========================================
+                // REGISTER
+                // ==========================================
+
+                else {
+
+                    const data =
+                        await register(
+                            email,
+                            password
+                        );
+
+
+                    // กรณีเปิด Confirm Email
+
+                    if (!data.session) {
+
+                        showMessage(
+                            "สมัครสมาชิกสำเร็จ กรุณาตรวจสอบอีเมลเพื่อยืนยันบัญชี",
+                            false
+                        );
+
+
+                        setMode("login");
+
+                    }
+
+
+                    // กรณีไม่ต้องยืนยัน Email
+
+                    else {
+
+                        showMessage(
+                            "สมัครสมาชิกสำเร็จ กำลังเข้าสู่หน้าหลัก...",
+                            false
+                        );
+
+
+                        setTimeout(() => {
+
+                            window.location.href =
+                                "index.html";
+
+                        }, 500);
+
+                    }
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Supabase Auth Error:",
+                    error
+                );
+
+
+                showMessage(
+                    thaiError(error),
+                    true
+                );
+
+            }
+
+
+            submitBtn.disabled = false;
+
+
+            submitBtn.textContent =
+                mode === "login"
+                    ? "เข้าสู่ระบบ"
+                    : "สมัครสมาชิก";
+
+        });
+
+
+        // ==================================================
+        // CHECK EXISTING SESSION
+        // ==================================================
+
+        (async () => {
+
+            try {
+
+                const { data } =
+                    await supabaseClient.auth.getSession();
+
+
+                if (data.session) {
+
+                    window.location.href =
+                        "index.html";
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "ตรวจสอบ Session ไม่สำเร็จ:",
+                    error
+                );
+
+            }
+
+        })();
+
+    </script>
+
+</body>
+</html>

@@ -1,200 +1,1192 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>tuyen - My Fridge (Desktop)</title>
-    <!-- Tailwind CSS CDN -->
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>TUYEN - My Fridge</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
     <style>
-        body { font-family: 'Prompt', sans-serif; }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #64748b;
+            border-radius: 999px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8b5cf6;
+        }
+
+        button,
+        input,
+        select {
+            transition: all 0.2s ease;
+        }
+
+
+        /* ================================================= */
+        /* FOOD CARD */
+        /* ================================================= */
+
+        /*
+            ลดขนาดกล่องอาหารที่สร้างจาก app.js
+            ให้ไม่กว้างจนเกินไป
+        */
+
+        #food-list > div:not(#empty-food-message) {
+            width: 100%;
+            max-width: 380px;
+            justify-self: start;
+        }
+
+
+        /*
+            ทำให้การ์ดอาหารดูพอดีและอ่านง่าย
+            โดยไม่บังคับความสูงตายตัว
+        */
+
+        #food-list > div:not(#empty-food-message) {
+            border-radius: 1.25rem;
+        }
+
+
+        /*
+            หน้าจอใหญ่จัดการ์ดให้กระจายเป็นช่องเล็กลง
+        */
+
+        @media (min-width: 1280px) {
+
+            #food-list {
+                grid-template-columns:
+                    repeat(3, minmax(0, 380px));
+            }
+
+        }
+
+
+        /*
+            หน้าจอขนาดกลาง
+        */
+
+        @media (min-width: 768px) and (max-width: 1279px) {
+
+            #food-list {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            #food-list > div:not(#empty-food-message) {
+                max-width: 100%;
+            }
+
+        }
+
+
+        /*
+            มือถือ
+        */
+
+        @media (max-width: 767px) {
+
+            #food-list > div:not(#empty-food-message) {
+                max-width: 100%;
+            }
+
+        }
+
     </style>
+
 </head>
+
+
 <body class="bg-slate-900 min-h-screen text-slate-800 flex flex-col">
 
-    <!-- Navbar ด้านบนสุดสำหรับเดสก์ท็อป -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 px-8 py-4 flex justify-between items-center shadow-sm">
-        <div class="flex items-center gap-3">
-            <!-- 🖼️ ตรงนี้สามารถเปลี่ยนลิงก์รูปภาพโลโก้ของคุณเองได้ที่ src="..." -->
-            <img src="โลโก้ตู้เย็น.png" alt="tuyen logo" class="w-10 h-10 rounded-xl object-cover border border-violet-100 shadow-sm bg-violet-50">
+
+    <!-- ================================================= -->
+    <!-- NAVBAR -->
+    <!-- ================================================= -->
+
+    <header
+        class="bg-white border-b border-slate-200 sticky top-0 z-50 px-5 lg:px-8 py-3.5 flex justify-between items-center shadow-sm"
+    >
+
+        <div class="flex items-center gap-3 min-w-fit">
+
+            <img
+                src="โลโก้ตู้เย็น.png"
+                alt="TUYEN logo"
+                class="w-10 h-10 rounded-xl object-cover border border-violet-100 shadow-sm bg-violet-50"
+            >
+
             <div>
-                <h1 class="font-bold text-slate-900 text-lg leading-tight">TUYEN</h1>
-                <p class="text-xs text-slate-400">Dorm Fridge Expiry Tracker</p>
+
+                <h1 class="font-bold text-slate-900 text-lg leading-tight">
+                    TUYEN
+                </h1>
+
+                <p class="text-[11px] text-slate-400">
+                    Dorm Fridge Expiry Tracker
+                </p>
+
             </div>
+
         </div>
 
-        <!-- เมนูบาร์บนเดสก์ท็อป -->
-        <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
-            <a href="#" class="text-violet-600 flex items-center gap-1.5 bg-violet-50 px-3 py-1.5 rounded-lg">🧊 ตู้เย็นของฉัน</a>
-            <a href="#" class="text-slate-600 hover:text-violet-600 flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition">🔔 แจ้งเตือน</a>
-            <a href="#" class="text-slate-600 hover:text-violet-600 flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition">📦 โซนตู้เย็น</a>
-            <a href="#" class="text-slate-600 hover:text-violet-600 flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition">⚙️ ตั้งค่า</a>
+
+        <nav class="hidden md:flex items-center gap-2 text-sm font-medium">
+
+            <a
+                href="#"
+                class="text-violet-600 flex items-center gap-2 bg-violet-50 px-4 py-2 rounded-xl"
+            >
+
+                <img
+                    src="โลโก้ตู้เย็น.png"
+                    alt="TUYEN logo"
+                    class="w-6 h-6 rounded-md object-cover"
+                >
+
+                ตู้เย็นของฉัน
+
+            </a>
+
+
+            <a
+                href="#"
+                class="text-slate-600 hover:text-violet-600 hover:bg-violet-50 px-4 py-2 rounded-xl"
+            >
+                📦 โซนตู้เย็น
+            </a>
+
+
+            <a
+                href="#"
+                class="text-slate-600 hover:text-violet-600 hover:bg-violet-50 px-4 py-2 rounded-xl"
+            >
+                ⚙️ ตั้งค่า
+            </a>
+
         </nav>
 
-        <!-- ค้นหาและโปรไฟล์ -->
-        <div class="flex items-center gap-4">
-            <div class="relative hidden sm:block">
-                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">🔍</span>
-                <input type="text" placeholder="ค้นหาวัตถุดิบในตู้..." class="pl-9 pr-4 py-1.5 text-xs bg-slate-100 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-violet-500 w-60">
+
+        <div class="flex items-center gap-3">
+
+            <div class="relative hidden lg:block">
+
+                <span
+                    class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"
+                >
+                    🔍
+                </span>
+
+                <input
+                    type="text"
+                    id="search-food"
+                    placeholder="ค้นหาอาหารในตู้..."
+                    class="pl-9 pr-4 py-2 text-xs bg-slate-100 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white w-56"
+                >
+
             </div>
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt="profile" class="w-9 h-9 rounded-full object-cover border-2 border-violet-200 shadow-sm">
+
+
+            <div
+                class="flex items-center gap-2.5 bg-violet-50 border border-violet-100 rounded-xl px-3 py-1.5"
+            >
+
+                <img
+                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100"
+                    alt="profile"
+                    class="w-8 h-8 rounded-full object-cover border-2 border-violet-200 shadow-sm"
+                >
+
+                <div class="leading-tight hidden sm:block">
+
+                    <p
+                        id="user-email"
+                        class="text-xs font-semibold text-slate-700 max-w-[160px] truncate"
+                    >
+                        ...
+                    </p>
+
+                    <button
+                        id="logout-btn"
+                        class="text-[10px] text-violet-600 hover:text-violet-800 font-medium"
+                    >
+                        ออกจากระบบ
+                    </button>
+
+                </div>
+
+            </div>
+
         </div>
+
     </header>
 
-    <!-- เนื้อหาหลักของเว็บไซต์ (Desktop Container) -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-6 lg:p-8 flex flex-col gap-6">
-        
-        <!-- ส่วนหัวข้อหน้า & อุณหภูมิ -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+
+
+    <!-- ================================================= -->
+    <!-- MAIN -->
+    <!-- ================================================= -->
+
+    <main
+        class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-7 flex flex-col gap-5"
+    >
+
+
+        <!-- PAGE HEADER -->
+
+        <section
+            class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white px-6 py-5 rounded-2xl border border-slate-200 shadow-sm"
+        >
+
             <div>
-                <h2 class="text-2xl font-bold text-slate-900">ตู้เย็นของฉัน (Dorm Fridge)</h2>
-            </div>
-            <div class="flex items-center gap-3">
-                <button class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-4 py-2 rounded-xl font-semibold shadow-md shadow-violet-200 transition flex items-center gap-1.5">
-                    + เพิ่มรายการอาหาร
-                </button>
-            </div>
-        </div>
 
-        <!-- แถวบน: แจ้งเตือนด่วน & การ์ดสรุปสถิติ -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- กล่องแจ้งเตือนด่วน -->
-            <div class="lg:col-span-2 bg-amber-50 border border-amber-200/80 rounded-2xl p-5 flex flex-col justify-between shadow-sm">
-                <div class="flex gap-3 items-start">
-                    <span class="text-2xl">🔔</span>
-                    <div class="flex-1">
-                        <p class="text-sm font-bold text-amber-900">เตือนด่วน • ปรุงด่วนก่อนเสีย</p>
-                        <p class="text-xs text-amber-700 mt-1">นมสดและโยเกิร์ตสดจะหมดอายุใน 2 วัน รีบนำมาทำเมนูด่วนก่อนที่จะเสียนะครับ!</p>
-                    </div>
+                <div class="flex items-center gap-3">
+
+                    <img
+                        src="โลโก้ตู้เย็น.png"
+                        alt="TUYEN logo"
+                        class="w-12 h-12 rounded-xl object-cover border border-violet-100 shadow-sm bg-violet-50"
+                    >
+
+                    <h2 class="text-xl lg:text-2xl font-bold text-slate-900">
+                        ตู้เย็นของฉัน
+                    </h2>
+
                 </div>
-                <div class="mt-4 flex justify-end">
-                    <button class="bg-amber-900 hover:bg-amber-950 text-white text-xs px-4 py-2 rounded-xl font-medium transition shadow">
-                        🎥 ดูเมนูแนะนำ (3 สูตรเด็ด)
+
+                <p class="text-xs text-slate-400 mt-1 ml-15">
+                    จัดการรายการอาหารและวันหมดอายุ
+                </p>
+
+            </div>
+
+
+            <button
+                id="add-food-btn"
+                type="button"
+                class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-5 py-2.5 rounded-xl font-semibold shadow-md shadow-violet-200 hover:shadow-lg transition"
+            >
+                ＋ เพิ่มรายการอาหาร
+            </button>
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- QUICK ALERT + STATISTICS -->
+        <!-- ================================================= -->
+
+        <section
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+        >
+
+
+            <!-- ================= QUICK ALERT ================= -->
+
+            <div
+                class="bg-amber-100 px-5 py-3.5 rounded-2xl border border-amber-300 shadow-sm flex items-center justify-between"
+            >
+
+                <div>
+
+                    <p class="text-xs font-medium text-amber-900">
+                        เตือนด่วน
+                    </p>
+
+                    <p class="text-amber-700 font-bold text-2xl leading-tight mt-1">
+                        <span id="urgent-count">0</span>
+                    </p>
+
+                    <p class="text-[10px] text-amber-700">
+                        ใกล้หมดอายุ
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-xl"
+                >
+                    🔔
+                </div>
+
+            </div>
+
+
+
+            <!-- ================= TOTAL ================= -->
+
+            <div
+                class="bg-white px-5 py-3.5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between"
+            >
+
+                <div>
+
+                    <p class="text-xs text-slate-500">
+                        ทั้งหมด
+                    </p>
+
+                    <p
+                        id="stat-total"
+                        class="text-violet-600 font-bold text-2xl leading-tight mt-1"
+                    >
+                        0
+                    </p>
+
+                    <p class="text-[10px] text-slate-400">
+                        ชิ้น
+                    </p>
+
+                </div>
+
+                <div
+                    class="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center text-xl"
+                >
+                    📊
+                </div>
+
+            </div>
+
+
+
+            <!-- ================= SOON ================= -->
+
+            <div
+                class="bg-amber-50 px-5 py-3.5 rounded-2xl border border-amber-200 shadow-sm flex items-center justify-between"
+            >
+
+                <div>
+
+                    <p class="text-xs text-amber-800">
+                        ใกล้หมดอายุ
+                    </p>
+
+                    <p
+                        id="stat-soon"
+                        class="text-amber-600 font-bold text-2xl leading-tight mt-1"
+                    >
+                        0
+                    </p>
+
+                    <p class="text-[10px] text-amber-600">
+                        รายการ
+                    </p>
+
+                </div>
+
+                <div
+                    class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-xl"
+                >
+                    ⚠️
+                </div>
+
+            </div>
+
+
+
+            <!-- ================= EXPIRED ================= -->
+
+            <div
+                class="bg-rose-50 px-5 py-3.5 rounded-2xl border border-rose-200 shadow-sm flex items-center justify-between"
+            >
+
+                <div>
+
+                    <p class="text-xs text-rose-800">
+                        หมดอายุแล้ว
+                    </p>
+
+                    <p
+                        id="stat-expired"
+                        class="text-rose-600 font-bold text-2xl leading-tight mt-1"
+                    >
+                        0
+                    </p>
+
+                    <p class="text-[10px] text-rose-600">
+                        รายการ
+                    </p>
+
+                </div>
+
+                <div
+                    class="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center text-xl"
+                >
+                    ❌
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- FOOD SECTION -->
+        <!-- ================================================= -->
+
+        <section
+            class="bg-[#3E3E75] border border-slate-500 rounded-2xl p-5 sm:p-6 shadow-xl"
+        >
+
+            <div
+                class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-5"
+            >
+
+                <div>
+
+                    <h3
+                        class="font-bold text-white text-base lg:text-lg"
+                    >
+                        🍱 รายการอาหารในตู้เย็น
+                    </h3>
+
+                    <p class="text-[11px] text-slate-200 mt-1">
+                        เลือกหมวดหมู่เพื่อดูอาหารตามตำแหน่งในตู้เย็น
+                    </p>
+
+                </div>
+
+                <span
+                    id="food-count"
+                    class="text-slate-700 text-xs bg-white px-3 py-1.5 rounded-full border border-slate-600"
+                >
+                    0 รายการ
+                </span>
+
+            </div>
+
+
+
+            <!-- FILTER -->
+
+            <div
+                class="mb-5 pb-4 border-b border-slate-500"
+            >
+
+                <p class="text-xs font-semibold text-white mb-2.5">
+                    🔎 กรองตามตำแหน่งในตู้เย็น
+                </p>
+
+
+                <div
+                    class="flex gap-2.5 text-xs flex-wrap"
+                >
+
+                    <button
+                        type="button"
+                        data-food-filter="all"
+                        class="bg-violet-600 text-white px-4 py-2 rounded-xl font-medium shadow-sm hover:bg-violet-500"
+                    >
+                        ทั้งหมด
+                        (
+                        <span id="filter-total">
+                            0
+                        </span>
+                        )
                     </button>
+
+
+                    <button
+                        type="button"
+                        data-food-filter="top"
+                        class="bg-white text-slate-700 hover:text-violet-700 hover:bg-violet-50 px-4 py-2 rounded-xl font-medium border border-slate-300 shadow-sm"
+                    >
+                        ⬆️ ชั้นบน
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-food-filter="middle"
+                        class="bg-white text-slate-700 hover:text-violet-700 hover:bg-violet-50 px-4 py-2 rounded-xl font-medium border border-slate-300 shadow-sm"
+                    >
+                        ↔️ ชั้นกลาง
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-food-filter="bottom"
+                        class="bg-white text-slate-700 hover:text-violet-700 hover:bg-violet-50 px-4 py-2 rounded-xl font-medium border border-slate-300 shadow-sm"
+                    >
+                        ⬇️ ชั้นล่าง
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-food-filter="door"
+                        class="bg-white text-slate-700 hover:text-violet-700 hover:bg-violet-50 px-4 py-2 rounded-xl font-medium border border-slate-300 shadow-sm"
+                    >
+                        🚪 ช่องประตู
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-food-filter="crisper"
+                        class="bg-white text-slate-700 hover:text-violet-700 hover:bg-violet-50 px-4 py-2 rounded-xl font-medium border border-slate-300 shadow-sm"
+                    >
+                        🥬 ช่องผักและผลไม้
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-food-filter="freezer"
+                        class="bg-white text-slate-700 hover:text-violet-700 hover:bg-violet-50 px-4 py-2 rounded-xl font-medium border border-slate-300 shadow-sm"
+                    >
+                        🧊 ช่องแช่แข็ง
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-food-filter="other"
+                        class="bg-white text-slate-700 hover:text-violet-700 hover:bg-violet-50 px-4 py-2 rounded-xl font-medium border border-slate-300 shadow-sm"
+                    >
+                        📦 อื่น ๆ
+                    </button>
+
                 </div>
+
             </div>
 
-            <!-- การ์ดสรุปสถานะ 3 ช่อง -->
-            <div class="grid grid-cols-3 lg:grid-cols-1 gap-3">
-                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-400 font-medium">ทั้งหมด (ชิ้น)</p>
-                        <p class="text-violet-600 font-bold text-xl mt-0.5">24</p>
+
+
+            <!-- FOOD LIST -->
+
+            <div
+                id="food-list"
+                class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 items-start"
+            >
+
+                <div
+                    id="empty-food-message"
+                    class="col-span-full bg-slate-700 border border-slate-500 rounded-2xl p-10 text-center flex flex-col items-center justify-center min-h-[260px]"
+                >
+
+                    <div class="text-5xl mb-4">
+                        🧊
                     </div>
-                    <span class="text-xl">📊</span>
+
+                    <p class="text-white font-semibold">
+                        ยังไม่มีข้อมูลอาหาร
+                    </p>
+
+                    <p class="text-slate-300 text-xs mt-1">
+                        กด "+ เพิ่มรายการอาหาร" เพื่อเพิ่มอาหารในตู้เย็น
+                    </p>
+
                 </div>
-                <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-amber-700 font-medium">ใกล้หมดอายุ</p>
-                        <p class="text-amber-600 font-bold text-xl mt-0.5">3</p>
-                    </div>
-                    <span class="text-xl">⚠️</span>
-                </div>
-                <div class="bg-rose-50/70 p-4 rounded-2xl border border-rose-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-rose-700 font-medium">หมดอายุแล้ว</p>
-                        <p class="text-rose-600 font-bold text-xl mt-0.5">1</p>
-                    </div>
-                    <span class="text-xl">❌</span>
-                </div>
+
             </div>
 
-        </div>
-
-        <!-- Filter หมวดหมู่ย่อย -->
-        <div class="flex gap-3 text-xs">
-            <button class="bg-violet-600 text-white px-4 py-2 rounded-xl font-medium shadow-sm">ทั้งหมด (24)</button>
-            <button class="bg-white hover:bg-slate-100 text-slate-600 px-4 py-2 rounded-xl font-medium border border-slate-200 transition">ช่องแช่เย็น (Chiller)</button>
-            <button class="bg-white hover:bg-slate-100 text-slate-600 px-4 py-2 rounded-xl font-medium border border-slate-200 transition">ผักและผลไม้ (Crisper)</button>
-        </div>
-
-        <!-- ส่วนรายการอาหาร -->
-        <div class="flex flex-col gap-4">
-            <div class="flex justify-between items-center text-sm px-1">
-                <span class="font-bold text-slate-300 flex items-center gap-1.5">⏱️ ต้องรีบใช้ (Urgent)</span>
-                <span class="text-slate-400 text-xs">3 รายการ</span>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:border-violet-200 transition">
-                    <div class="w-14 h-14 bg-slate-100 rounded-xl flex items-center justify-center text-2xl shrink-0">🥛</div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-start">
-                            <h3 class="font-bold text-slate-800 text-sm truncate">โยเกิร์ตธรรมชาติ</h3>
-                            <span class="bg-rose-100 text-rose-700 text-[10px] font-semibold px-2.5 py-0.5 rounded-full">● หมดอายุวันนี้</span>
-                        </div>
-                        <p class="text-xs text-slate-400 mt-1">ช่องแช่เย็น - 1 ถ้วย</p>
-                        <div class="w-full bg-slate-100 h-2 rounded-full mt-2.5 overflow-hidden">
-                            <div class="bg-rose-500 h-full w-full rounded-full"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:border-violet-200 transition">
-                    <div class="w-14 h-14 bg-slate-100 rounded-xl flex items-center justify-center text-2xl shrink-0">🥩</div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-start">
-                            <h3 class="font-bold text-slate-800 text-sm truncate">อกไก่สด 500g</h3>
-                            <span class="bg-amber-100 text-amber-700 text-[10px] font-semibold px-2.5 py-0.5 rounded-full">● เหลือ 1 วัน</span>
-                        </div>
-                        <p class="text-xs text-slate-400 mt-1">ช่องแช่เย็น - 1 แพ็ค</p>
-                        <div class="w-full bg-slate-100 h-2 rounded-full mt-2.5 overflow-hidden">
-                            <div class="bg-amber-500 h-full w-2/3 rounded-full"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </section>
 
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400 mt-10">
-        © 2026 tuyen - Dorm Fridge Expiry Tracker. All rights reserved.
+
+
+    <!-- FOOTER -->
+
+    <footer
+        class="bg-white border-t border-slate-200 py-3 text-center text-[11px] text-slate-400 mt-2"
+    >
+
+        © 2026 TUYEN - Dorm Fridge Expiry Tracker.
+
     </footer>
 
-    <!-- โหลด Supabase JS SDK -->
+
+
+    <!-- ================================================= -->
+    <!-- ADD / EDIT FOOD FORM -->
+    <!-- ================================================= -->
+
+    <div
+        id="food-form-overlay"
+        class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4 overflow-y-auto"
+    >
+
+        <div
+            class="bg-white w-full max-w-md rounded-2xl p-6 shadow-xl border border-slate-200 my-8"
+        >
+
+            <div class="flex justify-between items-center mb-5">
+
+                <div>
+
+                    <h3
+                        id="food-form-title"
+                        class="text-lg font-bold text-slate-900"
+                    >
+                        เพิ่มรายการอาหาร
+                    </h3>
+
+                    <p class="text-xs text-slate-400 mt-1">
+                        กรอกข้อมูลอาหารในตู้เย็น
+                    </p>
+
+                </div>
+
+                <button
+                    id="food-form-close"
+                    type="button"
+                    class="text-slate-400 hover:text-slate-600 text-2xl"
+                >
+                    &times;
+                </button>
+
+            </div>
+
+
+
+            <form
+                id="food-form"
+                class="flex flex-col gap-4"
+            >
+
+                <div>
+
+                    <label
+                        for="f-name"
+                        class="block text-xs font-semibold text-slate-600 mb-1"
+                    >
+                        ชื่ออาหาร *
+                    </label>
+
+                    <input
+                        id="f-name"
+                        name="food_name"
+                        type="text"
+                        required
+                        maxlength="100"
+                        placeholder="เช่น นมสด, อกไก่, แอปเปิ้ล"
+                        class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label
+                        for="f-manu"
+                        class="block text-xs font-semibold text-slate-600 mb-1"
+                    >
+                        ยี่ห้อ / ผู้ผลิต *
+                    </label>
+
+                    <input
+                        id="f-manu"
+                        name="manu"
+                        type="text"
+                        required
+                        maxlength="100"
+                        placeholder="เช่น Meiji, CP, ดอยคำ"
+                        class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    >
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- LOCATION -->
+                <!-- ================================================= -->
+
+                <div>
+
+                    <label
+                        for="f-location"
+                        class="block text-xs font-semibold text-slate-600 mb-1"
+                    >
+                        ตำแหน่งในตู้เย็น *
+                    </label>
+
+                    <select
+                        id="f-location"
+                        name="location"
+                        required
+                        class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    >
+
+                        <option value="">
+                            -- เลือกตำแหน่ง --
+                        </option>
+
+                        <option value="ชั้นบน">
+                            ⬆️ ชั้นบน
+                        </option>
+
+                        <option value="ชั้นกลาง">
+                            ↔️ ชั้นกลาง
+                        </option>
+
+                        <option value="ชั้นล่าง">
+                            ⬇️ ชั้นล่าง
+                        </option>
+
+                        <option value="ช่องประตู">
+                            🚪 ช่องประตู
+                        </option>
+
+                        <option value="ช่องผักและผลไม้">
+                            🥬 ช่องผักและผลไม้
+                        </option>
+
+                        <option value="ช่องแช่แข็ง">
+                            🧊 ช่องแช่แข็ง
+                        </option>
+
+                        <option value="อื่นๆ">
+                            📦 อื่น ๆ
+                        </option>
+
+                    </select>
+
+
+                    <!-- OTHER LOCATION -->
+
+                    <input
+                        id="f-location-other"
+                        type="text"
+                        maxlength="50"
+                        placeholder="ระบุว่าคือช่องอะไร เช่น ช่องเครื่องดื่ม"
+                        class="hidden w-full mt-2 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    >
+
+                    <p
+                        id="f-location-other-help"
+                        class="hidden text-[10px] text-slate-400 mt-1"
+                    >
+                        เช่น ช่องเครื่องดื่ม, ชั้นวางของจุกจิก, ช่องพิเศษด้านบน
+                    </p>
+
+                </div>
+
+
+                <div>
+
+                    <label
+                        for="f-quantity"
+                        class="block text-xs font-semibold text-slate-600 mb-1"
+                    >
+                        จำนวน *
+                    </label>
+
+                    <input
+                        id="f-quantity"
+                        name="quantity"
+                        type="number"
+                        min="1"
+                        step="1"
+                        value="1"
+                        required
+                        class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    >
+
+                </div>
+
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+                    <div>
+
+                        <label
+                            for="f-import-date"
+                            class="block text-xs font-semibold text-slate-600 mb-1"
+                        >
+                            วันที่นำเข้า *
+                        </label>
+
+                        <input
+                            id="f-import-date"
+                            name="import_date"
+                            type="date"
+                            required
+                            class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
+                        >
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            for="f-export-date"
+                            class="block text-xs font-semibold text-slate-600 mb-1"
+                        >
+                            วันหมดอายุ *
+                        </label>
+
+                        <input
+                            id="f-export-date"
+                            name="export_date"
+                            type="date"
+                            required
+                            class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="bg-violet-50 border border-violet-100 rounded-lg p-3"
+                >
+
+                    <div class="flex justify-between items-center">
+
+                        <span class="text-xs font-semibold text-violet-700">
+                            สถานะอาหาร
+                        </span>
+
+                        <span
+                            id="form-status-preview"
+                            class="text-xs font-semibold text-violet-600"
+                        >
+                            ระบบคำนวณอัตโนมัติ
+                        </span>
+
+                    </div>
+
+                    <p class="text-[10px] text-violet-500 mt-1">
+                        ระบบจะกำหนดสถานะจากวันหมดอายุให้อัตโนมัติ
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="bg-slate-50 rounded-lg p-3"
+                >
+
+                    <p class="text-[10px] text-slate-400">
+                        รายการนี้จะถูกบันทึกให้กับบัญชีที่กำลังเข้าสู่ระบบอัตโนมัติ
+                    </p>
+
+                    <p
+                        id="form-user-email"
+                        class="text-xs text-slate-600 font-medium mt-1 truncate"
+                    >
+                        ...
+                    </p>
+
+                </div>
+
+
+                <div class="flex justify-end gap-3 pt-2">
+
+                    <button
+                        type="button"
+                        id="food-form-cancel"
+                        class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl"
+                    >
+                        ยกเลิก
+                    </button>
+
+                    <button
+                        type="submit"
+                        id="food-form-submit"
+                        class="px-5 py-2 text-sm font-semibold text-white bg-violet-600 hover:bg-violet-700 rounded-xl shadow-md"
+                    >
+                        บันทึก
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- SCRIPTS -->
+    <!-- ================================================= -->
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="config.js"></script>
+
+    <script src="auth.js"></script>
+
     <script src="app.js"></script>
+
+
     <script>
-  // ฟังก์ชันดึงข้อมูลอาหารจากเซิร์ฟเวอร์
-  async function loadFoods() {
-    try {
-      const response = await fetch('http://localhost:3000/api/foods');
-      const foods = await response.json();
 
-      console.log('รายการอาหารในตู้เย็น:', foods);
+        /* ================================================= */
+        /* SHOW OTHER LOCATION INPUT */
+        /* ================================================= */
 
-      // TODO: นำข้อมูล foods ไปสร้างเป็นการ์ดแสดงผลบนหน้าจอ HTML ของคุณตรงนี้
-    } catch (error) {
-      console.error('ไม่สามารถดึงข้อมูลอาหารได้:', error);
-    }
-  }
+        const locationSelect =
+            document.getElementById(
+                'f-location'
+            );
 
-  // เรียกใช้งานฟังก์ชันเมื่อโหลดหน้าเว็บ
-  loadFoods();
-</script>
-<script>
-  async function fetchFridgeItems() {
-    try {
-      // ดึงข้อมูลจาก Backend ที่เราทำไว้ที่พอร์ต 3000
-      const response = await fetch('http://localhost:3000/api/foods');
-      const foods = await response.json();
-      
-      console.log('ข้อมูลอาหารจากฐานข้อมูล Neon:', foods);
-      
-      // ตัวอย่าง: ถ้าคุณต้องการเอาชื่ออาหารไปแสดงผลในหน้าเว็บ
-      // เราสามารถเขียนโค้ดวนลูปสร้างการ์ด (Card) แล้วเอาไปใส่ใน HTML ตรงนี้ได้เลยครับ
-      
-    } catch (error) {
-      console.error('เกิดข้อผิดพลาดในการดึงข้อมูล:', error);
-    }
-  }
+        const locationOther =
+            document.getElementById(
+                'f-location-other'
+            );
 
-  // เรียกใช้งานฟังก์ชันเมื่อเปิดหน้าเว็บ
-  fetchFridgeItems();
-</script>
+        const locationOtherHelp =
+            document.getElementById(
+                'f-location-other-help'
+            );
+
+
+        if (
+            locationSelect &&
+            locationOther
+        ) {
+
+            locationSelect.addEventListener(
+                'change',
+                () => {
+
+                    if (
+                        locationSelect.value ===
+                        'อื่นๆ'
+                    ) {
+
+                        locationOther.classList.remove(
+                            'hidden'
+                        );
+
+                        locationOther.required =
+                            true;
+
+                        if (locationOtherHelp) {
+
+                            locationOtherHelp.classList.remove(
+                                'hidden'
+                            );
+
+                        }
+
+                        locationOther.focus();
+
+                    } else {
+
+                        locationOther.classList.add(
+                            'hidden'
+                        );
+
+                        locationOther.required =
+                            false;
+
+                        locationOther.value =
+                            '';
+
+                        if (locationOtherHelp) {
+
+                            locationOtherHelp.classList.add(
+                                'hidden'
+                            );
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+
+
+        /* ================================================= */
+        /* LOAD USER EMAIL */
+        /* ================================================= */
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            async () => {
+
+                try {
+
+                    if (
+                        typeof getSupabase ===
+                        'function'
+                    ) {
+
+                        const sb =
+                            getSupabase();
+
+                        const {
+                            data
+                        } =
+                            await sb.auth.getUser();
+
+                        if (
+                            data &&
+                            data.user
+                        ) {
+
+                            const email =
+                                data.user.email || '';
+
+                            const el =
+                                document.getElementById(
+                                    'form-user-email'
+                                );
+
+                            if (el) {
+
+                                el.textContent =
+                                    email;
+
+                            }
+
+                        }
+
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        'ไม่สามารถโหลด Email ผู้ใช้:',
+                        error
+                    );
+
+                }
+
+            }
+        );
+
+
+
+        /* ================================================= */
+        /* EXPIRY STATUS PREVIEW */
+        /* ================================================= */
+
+        const exportDateInput =
+            document.getElementById(
+                'f-export-date'
+            );
+
+
+        if (exportDateInput) {
+
+            exportDateInput.addEventListener(
+                'change',
+                () => {
+
+                    const value =
+                        exportDateInput.value;
+
+                    const preview =
+                        document.getElementById(
+                            'form-status-preview'
+                        );
+
+
+                    if (
+                        !value ||
+                        !preview
+                    ) {
+                        return;
+                    }
+
+
+                    const today =
+                        new Date();
+
+                    today.setHours(
+                        0,
+                        0,
+                        0,
+                        0
+                    );
+
+
+                    const expiry =
+                        new Date(
+                            `${value}T00:00:00`
+                        );
+
+                    expiry.setHours(
+                        0,
+                        0,
+                        0,
+                        0
+                    );
+
+
+                    const days =
+                        Math.round(
+                            (
+                                expiry -
+                                today
+                            ) /
+                            (
+                                1000 *
+                                60 *
+                                60 *
+                                24
+                            )
+                        );
+
+
+                    if (days < 0) {
+
+                        preview.textContent =
+                            'หมดอายุ';
+
+                    } else if (days <= 3) {
+
+                        preview.textContent =
+                            'ใกล้หมดอายุ';
+
+                    } else {
+
+                        preview.textContent =
+                            'ปกติ';
+
+                    }
+
+                }
+            );
+
+        }
+
+    </script>
+
+
 </body>
+
 </html>
