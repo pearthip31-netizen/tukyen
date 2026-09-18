@@ -15,23 +15,15 @@
 
     <style>
         body {
-            font-family: 'Prompt', sans-serif;
+            font-family: "Prompt", sans-serif;
         }
     </style>
 </head>
 
 <body class="bg-slate-900 min-h-screen text-slate-800 flex flex-col">
 
-    <!-- =========================
-         Navbar
-    ========================== -->
-
-    <header
-        class="bg-white border-b border-slate-200 sticky top-0 z-50 px-8 py-4 flex justify-between items-center shadow-sm"
-    >
-
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 px-8 py-4 flex justify-between items-center shadow-sm">
         <div class="flex items-center gap-3">
-
             <img
                 src="โลโก้ตู้เย็น.png"
                 alt="TUYEN logo"
@@ -39,7 +31,6 @@
             >
 
             <div>
-
                 <h1 class="font-bold text-slate-900 text-lg leading-tight">
                     TUYEN
                 </h1>
@@ -47,24 +38,14 @@
                 <p class="text-xs text-slate-400">
                     Dorm Fridge Expiry Tracker
                 </p>
-
             </div>
-
         </div>
-
     </header>
 
-
-    <!-- =========================
-         Main
-    ========================== -->
-
     <main class="flex-1 w-full flex items-center justify-center p-6">
-
         <div class="w-full max-w-md">
 
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-
                 <h2 class="text-lg font-bold text-slate-900">
                     Welcome to TUYEN
                 </h2>
@@ -73,13 +54,7 @@
                     เข้าสู่ระบบหรือสมัครสมาชิกเพื่อจัดการตู้เย็นของคุณ
                 </p>
 
-
-                <!-- =========================
-                     Login / Register Tabs
-                ========================== -->
-
                 <div class="flex bg-slate-100 rounded-xl p-1 mb-6 text-sm font-medium">
-
                     <button
                         id="tab-login"
                         type="button"
@@ -95,20 +70,11 @@
                     >
                         สมัครสมาชิก
                     </button>
-
                 </div>
-
-
-                <!-- =========================
-                     Form
-                ========================== -->
 
                 <form id="auth-form" class="flex flex-col gap-4">
 
-                    <!-- Email -->
-
                     <div>
-
                         <label
                             for="auth-email"
                             class="block text-xs font-semibold text-slate-600 mb-1"
@@ -120,17 +86,13 @@
                             id="auth-email"
                             type="email"
                             required
-                            placeholder="you@example.com"
+                            autocomplete="email"
+                            placeholder="***@*******.***"
                             class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500"
                         >
-
                     </div>
 
-
-                    <!-- Password -->
-
                     <div>
-
                         <label
                             for="auth-password"
                             id="password-label"
@@ -140,12 +102,12 @@
                         </label>
 
                         <div class="relative">
-
                             <input
                                 id="auth-password"
                                 type="password"
                                 required
                                 minlength="6"
+                                autocomplete="current-password"
                                 placeholder="อย่างน้อย 6 ตัวอักษร"
                                 class="w-full px-3 py-2.5 pr-16 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500"
                             >
@@ -157,57 +119,33 @@
                             >
                                 ดู
                             </button>
-
                         </div>
-
                     </div>
-
-
-                    <!-- =========================
-                         Error / Success Message
-                    ========================== -->
 
                     <p
                         id="auth-message"
                         class="hidden text-xs font-medium rounded-xl px-3 py-2"
                     ></p>
 
-
-                    <!-- =========================
-                         Submit
-                    ========================== -->
-
                     <button
                         type="submit"
                         id="auth-submit"
-                        class="w-full bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold py-3 rounded-xl shadow-md shadow-violet-200 transition"
+                        class="w-full bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold py-3 rounded-xl shadow-md shadow-violet-200 transition disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                         เข้าสู่ระบบ
                     </button>
-
                 </form>
-
             </div>
 
-
             <p class="text-center text-slate-500 text-xs mt-6">
-                เปิดผ่าน http://localhost:3000 หรือ server ใดก็ได้
+                เปิดผ่าน localhost หรือ Live Server ได้
             </p>
-
         </div>
-
     </main>
-
-
-    <!-- =========================
-         Supabase Library
-    ========================== -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
     <script>
-
         // ==================================================
         // SUPABASE CONFIG
         // ==================================================
@@ -218,15 +156,11 @@
         const SUPABASE_ANON_KEY =
             "sb_publishable_Lp-Gu3pQd8aHOiGZ-FpVcg_dF11Ks0f";
 
-
-        // สร้าง Supabase Client
-
         const supabaseClient =
             window.supabase.createClient(
                 SUPABASE_URL,
                 SUPABASE_ANON_KEY
             );
-
 
         // ==================================================
         // ELEMENTS
@@ -234,143 +168,21 @@
 
         let mode = "login";
 
-        const tabLogin =
-            document.getElementById("tab-login");
-
-        const tabSignup =
-            document.getElementById("tab-signup");
-
-        const form =
-            document.getElementById("auth-form");
-
-        const submitBtn =
-            document.getElementById("auth-submit");
-
-        const message =
-            document.getElementById("auth-message");
-
-        const passwordInput =
-            document.getElementById("auth-password");
-
-        const passwordLabel =
-            document.getElementById("password-label");
-
-        const togglePassword =
-            document.getElementById("toggle-password");
-
+        const tabLogin = document.getElementById("tab-login");
+        const tabSignup = document.getElementById("tab-signup");
+        const form = document.getElementById("auth-form");
+        const submitBtn = document.getElementById("auth-submit");
+        const message = document.getElementById("auth-message");
+        const passwordInput = document.getElementById("auth-password");
+        const passwordLabel = document.getElementById("password-label");
+        const togglePassword = document.getElementById("toggle-password");
 
         // ==================================================
-        // SHOW / HIDE PASSWORD
-        // ==================================================
-
-        togglePassword.addEventListener("click", () => {
-
-            const isPassword =
-                passwordInput.type === "password";
-
-            passwordInput.type =
-                isPassword ? "text" : "password";
-
-            togglePassword.textContent =
-                isPassword ? "ซ่อน" : "ดู";
-
-        });
-
-
-        // ==================================================
-        // CHANGE LOGIN / REGISTER
-        // ==================================================
-
-        function setMode(newMode) {
-
-            mode = newMode;
-
-            const isLogin =
-                newMode === "login";
-
-
-            // เปลี่ยนข้อความรหัสผ่านตามหน้า
-
-            if (isLogin) {
-
-                passwordLabel.textContent =
-                    "รหัสผ่าน";
-
-                passwordInput.placeholder =
-                    "อย่างน้อย 6 ตัวอักษร";
-
-            } else {
-
-                passwordLabel.textContent =
-                    "ตั้งรหัสผ่านใหม่";
-
-                passwordInput.placeholder =
-                    "ตั้งรหัสผ่านอย่างน้อย 6 ตัวอักษร";
-
-            }
-
-
-            // เปลี่ยนข้อความปุ่ม
-
-            submitBtn.textContent =
-                isLogin
-                    ? "เข้าสู่ระบบ"
-                    : "สมัครสมาชิก";
-
-
-            // เปลี่ยนสี Tab
-
-            if (isLogin) {
-
-                tabLogin.className =
-                    "flex-1 py-2 rounded-lg text-violet-700 bg-white shadow transition";
-
-                tabSignup.className =
-                    "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-700 transition";
-
-            } else {
-
-                tabLogin.className =
-                    "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-700 transition";
-
-                tabSignup.className =
-                    "flex-1 py-2 rounded-lg text-violet-700 bg-white shadow transition";
-
-            }
-
-
-            // ล้างข้อความแจ้งเตือน
-
-            message.classList.add("hidden");
-
-            message.textContent = "";
-
-        }
-
-
-        tabLogin.addEventListener("click", () => {
-
-            setMode("login");
-
-        });
-
-
-        tabSignup.addEventListener("click", () => {
-
-            setMode("signup");
-
-        });
-
-
-        // ==================================================
-        // SHOW MESSAGE
+        // MESSAGE
         // ==================================================
 
         function showMessage(text, isError = true) {
-
             message.textContent = text;
-
-            message.classList.remove("hidden");
 
             message.className =
                 "text-xs font-medium rounded-xl px-3 py-2 " +
@@ -379,323 +191,294 @@
                         ? "bg-rose-50 text-rose-600"
                         : "bg-emerald-50 text-emerald-600"
                 );
-
         }
 
+        function clearMessage() {
+            message.textContent = "";
+            message.className =
+                "hidden text-xs font-medium rounded-xl px-3 py-2";
+        }
 
         // ==================================================
-        // ERROR MESSAGE
+        // CHANGE MODE
+        // ==================================================
+
+        function setMode(newMode) {
+            mode = newMode;
+
+            const isLogin = mode === "login";
+
+            passwordLabel.textContent =
+                isLogin ? "รหัสผ่าน" : "ตั้งรหัสผ่านใหม่";
+
+            passwordInput.placeholder =
+                isLogin
+                    ? "อย่างน้อย 6 ตัวอักษร"
+                    : "ตั้งรหัสผ่านอย่างน้อย 6 ตัวอักษร";
+
+            passwordInput.autocomplete =
+                isLogin ? "current-password" : "new-password";
+
+            submitBtn.textContent =
+                isLogin ? "เข้าสู่ระบบ" : "สมัครสมาชิก";
+
+            if (isLogin) {
+                tabLogin.className =
+                    "flex-1 py-2 rounded-lg text-violet-700 bg-white shadow transition";
+
+                tabSignup.className =
+                    "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-700 transition";
+            } else {
+                tabLogin.className =
+                    "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-700 transition";
+
+                tabSignup.className =
+                    "flex-1 py-2 rounded-lg text-violet-700 bg-white shadow transition";
+            }
+
+            clearMessage();
+        }
+
+        tabLogin.addEventListener("click", () => {
+            setMode("login");
+        });
+
+        tabSignup.addEventListener("click", () => {
+            setMode("signup");
+        });
+
+        // ==================================================
+        // PASSWORD SHOW / HIDE
+        // ==================================================
+
+        togglePassword.addEventListener("click", () => {
+            const isHidden = passwordInput.type === "password";
+
+            passwordInput.type =
+                isHidden ? "text" : "password";
+
+            togglePassword.textContent =
+                isHidden ? "ซ่อน" : "ดู";
+        });
+
+        // ==================================================
+        // THAI ERRORS
         // ==================================================
 
         function thaiError(error) {
-
-            const msg =
+            const errorMessage =
                 String(error?.message || "");
 
+            console.error("Supabase error:", error);
+            console.error("ข้อความจริง:", errorMessage);
+            console.error("Error code:", error?.code);
 
-            // Email / Password ผิด
-
-            if (
-                /invalid login credentials/i.test(msg)
-            ) {
-
+            if (/invalid login credentials/i.test(errorMessage)) {
                 return "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
-
             }
 
-
-            // Email ยังไม่ยืนยัน
-
-            if (
-                /email not confirmed/i.test(msg)
-            ) {
-
-                return "อีเมลยังไม่ได้รับการยืนยัน กรุณาตรวจสอบอีเมลก่อน";
-
+            if (/email not confirmed/i.test(errorMessage)) {
+                return "อีเมลนี้ยังไม่ได้ยืนยัน กรุณาตรวจสอบอีเมล";
             }
 
-
-            // Email ซ้ำ
-
             if (
-                /already registered|already exists/i.test(msg)
+                /already registered/i.test(errorMessage) ||
+                /already exists/i.test(errorMessage)
             ) {
-
                 return "อีเมลนี้สมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบแทน";
-
             }
 
-
-            // Password สั้น
-
             if (
-                /at least 6 characters/i.test(msg) ||
-                /password.*6/i.test(msg)
+                /at least 6 characters/i.test(errorMessage) ||
+                /password.*6/i.test(errorMessage)
             ) {
-
                 return "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร";
-
             }
 
-
-            // Email ผิดรูปแบบ
-
-            if (
-                /invalid email/i.test(msg)
-            ) {
-
+            if (/invalid email/i.test(errorMessage)) {
                 return "รูปแบบอีเมลไม่ถูกต้อง";
-
             }
 
-
-            // Network
-
-            if (
-                /network|fetch/i.test(msg)
-            ) {
-
-                return "ไม่สามารถเชื่อมต่อได้ กรุณาตรวจสอบอินเทอร์เน็ต";
-
+            if (/network|fetch/i.test(errorMessage)) {
+                return "เชื่อมต่อ Supabase ไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ต";
             }
 
-
-            return msg ||
-                "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
-
+            return errorMessage || "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
         }
 
+        // ==================================================
+        // CREATE / UPDATE PROFILE
+        // ==================================================
+
+        async function createUserProfile(user) {
+            if (!user) return;
+
+            const { error } =
+                await supabaseClient
+                    .from("users")
+                    .upsert(
+                        {
+                            user_id: user.id,
+                            user_email: user.email,
+                            name: user.email.split("@")[0]
+                        },
+                        {
+                            onConflict: "user_id"
+                        }
+                    );
+
+            if (error) {
+                console.warn(
+                    "เพิ่มข้อมูลใน public.users ไม่สำเร็จ:",
+                    error.message
+                );
+            }
+        }
 
         // ==================================================
         // LOGIN
         // ==================================================
 
         async function login(email, password) {
-
             const { data, error } =
                 await supabaseClient.auth.signInWithPassword({
-
                     email: email,
-
                     password: password
-
                 });
 
-
             if (error) {
-
                 throw error;
-
             }
 
+            await createUserProfile(data.user);
 
             return data;
-
         }
 
-
         // ==================================================
-        // REGISTER
+        // SIGN UP
         // ==================================================
 
         async function register(email, password) {
-
             const { data, error } =
                 await supabaseClient.auth.signUp({
-
                     email: email,
-
                     password: password
-
                 });
 
-
             if (error) {
-
                 throw error;
-
             }
 
+            /*
+                Supabase อาจไม่ส่ง error เมื่อใช้ email ซ้ำ
+                แต่ส่ง user ที่ไม่มี identities กลับมาแทน
+            */
+            if (
+                data.user &&
+                Array.isArray(data.user.identities) &&
+                data.user.identities.length === 0
+            ) {
+                throw new Error("User already registered");
+            }
+
+            if (data.session && data.user) {
+                await createUserProfile(data.user);
+            }
 
             return data;
-
         }
 
-
         // ==================================================
-        // SUBMIT FORM
+        // SUBMIT
         // ==================================================
 
         form.addEventListener("submit", async (event) => {
-
             event.preventDefault();
-
 
             const email =
                 document
                     .getElementById("auth-email")
                     .value
-                    .trim();
+                    .trim()
+                    .toLowerCase();
 
+            const password = passwordInput.value;
 
-            const password =
-                passwordInput.value;
-
-
-            message.classList.add("hidden");
+            clearMessage();
 
             submitBtn.disabled = true;
-
-
-            if (mode === "login") {
-
-                submitBtn.textContent =
-                    "กำลังเข้าสู่ระบบ...";
-
-            } else {
-
-                submitBtn.textContent =
-                    "กำลังสมัครสมาชิก...";
-
-            }
-
+            submitBtn.textContent =
+                mode === "login"
+                    ? "กำลังเข้าสู่ระบบ..."
+                    : "กำลังสมัครสมาชิก...";
 
             try {
-
-                // ==========================================
-                // LOGIN
-                // ==========================================
-
                 if (mode === "login") {
-
-                    await login(
-                        email,
-                        password
-                    );
-
+                    await login(email, password);
 
                     showMessage(
                         "เข้าสู่ระบบสำเร็จ กำลังเข้าสู่หน้าหลัก...",
                         false
                     );
 
-
                     setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 700);
 
-                        window.location.href =
-                            "index.html";
+                } else {
+                    const data = await register(email, password);
 
-                    }, 500);
-
-                }
-
-
-                // ==========================================
-                // REGISTER
-                // ==========================================
-
-                else {
-
-                    const data =
-                        await register(
-                            email,
-                            password
-                        );
-
-
-                    // กรณีเปิด Confirm Email
-
-                    if (!data.session) {
-
-                        showMessage(
-                            "สมัครสมาชิกสำเร็จ กรุณาตรวจสอบอีเมลเพื่อยืนยันบัญชี",
-                            false
-                        );
-
-
-                        setMode("login");
-
-                    }
-
-
-                    // กรณีไม่ต้องยืนยัน Email
-
-                    else {
-
+                    if (data.session) {
                         showMessage(
                             "สมัครสมาชิกสำเร็จ กำลังเข้าสู่หน้าหลัก...",
                             false
                         );
 
-
                         setTimeout(() => {
+                            window.location.href = "index.html";
+                        }, 700);
 
-                            window.location.href =
-                                "index.html";
+                    } else {
+                        showMessage(
+                            "สมัครสมาชิกสำเร็จ กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ",
+                            false
+                        );
 
-                        }, 500);
-
+                        setMode("login");
                     }
-
                 }
 
             } catch (error) {
+                showMessage(thaiError(error), true);
 
-                console.error(
-                    "Supabase Auth Error:",
-                    error
-                );
+            } finally {
+                submitBtn.disabled = false;
 
-
-                showMessage(
-                    thaiError(error),
-                    true
-                );
-
+                submitBtn.textContent =
+                    mode === "login"
+                        ? "เข้าสู่ระบบ"
+                        : "สมัครสมาชิก";
             }
-
-
-            submitBtn.disabled = false;
-
-
-            submitBtn.textContent =
-                mode === "login"
-                    ? "เข้าสู่ระบบ"
-                    : "สมัครสมาชิก";
-
         });
 
-
         // ==================================================
-        // CHECK EXISTING SESSION
+        // CHECK CURRENT SESSION
         // ==================================================
 
         (async () => {
+            const { data, error } =
+                await supabaseClient.auth.getSession();
 
-            try {
-
-                const { data } =
-                    await supabaseClient.auth.getSession();
-
-
-                if (data.session) {
-
-                    window.location.href =
-                        "index.html";
-
-                }
-
-            } catch (error) {
-
-                console.error(
-                    "ตรวจสอบ Session ไม่สำเร็จ:",
-                    error
-                );
-
+            if (error) {
+                console.error("ตรวจสอบ session ไม่สำเร็จ:", error);
+                return;
             }
 
+            if (data.session) {
+                window.location.href = "index.html";
+            }
         })();
-
     </script>
 
 </body>
