@@ -1,0 +1,2465 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>TUYEN - โซนตู้เย็น</title>
+
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+
+    <!-- Prompt -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/fridge.css">
+
+</head>
+
+
+<body class="bg-slate-900 min-h-screen text-slate-800 flex flex-col">
+
+
+    <!-- ================================================= -->
+    <!-- HEADER -->
+    <!-- เหมือน Header ของ index.html -->
+    <!-- ================================================= -->
+
+    <header
+        class="bg-white border-b border-slate-200 sticky top-0 z-50 px-5 lg:px-8 py-3.5 flex justify-between items-center shadow-sm"
+    >
+
+        <!-- ================================================= -->
+        <!-- LEFT : LOGO -->
+        <!-- ================================================= -->
+
+        <div class="flex items-center gap-3 min-w-fit">
+
+            <img
+                src="โลโก้ตู้เย็น.png"
+                alt="TUYEN logo"
+                class="w-10 h-10 rounded-xl object-cover border border-violet-100 shadow-sm bg-violet-50"
+            >
+
+            <div>
+
+                <h1
+                    class="font-bold text-slate-900 text-lg leading-tight"
+                >
+                    TUYEN
+                </h1>
+
+                <p class="text-[11px] text-slate-400">
+                    Dorm Fridge Expiry Tracker
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- CENTER : NAVIGATION -->
+        <!-- ================================================= -->
+
+        <nav
+            class="hidden md:flex items-center gap-2 text-sm font-medium"
+        >
+
+            <!-- ตู้เย็นของฉัน -->
+
+            <a
+                href="index.html"
+                class="text-slate-600 hover:text-violet-600 hover:bg-violet-50 px-4 py-2 rounded-xl flex items-center gap-2"
+            >
+
+                <img
+                    src="โลโก้ตู้เย็น.png"
+                    alt="TUYEN logo"
+                    class="w-6 h-6 rounded-md object-cover"
+                >
+
+                ตู้เย็นของฉัน
+
+            </a>
+
+
+            <!-- โซนตู้เย็น : ACTIVE -->
+
+            <a
+                href="fridge.html"
+                class="text-violet-600 flex items-center gap-2 bg-violet-50 px-4 py-2 rounded-xl"
+            >
+
+                📦 โซนตู้เย็น
+
+            </a>
+
+
+            <!-- ตั้งค่า -->
+
+            <a
+                href="#"
+                class="text-slate-600 hover:text-violet-600 hover:bg-violet-50 px-4 py-2 rounded-xl"
+            >
+
+                ⚙️ ตั้งค่า
+
+            </a>
+
+        </nav>
+
+
+        <!-- ================================================= -->
+        <!-- RIGHT : SEARCH + ACCOUNT -->
+        <!-- ================================================= -->
+
+        <div class="flex items-center gap-3">
+
+
+            <!-- SEARCH -->
+
+            <div class="relative hidden lg:block">
+
+                <span
+                    class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"
+                >
+                    🔍
+                </span>
+
+                <input
+                    type="text"
+                    id="search-food"
+                    placeholder="ค้นหาอาหารในตู้..."
+                    class="pl-9 pr-4 py-2 text-xs bg-slate-100 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white w-56"
+                >
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- USER ACCOUNT -->
+            <!-- เหมือน index.html -->
+            <!-- ================================================= -->
+
+            <div
+                class="flex items-center gap-2.5 bg-violet-50 border border-violet-100 rounded-xl px-3 py-1.5"
+            >
+
+                <img
+                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100"
+                    alt="profile"
+                    class="w-8 h-8 rounded-full object-cover border-2 border-violet-200 shadow-sm"
+                >
+
+                <div class="leading-tight hidden sm:block">
+
+                    <p
+                        id="user-email"
+                        class="text-xs font-semibold text-slate-700 max-w-[160px] truncate"
+                    >
+                        ...
+                    </p>
+
+                    <button
+                        id="logout-btn"
+                        class="text-[10px] text-violet-600 hover:text-violet-800 font-medium"
+                    >
+                        ออกจากระบบ
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ================================================= -->
+    <!-- MAIN -->
+    <!-- ================================================= -->
+
+    <main
+        class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-7 flex flex-col gap-5"
+    >
+
+
+        <!-- ================================================= -->
+        <!-- PAGE HEADER -->
+        <!-- ================================================= -->
+
+        <section
+            class="bg-white px-6 py-5 rounded-2xl border border-slate-200 shadow-sm"
+        >
+
+            <div
+                class="flex flex-col items-center justify-center text-center gap-3"
+            >
+
+                <div class="zone-page-icon">
+
+                    📦
+
+                </div>
+
+                <div>
+
+                    <h2
+                        class="text-xl lg:text-2xl font-bold text-slate-900"
+                    >
+                        โซนตู้เย็น
+                    </h2>
+
+                    <p class="text-xs text-slate-400 mt-1">
+                        เลือกโซนเพื่อดูรายการอาหารภายในตู้เย็น
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- ZONE -->
+        <!-- ================================================= -->
+
+        <section class="zone-container">
+
+            <div
+                class="flex flex-col sm:flex-row justify-between sm:items-end gap-2 mb-5"
+            >
+
+                <div>
+
+                    <h3
+                        class="font-bold text-white text-base lg:text-lg"
+                    >
+                        🧊 พื้นที่ในตู้เย็น
+                    </h3>
+
+                    <p class="text-[11px] text-slate-300 mt-1">
+                        กดแต่ละช่องเพื่อดูว่ามีอะไรอยู่บ้าง
+                    </p>
+
+                </div>
+
+
+                <span
+                    id="all-zone-count"
+                    class="zone-total"
+                >
+                    0 รายการ
+                </span>
+
+            </div>
+
+
+
+            <!-- ================================================= -->
+            <!-- ZONE CARDS -->
+            <!-- ================================================= -->
+
+            <div
+                id="zone-list"
+                class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
+            >
+
+
+                <!-- ================================================= -->
+                <!-- ชั้นบน -->
+                <!-- ================================================= -->
+
+                <button
+                    type="button"
+                    onclick="openZone('top')"
+                    class="zone-card"
+                >
+
+                    <div class="zone-card-icon purple">
+                        ⬆️
+                    </div>
+
+                    <div class="zone-card-body">
+
+                        <div
+                            class="flex items-start justify-between gap-3"
+                        >
+
+                            <div>
+
+                                <h4 class="zone-card-title">
+                                    ชั้นบน
+                                </h4>
+
+                                <p class="zone-card-desc">
+                                    นม ไข่ ชีส และอาหารที่เปิดใช้บ่อย
+                                </p>
+
+                            </div>
+
+                            <span
+                                id="count-top"
+                                class="zone-number"
+                            >
+                                0
+                            </span>
+
+                        </div>
+
+                        <div class="zone-card-bottom">
+
+                            <span>
+                                รายการอาหาร
+                            </span>
+
+                            <span class="zone-arrow">
+                                →
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </button>
+
+
+
+                <!-- ================================================= -->
+                <!-- ชั้นกลาง -->
+                <!-- ================================================= -->
+
+                <button
+                    type="button"
+                    onclick="openZone('middle')"
+                    class="zone-card"
+                >
+
+                    <div class="zone-card-icon orange">
+                        ↔️
+                    </div>
+
+                    <div class="zone-card-body">
+
+                        <div
+                            class="flex items-start justify-between gap-3"
+                        >
+
+                            <div>
+
+                                <h4 class="zone-card-title">
+                                    ชั้นกลาง
+                                </h4>
+
+                                <p class="zone-card-desc">
+                                    อาหารกล่อง โยเกิร์ต และของพร้อมทาน
+                                </p>
+
+                            </div>
+
+                            <span
+                                id="count-middle"
+                                class="zone-number"
+                            >
+                                0
+                            </span>
+
+                        </div>
+
+                        <div class="zone-card-bottom">
+
+                            <span>
+                                รายการอาหาร
+                            </span>
+
+                            <span class="zone-arrow">
+                                →
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </button>
+
+
+
+                <!-- ================================================= -->
+                <!-- ชั้นล่าง -->
+                <!-- ================================================= -->
+
+                <button
+                    type="button"
+                    onclick="openZone('bottom')"
+                    class="zone-card"
+                >
+
+                    <div class="zone-card-icon yellow">
+                        ⬇️
+                    </div>
+
+                    <div class="zone-card-body">
+
+                        <div
+                            class="flex items-start justify-between gap-3"
+                        >
+
+                            <div>
+
+                                <h4 class="zone-card-title">
+                                    ชั้นล่าง
+                                </h4>
+
+                                <p class="zone-card-desc">
+                                    เครื่องดื่ม ขวด และภาชนะขนาดใหญ่
+                                </p>
+
+                            </div>
+
+                            <span
+                                id="count-bottom"
+                                class="zone-number"
+                            >
+                                0
+                            </span>
+
+                        </div>
+
+                        <div class="zone-card-bottom">
+
+                            <span>
+                                รายการอาหาร
+                            </span>
+
+                            <span class="zone-arrow">
+                                →
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </button>
+
+
+
+                <!-- ================================================= -->
+                <!-- ช่องประตู -->
+                <!-- ================================================= -->
+
+                <button
+                    type="button"
+                    onclick="openZone('door')"
+                    class="zone-card"
+                >
+
+                    <div class="zone-card-icon pink">
+                        🚪
+                    </div>
+
+                    <div class="zone-card-body">
+
+                        <div
+                            class="flex items-start justify-between gap-3"
+                        >
+
+                            <div>
+
+                                <h4 class="zone-card-title">
+                                    ช่องประตู
+                                </h4>
+
+                                <p class="zone-card-desc">
+                                    ซอส เครื่องปรุง และเครื่องดื่ม
+                                </p>
+
+                            </div>
+
+                            <span
+                                id="count-door"
+                                class="zone-number"
+                            >
+                                0
+                            </span>
+
+                        </div>
+
+                        <div class="zone-card-bottom">
+
+                            <span>
+                                รายการอาหาร
+                            </span>
+
+                            <span class="zone-arrow">
+                                →
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </button>
+
+
+
+                <!-- ================================================= -->
+                <!-- ช่องผักและผลไม้ -->
+                <!-- ================================================= -->
+
+                <button
+                    type="button"
+                    onclick="openZone('crisper')"
+                    class="zone-card"
+                >
+
+                    <div class="zone-card-icon green">
+                        🥬
+                    </div>
+
+                    <div class="zone-card-body">
+
+                        <div
+                            class="flex items-start justify-between gap-3"
+                        >
+
+                            <div>
+
+                                <h4 class="zone-card-title">
+                                    ช่องผักและผลไม้
+                                </h4>
+
+                                <p class="zone-card-desc">
+                                    ผัก ผลไม้ และวัตถุดิบสด
+                                </p>
+
+                            </div>
+
+                            <span
+                                id="count-crisper"
+                                class="zone-number"
+                            >
+                                0
+                            </span>
+
+                        </div>
+
+                        <div class="zone-card-bottom">
+
+                            <span>
+                                รายการอาหาร
+                            </span>
+
+                            <span class="zone-arrow">
+                                →
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </button>
+
+
+
+                <!-- ================================================= -->
+                <!-- ช่องแช่แข็ง -->
+                <!-- ================================================= -->
+
+                <button
+                    type="button"
+                    onclick="openZone('freezer')"
+                    class="zone-card"
+                >
+
+                    <div class="zone-card-icon blue">
+                        🧊
+                    </div>
+
+                    <div class="zone-card-body">
+
+                        <div
+                            class="flex items-start justify-between gap-3"
+                        >
+
+                            <div>
+
+                                <h4 class="zone-card-title">
+                                    ช่องแช่แข็ง
+                                </h4>
+
+                                <p class="zone-card-desc">
+                                    เนื้อสัตว์ อาหารแช่แข็ง และไอศกรีม
+                                </p>
+
+                            </div>
+
+                            <span
+                                id="count-freezer"
+                                class="zone-number"
+                            >
+                                0
+                            </span>
+
+                        </div>
+
+                        <div class="zone-card-bottom">
+
+                            <span>
+                                รายการอาหาร
+                            </span>
+
+                            <span class="zone-arrow">
+                                →
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </button>
+
+
+
+                <!-- ================================================= -->
+                <!-- อื่น ๆ -->
+                <!-- ================================================= -->
+
+                <button
+                    type="button"
+                    onclick="openZone('other')"
+                    class="zone-card"
+                >
+
+                    <div class="zone-card-icon gray">
+                        📦
+                    </div>
+
+                    <div class="zone-card-body">
+
+                        <div
+                            class="flex items-start justify-between gap-3"
+                        >
+
+                            <div>
+
+                                <h4 class="zone-card-title">
+                                    อื่น ๆ
+                                </h4>
+
+                                <p class="zone-card-desc">
+                                    ตำแหน่งพิเศษที่กำหนดด้วยตัวเอง
+                                </p>
+
+                            </div>
+
+                            <span
+                                id="count-other"
+                                class="zone-number"
+                            >
+                                0
+                            </span>
+
+                        </div>
+
+                        <div class="zone-card-bottom">
+
+                            <span>
+                                รายการอาหาร
+                            </span>
+
+                            <span class="zone-arrow">
+                                →
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- ================================================= -->
+    <!-- ZONE MODAL -->
+    <!-- ================================================= -->
+
+    <div
+        id="zone-modal"
+        class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4"
+    >
+
+        <div
+            id="zone-modal-box"
+            class="zone-modal-box"
+        >
+
+
+            <!-- ================================================= -->
+            <!-- MODAL HEADER -->
+            <!-- ================================================= -->
+
+            <div
+                class="flex items-start justify-between gap-4 mb-5"
+            >
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        id="modal-zone-icon"
+                        class="zone-card-icon purple"
+                    >
+                        ⬆️
+                    </div>
+
+                    <div>
+
+                        <p
+                            class="text-[10px] text-violet-600 font-semibold"
+                        >
+                            FRIDGE ZONE
+                        </p>
+
+                        <h3
+                            id="modal-zone-title"
+                            class="text-lg font-bold text-slate-900 mt-1"
+                        >
+                            ชั้นบน
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="zone-modal-close"
+                    class="zone-modal-close"
+                >
+                    &times;
+                </button>
+
+            </div>
+
+
+
+            <!-- ================================================= -->
+            <!-- DESCRIPTION -->
+            <!-- ================================================= -->
+
+            <p
+                id="modal-zone-description"
+                class="text-xs text-slate-400 mb-4"
+            >
+                รายการอาหารในโซนนี้
+            </p>
+
+
+
+            <!-- ================================================= -->
+            <!-- COUNT -->
+            <!-- ================================================= -->
+
+            <div class="zone-modal-summary">
+
+                <span>
+                    ของในช่องนี้
+                </span>
+
+                <strong>
+
+                    <span id="modal-zone-count">
+                        0
+                    </span>
+
+                    รายการ
+
+                </strong>
+
+            </div>
+
+
+
+            <!-- ================================================= -->
+            <!-- FOOD LIST -->
+            <!-- ================================================= -->
+
+            <div
+                id="modal-food-list"
+                class="zone-modal-food-list"
+            >
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- FOOTER -->
+    <!-- ================================================= -->
+
+    <footer
+        class="bg-white border-t border-slate-200 py-3 text-center text-[11px] text-slate-400 mt-2"
+    >
+        © 2026 TUYEN - Dorm Fridge Expiry Tracker.
+    </footer>
+
+
+
+    <!-- ================================================= -->
+    <!-- SCRIPTS -->
+    <!-- ================================================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="config.js"></script>
+
+    <script src="auth.js"></script>
+
+
+    <script>
+
+        // =================================================
+        // ZONE CONFIG
+        // ไม่มีข้อมูลอาหารตัวอย่างแล้ว
+        // =================================================
+
+        const zoneConfig = {
+
+            top: {
+
+                name: "ชั้นบน",
+
+                description:
+                    "นม ไข่ ชีส และอาหารที่เปิดใช้บ่อย",
+
+                icon: "⬆️",
+
+                color: "purple"
+
+            },
+
+
+            middle: {
+
+                name: "ชั้นกลาง",
+
+                description:
+                    "อาหารกล่อง โยเกิร์ต และของพร้อมทาน",
+
+                icon: "↔️",
+
+                color: "orange"
+
+            },
+
+
+            bottom: {
+
+                name: "ชั้นล่าง",
+
+                description:
+                    "เครื่องดื่ม ขวด และภาชนะขนาดใหญ่",
+
+                icon: "⬇️",
+
+                color: "yellow"
+
+            },
+
+
+            door: {
+
+                name: "ช่องประตู",
+
+                description:
+                    "ซอส เครื่องปรุง และเครื่องดื่ม",
+
+                icon: "🚪",
+
+                color: "pink"
+
+            },
+
+
+            crisper: {
+
+                name: "ช่องผักและผลไม้",
+
+                description:
+                    "ผัก ผลไม้ และวัตถุดิบสด",
+
+                icon: "🥬",
+
+                color: "green"
+
+            },
+
+
+            freezer: {
+
+                name: "ช่องแช่แข็ง",
+
+                description:
+                    "เนื้อสัตว์ อาหารแช่แข็ง และไอศกรีม",
+
+                icon: "🧊",
+
+                color: "blue"
+
+            },
+
+
+            other: {
+
+                name: "อื่น ๆ",
+
+                description:
+                    "ตำแหน่งพิเศษที่กำหนดด้วยตัวเอง",
+
+                icon: "📦",
+
+                color: "gray"
+
+            }
+
+        };
+
+
+        // =================================================
+        // GLOBAL
+        // =================================================
+
+        let foods = [];
+
+        let currentUser = null;
+
+
+        // =================================================
+        // GET SUPABASE
+        // =================================================
+
+        function getSB() {
+
+            if (
+                typeof getSupabase ===
+                "function"
+            ) {
+
+                return getSupabase();
+
+            }
+
+
+            if (
+                typeof supabase !== "undefined" &&
+                supabase &&
+                typeof supabase.from ===
+                "function"
+            ) {
+
+                return supabase;
+
+            }
+
+
+            throw new Error(
+                "ไม่พบ Supabase client กรุณาตรวจสอบ config.js"
+            );
+
+        }
+
+
+        // =================================================
+        // GET CURRENT USER
+        // ใช้บัญชีเดียวกับ index
+        // =================================================
+
+        async function getCurrentUser() {
+
+            const sb = getSB();
+
+
+            const {
+                data,
+                error
+            } =
+                await sb.auth.getSession();
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            const authUser =
+                data?.session?.user;
+
+
+            if (!authUser) {
+
+                window.location.replace(
+                    "login.html"
+                );
+
+                return null;
+
+            }
+
+
+            const email =
+                String(
+                    authUser.email || ""
+                ).trim();
+
+
+            let userId =
+                authUser.id;
+
+
+            let userEmail =
+                email;
+
+
+            // =================================================
+            // หา user_id จาก public.users
+            // =================================================
+
+            if (email) {
+
+                try {
+
+                    const {
+                        data: dbUser,
+                        error: dbError
+                    } =
+                        await sb
+                            .from("users")
+                            .select(
+                                "user_id, name, user_email"
+                            )
+                            .eq(
+                                "user_email",
+                                email
+                            )
+                            .maybeSingle();
+
+
+                    if (
+                        !dbError &&
+                        dbUser
+                    ) {
+
+                        userId =
+                            dbUser.user_id;
+
+
+                        userEmail =
+                            dbUser.user_email ||
+                            email;
+
+                    }
+
+                } catch (error) {
+
+                    console.warn(
+                        "ค้นหา users ไม่สำเร็จ:",
+                        error
+                    );
+
+                }
+
+            }
+
+
+            currentUser = {
+
+                authUser:
+                    authUser,
+
+                user_id:
+                    userId,
+
+                user_email:
+                    userEmail
+
+            };
+
+
+            // แสดงอีเมลบน Header
+
+            const userEmailElement =
+                document.getElementById(
+                    "user-email"
+                );
+
+
+            if (userEmailElement) {
+
+                userEmailElement.textContent =
+                    userEmail ||
+                    "ผู้ใช้";
+
+                userEmailElement.title =
+                    userEmail;
+
+            }
+
+
+            return currentUser;
+
+        }
+
+
+        // =================================================
+        // LOAD FOODS
+        // ข้อมูลชุดเดียวกับ index
+        // =================================================
+
+        async function loadFoods() {
+
+            if (
+                !currentUser?.user_id
+            ) {
+
+                foods = [];
+
+                updateZoneCounts();
+
+                return;
+
+            }
+
+
+            const sb = getSB();
+
+
+            const {
+                data,
+                error
+            } =
+                await sb
+                    .from("food")
+                    .select(
+                        `
+                        food_id,
+                        food_name,
+                        manu,
+                        location,
+                        quantity,
+                        import_date,
+                        export_date,
+                        status,
+                        user_id
+                        `
+                    )
+                    .eq(
+                        "user_id",
+                        currentUser.user_id
+                    )
+                    .order(
+                        "export_date",
+                        {
+                            ascending: true
+                        }
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "โหลดรายการอาหารไม่สำเร็จ:",
+                    error
+                );
+
+
+                foods = [];
+
+
+                const totalElement =
+                    document.getElementById(
+                        "all-zone-count"
+                    );
+
+
+                if (totalElement) {
+
+                    totalElement.textContent =
+                        "โหลดข้อมูลไม่สำเร็จ";
+
+                }
+
+
+                return;
+
+            }
+
+
+            foods =
+                Array.isArray(data)
+                    ? data
+                    : [];
+
+
+            updateZoneCounts();
+
+        }
+
+
+        // =================================================
+        // LOCATION -> ZONE
+        // =================================================
+
+        function getZoneKey(location) {
+
+            const value =
+                String(
+                    location || ""
+                ).trim();
+
+
+            switch (value) {
+
+                case "ชั้นบน":
+                    return "top";
+
+                case "ชั้นกลาง":
+                    return "middle";
+
+                case "ชั้นล่าง":
+                    return "bottom";
+
+                case "ช่องประตู":
+                    return "door";
+
+                case "ช่องผักและผลไม้":
+                    return "crisper";
+
+                case "ช่องแช่แข็ง":
+                    return "freezer";
+
+                default:
+
+                    // ถ้ามี location อื่น ๆ
+                    // ให้เข้า "อื่น ๆ"
+
+                    if (value) {
+
+                        return "other";
+
+                    }
+
+                    return null;
+
+            }
+
+        }
+
+
+        // =================================================
+        // GET FOODS BY ZONE
+        // =================================================
+
+        function getFoodsByZone(zoneKey) {
+
+            return foods.filter(
+                food =>
+                    getZoneKey(
+                        food.location
+                    ) === zoneKey
+            );
+
+        }
+
+
+        // =================================================
+        // UPDATE COUNTS
+        // =================================================
+
+        function updateZoneCounts() {
+
+            let total = 0;
+
+
+            Object.keys(
+                zoneConfig
+            ).forEach(
+                zoneKey => {
+
+                    const zoneFoods =
+                        getFoodsByZone(
+                            zoneKey
+                        );
+
+
+                    const count =
+                        zoneFoods.length;
+
+
+                    total +=
+                        count;
+
+
+                    const element =
+                        document.getElementById(
+                            `count-${zoneKey}`
+                        );
+
+
+                    if (element) {
+
+                        element.textContent =
+                            count;
+
+                    }
+
+                }
+            );
+
+
+            const totalElement =
+                document.getElementById(
+                    "all-zone-count"
+                );
+
+
+            if (totalElement) {
+
+                totalElement.textContent =
+                    `${total} รายการ`;
+
+            }
+
+        }
+
+
+        // =================================================
+        // OPEN ZONE
+        // =================================================
+
+        function openZone(zoneKey) {
+
+            const zone =
+                zoneConfig[zoneKey];
+
+
+            if (!zone) {
+
+                return;
+
+            }
+
+
+            const zoneFoods =
+                getFoodsByZone(
+                    zoneKey
+                );
+
+
+            const modal =
+                document.getElementById(
+                    "zone-modal"
+                );
+
+
+            const title =
+                document.getElementById(
+                    "modal-zone-title"
+                );
+
+
+            const description =
+                document.getElementById(
+                    "modal-zone-description"
+                );
+
+
+            const count =
+                document.getElementById(
+                    "modal-zone-count"
+                );
+
+
+            const icon =
+                document.getElementById(
+                    "modal-zone-icon"
+                );
+
+
+            const foodList =
+                document.getElementById(
+                    "modal-food-list"
+                );
+
+
+            if (
+                !modal ||
+                !title ||
+                !description ||
+                !count ||
+                !icon ||
+                !foodList
+            ) {
+
+                return;
+
+            }
+
+
+            // HEADER
+
+            title.textContent =
+                zone.name;
+
+
+            description.textContent =
+                zone.description;
+
+
+            count.textContent =
+                zoneFoods.length;
+
+
+            icon.textContent =
+                zone.icon;
+
+
+            icon.className =
+                `zone-card-icon ${zone.color}`;
+
+
+            // CLEAR
+
+            foodList.innerHTML =
+                "";
+
+
+            // EMPTY
+
+            if (
+                zoneFoods.length ===
+                0
+            ) {
+
+                foodList.innerHTML = `
+
+                    <div class="modal-empty">
+
+                        <div class="text-4xl mb-3">
+                            🧊
+                        </div>
+
+                        <p
+                            class="text-sm font-semibold text-slate-600"
+                        >
+                            ยังไม่มีอาหารในช่องนี้
+                        </p>
+
+                        <p
+                            class="text-xs text-slate-400 mt-1"
+                        >
+                            เมื่อเพิ่มอาหารจากหน้า
+                            “ตู้เย็นของฉัน”
+                            รายการจะแสดงตรงนี้
+                        </p>
+
+                    </div>
+
+                `;
+
+            }
+
+
+            // HAS FOOD
+
+            else {
+
+                zoneFoods.forEach(
+                    food => {
+
+                        foodList.innerHTML +=
+                            createFoodCard(
+                                food
+                            );
+
+                    }
+                );
+
+            }
+
+
+            modal.classList.remove(
+                "hidden"
+            );
+
+
+            document.body.classList.add(
+                "modal-open"
+            );
+
+        }
+
+
+        // =================================================
+        // CREATE FOOD CARD
+        // =================================================
+
+        function createFoodCard(food) {
+
+            const days =
+                getDaysUntilExpiry(
+                    food.export_date
+                );
+
+
+            let statusText =
+                "ไม่ระบุวันหมดอายุ";
+
+
+            let statusClass =
+                "bg-slate-100 text-slate-500";
+
+
+            if (
+                days !== null
+            ) {
+
+                if (
+                    days < 0
+                ) {
+
+                    statusText =
+                        "หมดอายุแล้ว";
+
+                    statusClass =
+                        "bg-rose-100 text-rose-700";
+
+                }
+                else if (
+                    days === 0
+                ) {
+
+                    statusText =
+                        "หมดอายุวันนี้";
+
+                    statusClass =
+                        "bg-rose-100 text-rose-700";
+
+                }
+                else if (
+                    days <= 3
+                ) {
+
+                    statusText =
+                        `เหลือ ${days} วัน`;
+
+                    statusClass =
+                        "bg-amber-100 text-amber-700";
+
+                }
+                else {
+
+                    statusText =
+                        `เหลือ ${days} วัน`;
+
+                    statusClass =
+                        "bg-emerald-100 text-emerald-700";
+
+                }
+
+            }
+
+
+            let remainingText =
+                "ไม่สามารถคำนวณได้";
+
+
+            if (
+                days !== null
+            ) {
+
+                if (
+                    days < 0
+                ) {
+
+                    remainingText =
+                        `หมดอายุมาแล้ว ${Math.abs(days)} วัน`;
+
+                }
+                else if (
+                    days === 0
+                ) {
+
+                    remainingText =
+                        "หมดอายุวันนี้";
+
+                }
+                else {
+
+                    remainingText =
+                        `เหลือ ${days} วัน`;
+
+                }
+
+            }
+
+
+            let remainingClass =
+                "text-emerald-500";
+
+
+            if (
+                days !== null &&
+                days < 0
+            ) {
+
+                remainingClass =
+                    "text-rose-500";
+
+            }
+            else if (
+                days !== null &&
+                days <= 3
+            ) {
+
+                remainingClass =
+                    "text-amber-500";
+
+            }
+
+
+            return `
+
+                <div
+                    class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm"
+                >
+
+                    <div
+                        class="flex items-start gap-3"
+                    >
+
+                        <div
+                            class="modal-food-icon flex items-center justify-center shrink-0"
+                        >
+                            ${getFoodIcon(
+                                food.food_name
+                            )}
+                        </div>
+
+
+                        <div
+                            class="flex-1 min-w-0"
+                        >
+
+                            <div
+                                class="flex items-start justify-between gap-3"
+                            >
+
+                                <div
+                                    class="min-w-0"
+                                >
+
+                                    <p
+                                        class="text-sm font-semibold text-slate-800 truncate"
+                                        title="${escapeHtml(
+                                            food.food_name || ""
+                                        )}"
+                                    >
+                                        ${escapeHtml(
+                                            food.food_name ||
+                                            "-"
+                                        )}
+                                    </p>
+
+
+                                    <p
+                                        class="text-xs text-slate-400 mt-1 truncate"
+                                        title="${escapeHtml(
+                                            food.manu || ""
+                                        )}"
+                                    >
+                                        🏷️
+                                        ${escapeHtml(
+                                            food.manu ||
+                                            "-"
+                                        )}
+                                    </p>
+
+                                </div>
+
+
+                                <span
+                                    class="${statusClass} text-[10px] px-2 py-1 rounded-lg font-semibold whitespace-nowrap"
+                                >
+                                    ${statusText}
+                                </span>
+
+                            </div>
+
+
+                            <!-- DETAILS -->
+
+                            <div
+                                class="mt-3 space-y-1.5"
+                            >
+
+                                <p
+                                    class="text-xs text-slate-500"
+                                >
+
+                                    📍 ตำแหน่ง:
+
+                                    <span
+                                        class="font-medium text-slate-700"
+                                    >
+                                        ${escapeHtml(
+                                            food.location ||
+                                            "-"
+                                        )}
+                                    </span>
+
+                                </p>
+
+
+                                <p
+                                    class="text-xs text-slate-500"
+                                >
+
+                                    🔢 จำนวน:
+
+                                    <span
+                                        class="font-medium text-slate-700"
+                                    >
+                                        ${Number(
+                                            food.quantity ||
+                                            0
+                                        )}
+                                    </span>
+
+                                </p>
+
+
+                                <p
+                                    class="text-xs text-slate-500"
+                                >
+
+                                    📥 วันที่นำเข้า:
+
+                                    <span
+                                        class="font-medium text-slate-700"
+                                    >
+                                        ${formatDate(
+                                            food.import_date
+                                        )}
+                                    </span>
+
+                                </p>
+
+
+                                <p
+                                    class="text-xs text-slate-500"
+                                >
+
+                                    📅 วันหมดอายุ:
+
+                                    <span
+                                        class="font-medium text-slate-700"
+                                    >
+                                        ${formatDate(
+                                            food.export_date
+                                        )}
+                                    </span>
+
+                                </p>
+
+
+                                <p
+                                    class="text-xs ${remainingClass}"
+                                >
+
+                                    ⏳
+                                    ${remainingText}
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+        // =================================================
+        // FOOD ICON
+        // =================================================
+
+        function getFoodIcon(name) {
+
+            const value =
+                String(
+                    name || ""
+                ).toLowerCase();
+
+
+            if (
+                value.includes("นม")
+            ) {
+
+                return "🥛";
+
+            }
+
+
+            if (
+                value.includes("ไข่")
+            ) {
+
+                return "🥚";
+
+            }
+
+
+            if (
+                value.includes("ชีส") ||
+                value.includes("เนยแข็ง")
+            ) {
+
+                return "🧀";
+
+            }
+
+
+            if (
+                value.includes("โยเกิร์ต")
+            ) {
+
+                return "🥛";
+
+            }
+
+
+            if (
+                value.includes("ข้าว") ||
+                value.includes("กล่อง")
+            ) {
+
+                return "🍱";
+
+            }
+
+
+            if (
+                value.includes("น้ำผลไม้") ||
+                value.includes("น้ำส้ม")
+            ) {
+
+                return "🧃";
+
+            }
+
+
+            if (
+                value.includes("ซอสมะเขือเทศ")
+            ) {
+
+                return "🍅";
+
+            }
+
+
+            if (
+                value.includes("น้ำปลา")
+            ) {
+
+                return "🧴";
+
+            }
+
+
+            if (
+                value.includes("แอปเปิ้ล") ||
+                value.includes("แอปเปิล")
+            ) {
+
+                return "🍎";
+
+            }
+
+
+            if (
+                value.includes("แครอท")
+            ) {
+
+                return "🥕";
+
+            }
+
+
+            if (
+                value.includes("ไก่")
+            ) {
+
+                return "🍗";
+
+            }
+
+
+            if (
+                value.includes("ไอศกรีม") ||
+                value.includes("ไอติม")
+            ) {
+
+                return "🍦";
+
+            }
+
+
+            if (
+                value.includes("เฟรนช์ฟราย") ||
+                value.includes("เฟรนฟราย")
+            ) {
+
+                return "🍟";
+
+            }
+
+
+            return "🍽️";
+
+        }
+
+
+        // =================================================
+        // DAYS UNTIL EXPIRY
+        // =================================================
+
+        function getDaysUntilExpiry(
+            dateString
+        ) {
+
+            if (
+                !dateString
+            ) {
+
+                return null;
+
+            }
+
+
+            const expiry =
+                new Date(
+                    `${dateString}T00:00:00`
+                );
+
+
+            if (
+                Number.isNaN(
+                    expiry.getTime()
+                )
+            ) {
+
+                return null;
+
+            }
+
+
+            const today =
+                new Date();
+
+
+            today.setHours(
+                0,
+                0,
+                0,
+                0
+            );
+
+
+            expiry.setHours(
+                0,
+                0,
+                0,
+                0
+            );
+
+
+            return Math.round(
+                (
+                    expiry.getTime() -
+                    today.getTime()
+                ) /
+                86400000
+            );
+
+        }
+
+
+        // =================================================
+        // FORMAT DATE
+        // =================================================
+
+        function formatDate(
+            dateString
+        ) {
+
+            if (
+                !dateString
+            ) {
+
+                return "-";
+
+            }
+
+
+            const date =
+                new Date(
+                    `${dateString}T00:00:00`
+                );
+
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+
+                return String(
+                    dateString
+                );
+
+            }
+
+
+            return date.toLocaleDateString(
+                "th-TH",
+                {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric"
+                }
+            );
+
+        }
+
+
+        // =================================================
+        // ESCAPE HTML
+        // =================================================
+
+        function escapeHtml(
+            value
+        ) {
+
+            return String(
+                value ?? ""
+            )
+                .replaceAll(
+                    "&",
+                    "&amp;"
+                )
+                .replaceAll(
+                    "<",
+                    "&lt;"
+                )
+                .replaceAll(
+                    ">",
+                    "&gt;"
+                )
+                .replaceAll(
+                    '"',
+                    "&quot;"
+                )
+                .replaceAll(
+                    "'",
+                    "&#039;"
+                );
+
+        }
+
+
+        // =================================================
+        // CLOSE MODAL
+        // =================================================
+
+        function closeZoneModal() {
+
+            const modal =
+                document.getElementById(
+                    "zone-modal"
+                );
+
+
+            if (!modal) {
+                return;
+            }
+
+
+            modal.classList.add(
+                "hidden"
+            );
+
+
+            document.body.classList.remove(
+                "modal-open"
+            );
+
+        }
+
+
+        // =================================================
+        // LOGOUT
+        // =================================================
+
+        async function logout() {
+
+            try {
+
+                const sb =
+                    getSB();
+
+
+                await sb.auth.signOut();
+
+            }
+            catch (error) {
+
+                console.error(
+                    "ออกจากระบบไม่สำเร็จ:",
+                    error
+                );
+
+            }
+            finally {
+
+                window.location.replace(
+                    "login.html"
+                );
+
+            }
+
+        }
+
+
+        // =================================================
+        // SEARCH
+        // =================================================
+
+        function setupSearch() {
+
+            const searchInput =
+                document.getElementById(
+                    "search-food"
+                );
+
+
+            if (!searchInput) {
+                return;
+            }
+
+
+            searchInput.addEventListener(
+                "keydown",
+                event => {
+
+                    if (
+                        event.key !==
+                        "Enter"
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const keyword =
+                        searchInput.value
+                            .trim()
+                            .toLowerCase();
+
+
+                    if (!keyword) {
+                        return;
+                    }
+
+
+                    const food =
+                        foods.find(
+                            item => {
+
+                                const text =
+                                    [
+                                        item.food_name,
+                                        item.manu,
+                                        item.location
+                                    ]
+                                        .join(" ")
+                                        .toLowerCase();
+
+
+                                return text.includes(
+                                    keyword
+                                );
+
+                            }
+                        );
+
+
+                    if (!food) {
+
+                        alert(
+                            "ไม่พบรายการอาหารที่ค้นหา"
+                        );
+
+                        return;
+
+                    }
+
+
+                    const zoneKey =
+                        getZoneKey(
+                            food.location
+                        );
+
+
+                    if (zoneKey) {
+
+                        openZone(
+                            zoneKey
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        // =================================================
+        // INITIALIZE
+        // =================================================
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async () => {
+
+                try {
+
+                    // โหลด account
+
+                    await getCurrentUser();
+
+
+                    // โหลดข้อมูลอาหาร
+
+                    if (
+                        currentUser
+                    ) {
+
+                        await loadFoods();
+
+                    }
+
+
+                    // Search
+
+                    setupSearch();
+
+
+                    // ปิด modal
+
+                    document
+                        .getElementById(
+                            "zone-modal-close"
+                        )
+                        ?.addEventListener(
+                            "click",
+                            closeZoneModal
+                        );
+
+
+                    // คลิกนอก modal
+
+                    document
+                        .getElementById(
+                            "zone-modal"
+                        )
+                        ?.addEventListener(
+                            "click",
+                            event => {
+
+                                if (
+                                    event.target ===
+                                    event.currentTarget
+                                ) {
+
+                                    closeZoneModal();
+
+                                }
+
+                            }
+                        );
+
+
+                    // Logout
+
+                    document
+                        .getElementById(
+                            "logout-btn"
+                        )
+                        ?.addEventListener(
+                            "click",
+                            logout
+                        );
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "เปิดหน้าโซนไม่สำเร็จ:",
+                        error
+                    );
+
+                }
+
+            }
+        );
+
+
+        // =================================================
+        // ESC
+        // =================================================
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key ===
+                    "Escape"
+                ) {
+
+                    closeZoneModal();
+
+                }
+
+            }
+        );
+
+
+        // =================================================
+        // โหลดข้อมูลใหม่เมื่อกลับเข้าหน้า
+        // =================================================
+
+        document.addEventListener(
+            "visibilitychange",
+            async () => {
+
+                if (
+                    document.visibilityState !==
+                    "visible"
+                ) {
+
+                    return;
+
+                }
+
+
+                try {
+
+                    const sb =
+                        getSB();
+
+
+                    const {
+                        data,
+                        error
+                    } =
+                        await sb.auth.getSession();
+
+
+                    if (
+                        error
+                    ) {
+
+                        console.error(
+                            error
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        !data?.session?.user
+                    ) {
+
+                        window.location.replace(
+                            "login.html"
+                        );
+
+                        return;
+
+                    }
+
+
+                    await getCurrentUser();
+
+                    await loadFoods();
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "โหลดข้อมูลใหม่ไม่สำเร็จ:",
+                        error
+                    );
+
+                }
+
+            }
+        );
+
+    </script>
+
+
+</body>
+
+</html>

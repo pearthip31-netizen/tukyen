@@ -1,0 +1,93 @@
+/* ================================================= */
+/* GLOBAL */
+/* ================================================= */
+
+body {
+    font-family: 'Prompt', sans-serif;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #64748b;
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #8b5cf6;
+}
+
+button,
+input,
+select {
+    transition: all 0.2s ease;
+}
+
+
+/* ================================================= */
+/* FOOD CARD */
+/* ================================================= */
+
+/*
+    ลดขนาดกล่องอาหารที่สร้างจาก app.js
+    ให้ไม่กว้างจนเกินไป
+*/
+
+#food-list > div:not(#empty-food-message) {
+    width: 100%;
+    max-width: 380px;
+    justify-self: start;
+}
+
+
+/*
+    ทำให้การ์ดอาหารดูพอดีและอ่านง่าย
+    โดยไม่บังคับความสูงตายตัว
+*/
+
+#food-list > div:not(#empty-food-message) {
+    border-radius: 1.25rem;
+}
+
+
+/*
+    หน้าจอใหญ่จัดการ์ดให้กระจายเป็นช่องเล็กลง
+*/
+
+@media (min-width: 1280px) {
+    #food-list {
+        grid-template-columns: repeat(3, minmax(0, 380px));
+    }
+}
+
+
+/*
+    หน้าจอขนาดกลาง
+*/
+
+@media (min-width: 768px) and (max-width: 1279px) {
+    #food-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #food-list > div:not(#empty-food-message) {
+        max-width: 100%;
+    }
+}
+
+
+/*
+    มือถือ
+*/
+
+@media (max-width: 767px) {
+    #food-list > div:not(#empty-food-message) {
+        max-width: 100%;
+    }
+}
