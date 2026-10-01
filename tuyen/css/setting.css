@@ -1,0 +1,707 @@
+/* =====================================================
+   TUYEN - SETTINGS
+   ===================================================== */
+
+* {
+    font-family: "Prompt", sans-serif;
+}
+
+
+/* =====================================================
+   TITLE
+   ===================================================== */
+
+.settings-title-icon {
+
+    width: 46px;
+    height: 46px;
+
+    border-radius: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f5f3ff;
+
+    border: 1px solid #ddd6fe;
+
+    font-size: 21px;
+
+    flex-shrink: 0;
+}
+
+
+/* =====================================================
+   ACCOUNT / FRIDGE INFO
+   ===================================================== */
+
+.settings-info-box {
+
+    min-height: 70px;
+
+    padding: 12px 14px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.settings-info-icon {
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
+
+    flex-shrink: 0;
+}
+
+
+.settings-info-icon.purple {
+
+    background: #f5f3ff;
+
+    border: 1px solid #ddd6fe;
+}
+
+
+.settings-info-icon.blue {
+
+    background: #eff6ff;
+
+    border: 1px solid #bfdbfe;
+}
+
+
+/* =====================================================
+   SECTION ICON
+   ===================================================== */
+
+.settings-section-icon {
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 13px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
+
+    flex-shrink: 0;
+}
+
+
+.settings-section-icon.purple {
+
+    background: #f5f3ff;
+
+    border: 1px solid #ddd6fe;
+}
+
+
+.settings-section-icon.blue {
+
+    background: #eff6ff;
+
+    border: 1px solid #bfdbfe;
+}
+
+
+.settings-section-icon.orange {
+
+    background: #fff7ed;
+
+    border: 1px solid #fed7aa;
+}
+
+
+.settings-section-icon.pink {
+
+    background: #fdf2f8;
+
+    border: 1px solid #fbcfe8;
+}
+
+
+.settings-section-icon.green {
+
+    background: #f0fdf4;
+
+    border: 1px solid #bbf7d0;
+}
+
+
+/* =====================================================
+   PERMISSION BOX
+   ===================================================== */
+
+.permission-box {
+
+    padding: 12px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 12px;
+
+    background: #f8fafc;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.permission-icon {
+
+    width: 32px;
+    height: 32px;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+}
+
+
+/* =====================================================
+   MEMBER
+   ===================================================== */
+
+.member-row {
+
+    min-height: 70px;
+
+    padding: 12px 14px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    transition: 0.15s ease;
+}
+
+
+.member-row:hover {
+
+    border-color: #ddd6fe;
+
+    background: #fcfcff;
+}
+
+
+.member-avatar {
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 12px;
+
+    background: #ede9fe;
+
+    color: #7c3aed;
+
+    border: 1px solid #ddd6fe;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    flex-shrink: 0;
+}
+
+
+/* =====================================================
+   ROLE BADGE
+   ===================================================== */
+
+.role-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 78px;
+
+    padding: 6px 9px;
+
+    border-radius: 9px;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+.role-badge.owner {
+
+    background: #fef3c7;
+
+    color: #b45309;
+}
+
+
+.role-badge.editor {
+
+    background: #ede9fe;
+
+    color: #6d28d9;
+}
+
+
+.role-badge.viewer {
+
+    background: #f1f5f9;
+
+    color: #475569;
+}
+
+
+/* =====================================================
+   ROLE SELECT
+   ===================================================== */
+
+.role-select {
+
+    min-width: 112px;
+
+    padding: 7px 9px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 9px;
+
+    background: #f8fafc;
+
+    color: #475569;
+
+    font-size: 10px;
+
+    outline: none;
+}
+
+
+.role-select:focus {
+
+    border-color: #8b5cf6;
+
+    box-shadow:
+        0 0 0 2px rgba(139, 92, 246, 0.12);
+}
+
+
+/* =====================================================
+   DELETE MEMBER
+   ===================================================== */
+
+.member-delete-btn {
+
+    padding: 7px 10px;
+
+    border: 1px solid #fecdd3;
+
+    border-radius: 9px;
+
+    background: #fff1f2;
+
+    color: #e11d48;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.15s ease;
+}
+
+
+.member-delete-btn:hover {
+
+    background: #ffe4e6;
+}
+
+
+/* =====================================================
+   INVITATION
+   ===================================================== */
+
+.invitation-row {
+
+    min-height: 66px;
+
+    padding: 12px 14px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+}
+
+
+.invitation-status {
+
+    padding: 6px 9px;
+
+    border-radius: 9px;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+.invitation-status.pending {
+
+    background: #fff7ed;
+
+    color: #c2410c;
+}
+
+
+.invitation-status.accepted {
+
+    background: #f0fdf4;
+
+    color: #15803d;
+}
+
+
+.invitation-status.rejected {
+
+    background: #fff1f2;
+
+    color: #be123c;
+}
+
+
+.invitation-status.cancelled {
+
+    background: #f1f5f9;
+
+    color: #64748b;
+}
+
+
+/* =====================================================
+   CANCEL INVITATION
+   ===================================================== */
+
+.invitation-cancel-btn {
+
+    padding: 6px 9px;
+
+    border: 1px solid #fecdd3;
+
+    border-radius: 8px;
+
+    background: #fff1f2;
+
+    color: #e11d48;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.invitation-cancel-btn:hover {
+
+    background: #ffe4e6;
+}
+
+
+/* =====================================================
+   ACCEPT / REJECT
+   ===================================================== */
+
+.accept-invite-btn {
+
+    padding: 7px 11px;
+
+    border-radius: 9px;
+
+    border: 1px solid #bbf7d0;
+
+    background: #f0fdf4;
+
+    color: #15803d;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.accept-invite-btn:hover {
+
+    background: #dcfce7;
+}
+
+
+.reject-invite-btn {
+
+    padding: 7px 11px;
+
+    border-radius: 9px;
+
+    border: 1px solid #fecdd3;
+
+    background: #fff1f2;
+
+    color: #e11d48;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.reject-invite-btn:hover {
+
+    background: #ffe4e6;
+}
+
+
+/* =====================================================
+   FOOD ADDED BY
+   ===================================================== */
+
+.food-added-row {
+
+    min-height: 90px;
+
+    padding: 13px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    transition: 0.15s ease;
+}
+
+
+.food-added-row:hover {
+
+    border-color: #ddd6fe;
+}
+
+
+.food-added-icon {
+
+    width: 44px;
+    height: 44px;
+
+    border-radius: 12px;
+
+    background: #f5f3ff;
+
+    border: 1px solid #ddd6fe;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 21px;
+
+    flex-shrink: 0;
+}
+
+
+/* =====================================================
+   EMPTY / LOADING
+   ===================================================== */
+
+.settings-loading {
+
+    min-height: 64px;
+
+    border: 1px dashed #cbd5e1;
+
+    background: #f8fafc;
+
+    color: #94a3b8;
+
+    border-radius: 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 11px;
+}
+
+
+.settings-empty {
+
+    min-height: 64px;
+
+    border: 1px dashed #cbd5e1;
+
+    background: #f8fafc;
+
+    color: #94a3b8;
+
+    border-radius: 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    padding: 15px;
+
+    font-size: 11px;
+}
+
+
+/* =====================================================
+   ERROR TOAST
+   ===================================================== */
+
+.settings-error-toast {
+
+    position: fixed;
+
+    right: 20px;
+    bottom: 20px;
+
+    max-width: 360px;
+
+    padding: 12px 15px;
+
+    background: #e11d48;
+
+    color: #ffffff;
+
+    border-radius: 12px;
+
+    font-size: 11px;
+
+    box-shadow:
+        0 10px 30px rgba(15, 23, 42, 0.25);
+
+    z-index: 9999;
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 640px) {
+
+    .member-row {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .member-row > div:last-child {
+
+        width: 100%;
+
+        justify-content: flex-end;
+    }
+
+
+    .invitation-row {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .invitation-row > div:last-child {
+
+        width: 100%;
+
+        justify-content: flex-end;
+    }
+
+
+    .role-select {
+
+        flex: 1;
+
+    }
+
+}

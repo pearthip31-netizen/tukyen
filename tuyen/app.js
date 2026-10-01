@@ -1,5 +1,5 @@
 // =====================================================
-// TUYEN - FOOD CRUD
+// TUYEN - FOOD CRUD + SHARED FRIDGE
 // =====================================================
 // Supabase table: food
 //
@@ -12,25 +12,51 @@
 // export_date
 // status
 // user_id
+// fridge_id
+// added_by
 // =====================================================
 
 const FOOD_TABLE = "food";
 const USERS_TABLE = "users";
 
+const CURRENT_FRIDGE_STORAGE_KEY =
+    "tuyen_current_fridge_id";
+
+
 let foods = [];
+
 let currentUser = null;
+
 let authUser = null;
+
 let editingFoodId = null;
+
 let currentFilter = "all";
+
 let searchText = "";
+
 let realtimeChannel = null;
+
+
+// =====================================================
+// SHARED FRIDGE
+// =====================================================
+
+let currentFridgeId = null;
+
+let currentFridgeRole = null;
+
+
+// เก็บข้อมูล user ของคนที่เพิ่มอาหาร
+let foodUserMap = new Map();
 
 
 // =====================================================
 // SHORTCUT
 // =====================================================
 
-const $ = (id) => document.getElementById(id);
+const $ = (id) =>
+    document.getElementById(id);
 
 
 // =====================================================
@@ -40,9 +66,14 @@ const $ = (id) => document.getElementById(id);
 function getSB() {
 
     // ใช้ getSupabase() จาก config.js ก่อน
-    if (typeof getSupabase === "function") {
+    if (
+        typeof getSupabase === "function"
+    ) {
+
         return getSupabase();
+
     }
+
 
     // fallback ถ้ามีตัวแปร supabase เป็น client อยู่แล้ว
     if (
@@ -51,12 +82,16 @@ function getSB() {
         typeof supabase.from === "function" &&
         supabase.auth
     ) {
+
         return supabase;
+
     }
+
 
     throw new Error(
         "ไม่พบ Supabase client กรุณาตรวจสอบ config.js"
     );
+
 }
 
 
@@ -91,7 +126,21 @@ function bindEvents() {
     $("add-food-btn")?.addEventListener(
         "click",
         () => {
+
+            if (
+                !canEditCurrentFridge()
+            ) {
+
+                alert(
+                    "สิทธิ์ของคุณไม่สามารถเพิ่มอาหารในตู้เย็นนี้ได้"
+                );
+
+                return;
+
+            }
+
             openFoodForm();
+
         }
     );
 
@@ -104,6 +153,7 @@ function bindEvents() {
         "click",
         closeFoodForm
     );
+
 
     $("food-form-cancel")?.addEventListener(
         "click",
@@ -130,9 +180,12 @@ function bindEvents() {
         (event) => {
 
             searchText =
-                String(event.target.value || "")
+                String(
+                    event.target.value || ""
+                )
                     .trim()
                     .toLowerCase();
+
 
             renderFoods();
 
@@ -145,24 +198,30 @@ function bindEvents() {
     // -------------------------
 
     document
-        .querySelectorAll("[data-food-filter]")
-        .forEach((button) => {
+        .querySelectorAll(
+            "[data-food-filter]"
+        )
+        .forEach(
+            (button) => {
 
-            button.addEventListener(
-                "click",
-                () => {
+                button.addEventListener(
+                    "click",
+                    () => {
 
-                    currentFilter =
-                        button.dataset.foodFilter || "all";
+                        currentFilter =
+                            button.dataset.foodFilter ||
+                            "all";
 
-                    updateFilterButtons();
 
-                    renderFoods();
+                        updateFilterButtons();
 
-                }
-            );
+                        renderFoods();
 
-        });
+                    }
+                );
+
+            }
+        );
 
 
     // -------------------------
@@ -197,7 +256,9 @@ function bindEvents() {
                 event.target ===
                 event.currentTarget
             ) {
+
                 closeFoodForm();
+
             }
 
         }
@@ -229,7 +290,9 @@ function bindEvents() {
                     .classList
                     .contains("hidden")
             ) {
+
                 closeFoodForm();
+
             }
 
         }
@@ -241,22 +304,20 @@ function bindEvents() {
 // =====================================================
 // INITIALIZE
 // =====================================================
-// สำคัญ:
-// ใช้ getSession() โดยตรง
-// ไม่ใช้ requireAuth()
-// เพื่อป้องกันกลับจาก fridge.html แล้วถูกส่ง login
-// =====================================================
 
 async function initialize() {
 
     try {
 
-        const sb = getSB();
+        const sb =
+            getSB();
+
 
         const {
             data,
             error
-        } = await sb.auth.getSession();
+        } =
+            await sb.auth.getSession();
 
 
         if (error) {
@@ -265,6 +326,7 @@ async function initialize() {
                 "ตรวจสอบ Session ไม่สำเร็จ:",
                 error
             );
+
 
             redirectToLogin();
 
@@ -275,6 +337,7 @@ async function initialize() {
 
         const session =
             data?.session;
+
 
         const user =
             session?.user;
@@ -290,7 +353,8 @@ async function initialize() {
         }
 
 
-        authUser = user;
+        authUser =
+            user;
 
 
         // -------------------------
@@ -299,12 +363,15 @@ async function initialize() {
 
         setText(
             "user-email",
-            user.email || "ผู้ใช้"
+            user.email ||
+            "ผู้ใช้"
         );
+
 
         setText(
             "form-user-email",
-            user.email || "ผู้ใช้"
+            user.email ||
+            "ผู้ใช้"
         );
 
 
@@ -313,13 +380,35 @@ async function initialize() {
         // -------------------------
 
         currentUser =
-            await getCurrentDBUser(user);
+            await getCurrentDBUser(
+                user
+            );
 
 
-        if (!currentUser?.user_id) {
+        if (
+            !currentUser?.user_id
+        ) {
 
             showError(
                 "ไม่พบ user_id ของผู้ใช้งาน"
+            );
+
+            return;
+
+        }
+
+
+        // -------------------------
+        // หา fridge ปัจจุบัน
+        // -------------------------
+
+        await getCurrentFridgeForUser();
+
+
+        if (!currentFridgeId) {
+
+            showError(
+                "ยังไม่มีตู้เย็นที่สามารถเข้าถึงได้"
             );
 
             return;
@@ -353,7 +442,9 @@ async function initialize() {
         if (
             handleAuthError(error)
         ) {
+
             return;
+
         }
 
 
@@ -371,9 +462,13 @@ async function initialize() {
 // GET CURRENT DB USER
 // =====================================================
 
-async function getCurrentDBUser(user) {
+async function getCurrentDBUser(
+    user
+) {
 
-    const sb = getSB();
+    const sb =
+        getSB();
+
 
     const email =
         String(
@@ -386,11 +481,14 @@ async function getCurrentDBUser(user) {
 
         return {
 
-            user_id: user.id,
+            user_id:
+                user.id,
 
-            name: "",
+            name:
+                "",
 
-            user_email: ""
+            user_email:
+                ""
 
         };
 
@@ -402,16 +500,19 @@ async function getCurrentDBUser(user) {
         const {
             data,
             error
-        } = await sb
-            .from(USERS_TABLE)
-            .select(
-                "user_id, name, user_email"
-            )
-            .eq(
-                "user_email",
-                email
-            )
-            .maybeSingle();
+        } =
+            await sb
+                .from(
+                    USERS_TABLE
+                )
+                .select(
+                    "user_id, name, user_email"
+                )
+                .eq(
+                    "user_email",
+                    email
+                )
+                .maybeSingle();
 
 
         if (
@@ -446,16 +547,422 @@ async function getCurrentDBUser(user) {
 
 
     // fallback
-    // เผื่อฐานข้อมูล food ใช้ Auth UUID
     return {
 
-        user_id: user.id,
+        user_id:
+            user.id,
 
-        name: "",
+        name:
+            "",
 
-        user_email: email
+        user_email:
+            email
 
     };
+
+}
+
+
+// =====================================================
+// CURRENT FRIDGE
+// =====================================================
+// ตู้เย็นปัจจุบันจะถูกใช้เป็นศูนย์กลางของข้อมูลอาหาร
+//
+// localStorage:
+// tuyen_current_fridge_id
+//
+// ลำดับการเลือก:
+//
+// 1. ตู้ที่เลือกไว้ล่าสุด
+// 2. ตู้ที่ user เป็น owner
+// 3. ตู้แรกที่ user เป็นสมาชิก
+// =====================================================
+
+async function getCurrentFridgeForUser() {
+
+    if (
+        !currentUser?.user_id
+    ) {
+
+        currentFridgeId =
+            null;
+
+        currentFridgeRole =
+            null;
+
+        return null;
+
+    }
+
+
+    const sb =
+        getSB();
+
+
+    // -------------------------
+    // โหลด fridge ที่เข้าถึงได้
+    // -------------------------
+
+    const {
+        data: fridges,
+        error: fridgeError
+    } =
+        await sb
+            .from(
+                "fridges"
+            )
+            .select(
+                "fridge_id, fridge_name, created_by, created_at"
+            )
+            .order(
+                "created_at",
+                {
+                    ascending:
+                        true
+                }
+            );
+
+
+    if (fridgeError) {
+
+        throw new Error(
+            fridgeError.message
+        );
+
+    }
+
+
+    const fridgeRows =
+        Array.isArray(fridges)
+            ? fridges
+            : [];
+
+
+    if (
+        fridgeRows.length ===
+        0
+    ) {
+
+        currentFridgeId =
+            null;
+
+        currentFridgeRole =
+            null;
+
+        return null;
+
+    }
+
+
+    // -------------------------
+    // โหลด membership ของ user
+    // -------------------------
+
+    const {
+        data: memberships,
+        error: memberError
+    } =
+        await sb
+            .from(
+                "fridge_members"
+            )
+            .select(
+                "fridge_id, role, status"
+            )
+            .eq(
+                "user_id",
+                currentUser.user_id
+            )
+            .eq(
+                "status",
+                "active"
+            );
+
+
+    if (memberError) {
+
+        throw new Error(
+            memberError.message
+        );
+
+    }
+
+
+    const membershipRows =
+        Array.isArray(memberships)
+            ? memberships
+            : [];
+
+
+    // -------------------------
+    // Map fridge_id -> role
+    // -------------------------
+
+    const roleMap =
+        new Map(
+            membershipRows.map(
+                (row) => [
+
+                    String(
+                        row.fridge_id
+                    ),
+
+                    row.role
+
+                ]
+            )
+        );
+
+
+    // -------------------------
+    // ถ้าไม่มี membership เลย
+    // -------------------------
+
+    if (
+        roleMap.size === 0
+    ) {
+
+        currentFridgeId =
+            null;
+
+        currentFridgeRole =
+            null;
+
+        return null;
+
+    }
+
+
+    let selected =
+        null;
+
+
+    // -------------------------
+    // ใช้ fridge ที่เคยเลือกไว้
+    // -------------------------
+    // สำคัญ:
+    // ต้องตรวจด้วยว่า user ยังเป็นสมาชิกอยู่
+    // -------------------------
+
+    const savedFridgeId =
+        localStorage.getItem(
+            CURRENT_FRIDGE_STORAGE_KEY
+        );
+
+
+    if (savedFridgeId) {
+
+        selected =
+            fridgeRows.find(
+                (fridge) => {
+
+                    const id =
+                        String(
+                            fridge.fridge_id
+                        );
+
+
+                    return (
+                        id ===
+                        String(
+                            savedFridgeId
+                        ) &&
+                        roleMap.has(id)
+                    );
+
+                }
+            ) || null;
+
+    }
+
+
+    // -------------------------
+    // ถ้ายังไม่มี ให้เลือก owner ก่อน
+    // -------------------------
+
+    if (!selected) {
+
+        selected =
+            fridgeRows.find(
+                (fridge) => {
+
+                    return (
+                        roleMap.get(
+                            String(
+                                fridge.fridge_id
+                            )
+                        ) ===
+                        "owner"
+                    );
+
+                }
+            ) || null;
+
+    }
+
+
+    // -------------------------
+    // ถ้ายังไม่มี ให้เลือก editor
+    // -------------------------
+
+    if (!selected) {
+
+        selected =
+            fridgeRows.find(
+                (fridge) => {
+
+                    return (
+                        roleMap.get(
+                            String(
+                                fridge.fridge_id
+                            )
+                        ) ===
+                        "editor"
+                    );
+
+                }
+            ) || null;
+
+    }
+
+
+    // -------------------------
+    // ถ้ายังไม่มี ให้เลือกสมาชิกตัวแรก
+    // -------------------------
+
+    if (!selected) {
+
+        selected =
+            fridgeRows.find(
+                (fridge) => {
+
+                    return roleMap.has(
+                        String(
+                            fridge.fridge_id
+                        )
+                    );
+
+                }
+            ) || null;
+
+    }
+
+
+    if (!selected) {
+
+        currentFridgeId =
+            null;
+
+        currentFridgeRole =
+            null;
+
+        return null;
+
+    }
+
+
+    currentFridgeId =
+        selected.fridge_id;
+
+
+    currentFridgeRole =
+        roleMap.get(
+            String(
+                selected.fridge_id
+            )
+        ) || null;
+
+
+    // -------------------------
+    // จำ fridge ปัจจุบัน
+    // -------------------------
+
+    localStorage.setItem(
+        CURRENT_FRIDGE_STORAGE_KEY,
+        String(
+            currentFridgeId
+        )
+    );
+
+
+    // -------------------------
+    // อัปเดตชื่อถ้ามี element
+    // -------------------------
+
+    updateCurrentFridgeUI(
+        selected
+    );
+
+
+    return selected;
+
+}
+
+
+// =====================================================
+// UPDATE CURRENT FRIDGE UI
+// =====================================================
+// ทำงานเฉพาะถ้า index.html มี element เหล่านี้อยู่
+// ไม่กระทบระบบเดิมถ้าไม่มี
+// =====================================================
+
+function updateCurrentFridgeUI(
+    fridge
+) {
+
+    if (!fridge) {
+
+        return;
+
+    }
+
+
+    const possibleIds = [
+
+        "current-fridge-name",
+
+        "fridge-name",
+
+        "current-fridge",
+
+        "selected-fridge-name"
+
+    ];
+
+
+    possibleIds.forEach(
+        (id) => {
+
+            const element =
+                $(id);
+
+
+            if (element) {
+
+                element.textContent =
+                    fridge.fridge_name ||
+                    "";
+
+            }
+
+        }
+    );
+
+}
+
+
+// =====================================================
+// PERMISSION
+// =====================================================
+
+function canEditCurrentFridge() {
+
+    return (
+        currentFridgeRole ===
+            "owner" ||
+        currentFridgeRole ===
+            "editor"
+    );
 
 }
 
@@ -464,7 +971,9 @@ async function getCurrentDBUser(user) {
 // AUTH ERROR
 // =====================================================
 
-function handleAuthError(error) {
+function handleAuthError(
+    error
+) {
 
     const message =
         String(
@@ -476,7 +985,9 @@ function handleAuthError(error) {
 
     if (
         /invalid jwt|jwt expired|refresh token|invalid refresh token|session missing|not authenticated|permission denied|PGRST301/i
-            .test(message)
+            .test(
+                message
+            )
     ) {
 
         redirectToLogin();
@@ -520,7 +1031,9 @@ async function handleLogout() {
 
     try {
 
-        const sb = getSB();
+        const sb =
+            getSB();
+
 
         await sb.auth.signOut();
 
@@ -537,12 +1050,16 @@ async function handleLogout() {
 
     finally {
 
-        // ล้างข้อมูลเก่าที่อาจค้าง
         const keys = [
+
             "currentUser",
+
             "user",
+
             "loggedInUser",
+
             "tuyenUser"
+
         ];
 
 
@@ -588,13 +1105,17 @@ function setupRealtime() {
     try {
 
         if (
-            !currentUser?.user_id
+            !currentUser?.user_id ||
+            !currentFridgeId
         ) {
+
             return;
+
         }
 
 
-        const sb = getSB();
+        const sb =
+            getSB();
 
 
         // ลบ channel เดิม
@@ -604,7 +1125,8 @@ function setupRealtime() {
                 realtimeChannel
             );
 
-            realtimeChannel = null;
+            realtimeChannel =
+                null;
 
         }
 
@@ -612,14 +1134,21 @@ function setupRealtime() {
         realtimeChannel =
             sb
                 .channel(
-                    "tuyen-food-realtime"
+                    `tuyen-food-${String(
+                        currentFridgeId
+                    )}`
                 )
                 .on(
                     "postgres_changes",
                     {
-                        event: "*",
-                        schema: "public",
-                        table: FOOD_TABLE
+                        event:
+                            "*",
+
+                        schema:
+                            "public",
+
+                        table:
+                            FOOD_TABLE
                     },
                     async () => {
 
@@ -662,27 +1191,60 @@ async function loadFoods() {
     }
 
 
+    // ถ้ายังไม่มี fridge
+    if (
+        !currentFridgeId
+    ) {
+
+        await getCurrentFridgeForUser();
+
+    }
+
+
+    if (
+        !currentFridgeId
+    ) {
+
+        showError(
+            "ยังไม่มีตู้เย็นที่สามารถเข้าถึงได้"
+        );
+
+        return;
+
+    }
+
+
     try {
 
-        const sb = getSB();
+        const sb =
+            getSB();
 
+
+        // =================================================
+        // โหลดอาหารตาม fridge_id
+        // ไม่ได้โหลดตาม user_id
+        // =================================================
 
         const {
             data,
             error
-        } = await sb
-            .from(FOOD_TABLE)
-            .select("*")
-            .eq(
-                "user_id",
-                currentUser.user_id
-            )
-            .order(
-                "export_date",
-                {
-                    ascending: true
-                }
-            );
+        } =
+            await sb
+                .from(
+                    FOOD_TABLE
+                )
+                .select("*")
+                .eq(
+                    "fridge_id",
+                    currentFridgeId
+                )
+                .order(
+                    "export_date",
+                    {
+                        ascending:
+                            true
+                    }
+                );
 
 
         if (error) {
@@ -690,7 +1252,9 @@ async function loadFoods() {
             if (
                 handleAuthError(error)
             ) {
+
                 return;
+
             }
 
 
@@ -716,6 +1280,78 @@ async function loadFoods() {
                 : [];
 
 
+        // =================================================
+        // โหลดชื่อคนที่เพิ่มอาหาร
+        // =================================================
+
+        const addedByIds =
+            [
+                ...new Set(
+                    foods
+                        .map(
+                            (food) =>
+                                food.added_by ||
+                                food.user_id
+                        )
+                        .filter(Boolean)
+                )
+            ];
+
+
+        foodUserMap =
+            new Map();
+
+
+        if (
+            addedByIds.length
+        ) {
+
+            const {
+                data: users,
+                error: usersError
+            } =
+                await sb
+                    .from(
+                        USERS_TABLE
+                    )
+                    .select(
+                        "user_id, name, user_email"
+                    )
+                    .in(
+                        "user_id",
+                        addedByIds
+                    );
+
+
+            if (usersError) {
+
+                console.warn(
+                    "โหลดข้อมูลผู้เพิ่มอาหารไม่สำเร็จ:",
+                    usersError
+                );
+
+            }
+
+
+            (
+                users ||
+                []
+            ).forEach(
+                (user) => {
+
+                    foodUserMap.set(
+                        String(
+                            user.user_id
+                        ),
+                        user
+                    );
+
+                }
+            );
+
+        }
+
+
         renderFoods();
 
     }
@@ -725,7 +1361,9 @@ async function loadFoods() {
         if (
             handleAuthError(error)
         ) {
+
             return;
+
         }
 
 
@@ -750,7 +1388,9 @@ async function loadFoods() {
 // CREATE + UPDATE
 // =====================================================
 
-async function saveFood(event) {
+async function saveFood(
+    event
+) {
 
     event.preventDefault();
 
@@ -763,7 +1403,54 @@ async function saveFood(event) {
             "ไม่พบข้อมูลผู้ใช้ กรุณาเข้าสู่ระบบใหม่"
         );
 
+
         redirectToLogin();
+
+
+        return;
+
+    }
+
+
+    // -------------------------
+    // ตรวจ fridge
+    // -------------------------
+
+    if (
+        !currentFridgeId
+    ) {
+
+        await getCurrentFridgeForUser();
+
+    }
+
+
+    if (
+        !currentFridgeId
+    ) {
+
+        alert(
+            "ยังไม่มีตู้เย็นสำหรับบันทึกรายการอาหาร"
+        );
+
+
+        return;
+
+    }
+
+
+    // -------------------------
+    // ตรวจสิทธิ์
+    // -------------------------
+
+    if (
+        !canEditCurrentFridge()
+    ) {
+
+        alert(
+            "สิทธิ์ของคุณไม่สามารถเพิ่มหรือแก้ไขอาหารในตู้เย็นนี้ได้"
+        );
+
 
         return;
 
@@ -776,22 +1463,26 @@ async function saveFood(event) {
 
     const foodName =
         $("f-name")?.value
-            .trim() || "";
+            .trim() ||
+        "";
 
 
     const manu =
         $("f-manu")?.value
-            .trim() || "";
+            .trim() ||
+        "";
 
 
     const selectedLocation =
         $("f-location")?.value
-            .trim() || "";
+            .trim() ||
+        "";
 
 
     const otherLocation =
         $("f-location-other")?.value
-            .trim() || "";
+            .trim() ||
+        "";
 
 
     const location =
@@ -833,19 +1524,23 @@ async function saveFood(event) {
             "กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบ"
         );
 
+
         return;
 
     }
 
 
     if (
-        !Number.isFinite(quantity) ||
+        !Number.isFinite(
+            quantity
+        ) ||
         quantity < 1
     ) {
 
         alert(
             "จำนวนต้องเป็นตัวเลขตั้งแต่ 1 ขึ้นไป"
         );
+
 
         return;
 
@@ -861,14 +1556,11 @@ async function saveFood(event) {
             "วันหมดอายุต้องไม่ก่อนวันที่นำเข้า"
         );
 
+
         return;
 
     }
 
-
-    // -------------------------
-    // Status
-    // -------------------------
 
     const status =
         calculateStatus(
@@ -876,9 +1568,9 @@ async function saveFood(event) {
         );
 
 
-    // -------------------------
-    // Payload
-    // -------------------------
+    // =================================================
+    // INSERT PAYLOAD
+    // =================================================
 
     const payload = {
 
@@ -903,7 +1595,16 @@ async function saveFood(event) {
         status:
             status,
 
+        // user เดิม
         user_id:
+            currentUser.user_id,
+
+        // ตู้ปัจจุบัน
+        fridge_id:
+            currentFridgeId,
+
+        // คนที่เอาอาหารใส่
+        added_by:
             currentUser.user_id
 
     };
@@ -921,7 +1622,9 @@ async function saveFood(event) {
 
     if (submitButton) {
 
-        submitButton.disabled = true;
+        submitButton.disabled =
+            true;
+
 
         submitButton.textContent =
             "กำลังบันทึก...";
@@ -931,42 +1634,79 @@ async function saveFood(event) {
 
     try {
 
-        const sb = getSB();
+        const sb =
+            getSB();
+
 
         let result;
 
 
-        // -------------------------
+        // =================================================
         // UPDATE
-        // -------------------------
+        // =================================================
 
         if (isEditing) {
 
+            // ไม่แก้ added_by
+            // คนเดิมยังเป็นคนที่นำอาหารเข้าตู้
+
+            const updatePayload = {
+
+                food_name:
+                    foodName,
+
+                manu:
+                    manu,
+
+                location:
+                    location,
+
+                quantity:
+                    quantity,
+
+                import_date:
+                    importDate,
+
+                export_date:
+                    exportDate,
+
+                status:
+                    status
+
+            };
+
+
             result =
                 await sb
-                    .from(FOOD_TABLE)
-                    .update(payload)
+                    .from(
+                        FOOD_TABLE
+                    )
+                    .update(
+                        updatePayload
+                    )
                     .eq(
                         "food_id",
                         editingFoodId
                     )
                     .eq(
-                        "user_id",
-                        currentUser.user_id
+                        "fridge_id",
+                        currentFridgeId
                     );
 
         }
 
 
-        // -------------------------
+        // =================================================
         // INSERT
-        // -------------------------
+        // =================================================
 
         else {
 
             result =
                 await sb
-                    .from(FOOD_TABLE)
+                    .from(
+                        FOOD_TABLE
+                    )
                     .insert(
                         payload
                     );
@@ -974,9 +1714,9 @@ async function saveFood(event) {
         }
 
 
-        // -------------------------
-        // Error
-        // -------------------------
+        // =================================================
+        // ERROR
+        // =================================================
 
         if (
             result.error
@@ -987,7 +1727,9 @@ async function saveFood(event) {
                     result.error
                 )
             ) {
+
                 return;
+
             }
 
 
@@ -998,9 +1740,9 @@ async function saveFood(event) {
         }
 
 
-        // -------------------------
-        // สำเร็จ
-        // -------------------------
+        // =================================================
+        // SUCCESS
+        // =================================================
 
         closeFoodForm();
 
@@ -1013,7 +1755,9 @@ async function saveFood(event) {
         if (
             handleAuthError(error)
         ) {
+
             return;
+
         }
 
 
@@ -1035,10 +1779,13 @@ async function saveFood(event) {
 
     finally {
 
-        if (submitButton) {
+        if (
+            submitButton
+        ) {
 
             submitButton.disabled =
                 false;
+
 
             submitButton.textContent =
                 isEditing
@@ -1068,7 +1815,23 @@ async function deleteFood(
             "ไม่พบข้อมูลผู้ใช้"
         );
 
+
         redirectToLogin();
+
+
+        return;
+
+    }
+
+
+    if (
+        !canEditCurrentFridge()
+    ) {
+
+        alert(
+            "สิทธิ์ของคุณไม่สามารถลบอาหารในตู้เย็นนี้ได้"
+        );
+
 
         return;
 
@@ -1081,7 +1844,9 @@ async function deleteFood(
                 String(
                     item.food_id
                 ) ===
-                String(foodId)
+                String(
+                    foodId
+                )
         );
 
 
@@ -1096,37 +1861,49 @@ async function deleteFood(
         );
 
 
-    if (!confirmDelete) {
+    if (
+        !confirmDelete
+    ) {
+
         return;
+
     }
 
 
     try {
 
-        const sb = getSB();
+        const sb =
+            getSB();
 
 
         const {
             error
-        } = await sb
-            .from(FOOD_TABLE)
-            .delete()
-            .eq(
-                "food_id",
-                foodId
-            )
-            .eq(
-                "user_id",
-                currentUser.user_id
-            );
+        } =
+            await sb
+                .from(
+                    FOOD_TABLE
+                )
+                .delete()
+                .eq(
+                    "food_id",
+                    foodId
+                )
+                .eq(
+                    "fridge_id",
+                    currentFridgeId
+                );
 
 
         if (error) {
 
             if (
-                handleAuthError(error)
+                handleAuthError(
+                    error
+                )
             ) {
+
                 return;
+
             }
 
 
@@ -1146,7 +1923,9 @@ async function deleteFood(
         if (
             handleAuthError(error)
         ) {
+
             return;
+
         }
 
 
@@ -1190,7 +1969,23 @@ async function updateStock(
             "ไม่พบข้อมูลผู้ใช้ กรุณาเข้าสู่ระบบใหม่"
         );
 
+
         redirectToLogin();
+
+
+        return;
+
+    }
+
+
+    if (
+        !canEditCurrentFridge()
+    ) {
+
+        alert(
+            "สิทธิ์ของคุณไม่สามารถแก้ไขจำนวนอาหารในตู้เย็นนี้ได้"
+        );
+
 
         return;
 
@@ -1203,7 +1998,9 @@ async function updateStock(
                 String(
                     item.food_id
                 ) ===
-                String(foodId)
+                String(
+                    foodId
+                )
         );
 
 
@@ -1212,6 +2009,7 @@ async function updateStock(
         alert(
             "ไม่พบรายการอาหารนี้"
         );
+
 
         return;
 
@@ -1222,52 +2020,67 @@ async function updateStock(
         Math.max(
             0,
             Number(
-                food.quantity ?? 0
+                food.quantity ??
+                0
             )
         );
 
 
     const newQuantity =
         currentQuantity +
-        Number(change);
+        Number(
+            change
+        );
 
 
     if (
         newQuantity < 0
     ) {
+
         return;
+
     }
 
 
     try {
 
-        const sb = getSB();
+        const sb =
+            getSB();
 
 
         const {
             error
-        } = await sb
-            .from(FOOD_TABLE)
-            .update({
-                quantity:
-                    newQuantity
-            })
-            .eq(
-                "food_id",
-                foodId
-            )
-            .eq(
-                "user_id",
-                currentUser.user_id
-            );
+        } =
+            await sb
+                .from(
+                    FOOD_TABLE
+                )
+                .update(
+                    {
+                        quantity:
+                            newQuantity
+                    }
+                )
+                .eq(
+                    "food_id",
+                    foodId
+                )
+                .eq(
+                    "fridge_id",
+                    currentFridgeId
+                );
 
 
         if (error) {
 
             if (
-                handleAuthError(error)
+                handleAuthError(
+                    error
+                )
             ) {
+
                 return;
+
             }
 
 
@@ -1287,7 +2100,9 @@ async function updateStock(
         if (
             handleAuthError(error)
         ) {
+
             return;
+
         }
 
 
@@ -1337,6 +2152,7 @@ async function increaseStock(
 window.decreaseStock =
     decreaseStock;
 
+
 window.increaseStock =
     increaseStock;
 
@@ -1349,13 +2165,26 @@ function openFoodForm(
     food = null
 ) {
 
+    if (
+        !canEditCurrentFridge()
+    ) {
+
+        alert(
+            "สิทธิ์ของคุณไม่สามารถเพิ่มหรือแก้ไขอาหารในตู้เย็นนี้ได้"
+        );
+
+
+        return;
+
+    }
+
+
     editingFoodId =
         food
             ? food.food_id
             : null;
 
 
-    // Title
     setText(
         "food-form-title",
         food
@@ -1364,7 +2193,6 @@ function openFoodForm(
     );
 
 
-    // Button
     setText(
         "food-form-submit",
         food
@@ -1373,11 +2201,9 @@ function openFoodForm(
     );
 
 
-    // -------------------------
-    // Name
-    // -------------------------
-
-    if ($("f-name")) {
+    if (
+        $("f-name")
+    ) {
 
         $("f-name").value =
             food?.food_name ||
@@ -1386,11 +2212,9 @@ function openFoodForm(
     }
 
 
-    // -------------------------
-    // Manufacturer
-    // -------------------------
-
-    if ($("f-manu")) {
+    if (
+        $("f-manu")
+    ) {
 
         $("f-manu").value =
             food?.manu ||
@@ -1399,11 +2223,9 @@ function openFoodForm(
     }
 
 
-    // -------------------------
-    // Quantity
-    // -------------------------
-
-    if ($("f-quantity")) {
+    if (
+        $("f-quantity")
+    ) {
 
         $("f-quantity").value =
             food?.quantity ??
@@ -1412,11 +2234,9 @@ function openFoodForm(
     }
 
 
-    // -------------------------
-    // Import date
-    // -------------------------
-
-    if ($("f-import-date")) {
+    if (
+        $("f-import-date")
+    ) {
 
         $("f-import-date").value =
             food?.import_date ||
@@ -1425,11 +2245,9 @@ function openFoodForm(
     }
 
 
-    // -------------------------
-    // Export date
-    // -------------------------
-
-    if ($("f-export-date")) {
+    if (
+        $("f-export-date")
+    ) {
 
         $("f-export-date").value =
             food?.export_date ||
@@ -1438,30 +2256,20 @@ function openFoodForm(
     }
 
 
-    // -------------------------
-    // Location
-    // -------------------------
-
     setLocationForForm(
         food?.location ||
         ""
     );
 
 
-    // -------------------------
-    // Preview
-    // -------------------------
-
     updateFormStatusPreview();
 
 
-    // -------------------------
-    // Open
-    // -------------------------
-
     $("food-form-overlay")
         ?.classList
-        .remove("hidden");
+        .remove(
+            "hidden"
+        );
 
 
     $("f-name")
@@ -1475,7 +2283,23 @@ function openFoodForm(
 // =====================================================
 
 window.editFood =
-    function(foodId) {
+    function(
+        foodId
+    ) {
+
+        if (
+            !canEditCurrentFridge()
+        ) {
+
+            alert(
+                "สิทธิ์ของคุณไม่สามารถแก้ไขอาหารในตู้เย็นนี้ได้"
+            );
+
+
+            return;
+
+        }
+
 
         const food =
             foods.find(
@@ -1483,7 +2307,9 @@ window.editFood =
                     String(
                         item.food_id
                     ) ===
-                    String(foodId)
+                    String(
+                        foodId
+                    )
             );
 
 
@@ -1492,6 +2318,7 @@ window.editFood =
             alert(
                 "ไม่พบรายการอาหารนี้"
             );
+
 
             return;
 
@@ -1536,7 +2363,9 @@ function closeFoodForm() {
 
     $("food-form-overlay")
         ?.classList
-        .add("hidden");
+        .add(
+            "hidden"
+        );
 
 }
 
@@ -1586,7 +2415,9 @@ function setFormDefaults() {
 
         $("f-location-other")
             .classList
-            .add("hidden");
+            .add(
+                "hidden"
+            );
 
         $("f-location-other")
             .required =
@@ -1601,7 +2432,9 @@ function setFormDefaults() {
 
         $("f-location-other-help")
             .classList
-            .add("hidden");
+            .add(
+                "hidden"
+            );
 
     }
 
@@ -1676,6 +2509,7 @@ function toggleOtherLocationInput(
                 !show
             );
 
+
         $("f-location-other")
             .required =
             show;
@@ -1702,7 +2536,8 @@ function toggleOtherLocationInput(
         $("f-location-other")
     ) {
 
-        $("f-location-other").value =
+        $("f-location-other")
+            .value =
             "";
 
     }
@@ -1717,12 +2552,15 @@ function setLocationForForm(
     const select =
         $("f-location");
 
+
     const other =
         $("f-location-other");
 
 
     if (!select) {
+
         return;
+
     }
 
 
@@ -1731,14 +2569,19 @@ function setLocationForForm(
         select.value =
             "";
 
+
         if (other) {
+
             other.value =
                 "";
+
         }
+
 
         toggleOtherLocationInput(
             false
         );
+
 
         return;
 
@@ -1754,16 +2597,17 @@ function setLocationForForm(
         select.value =
             location;
 
+
         toggleOtherLocationInput(
             false
         );
+
 
         return;
 
     }
 
 
-    // ถ้าเป็นค่าอื่น
     select.value =
         "อื่นๆ";
 
@@ -1800,7 +2644,9 @@ function updateFormStatusPreview() {
 
 
     if (!preview) {
+
         return;
+
     }
 
 
@@ -1808,6 +2654,7 @@ function updateFormStatusPreview() {
 
         preview.textContent =
             "ระบบคำนวณอัตโนมัติ";
+
 
         return;
 
@@ -1820,21 +2667,27 @@ function updateFormStatusPreview() {
         );
 
 
-    if (days === null) {
+    if (
+        days === null
+    ) {
 
         preview.textContent =
             "ระบบคำนวณอัตโนมัติ";
 
     }
 
-    else if (days < 0) {
+    else if (
+        days < 0
+    ) {
 
         preview.textContent =
             "หมดอายุ";
 
     }
 
-    else if (days <= 3) {
+    else if (
+        days <= 3
+    ) {
 
         preview.textContent =
             "ใกล้หมดอายุ";
@@ -1862,17 +2715,15 @@ function renderFoods() {
 
 
     if (!list) {
+
         return;
+
     }
 
 
     let filtered =
         foods.filter(
             (food) => {
-
-                // -------------------------
-                // Search
-                // -------------------------
 
                 const searchArea = [
 
@@ -1882,16 +2733,23 @@ function renderFoods() {
 
                     food.location,
 
-                    food.status
+                    food.status,
+
+                    getFoodAddedByName(
+                        food
+                    )
 
                 ]
                     .map(
                         (value) =>
                             String(
-                                value || ""
+                                value ||
+                                ""
                             ).toLowerCase()
                     )
-                    .join(" ");
+                    .join(
+                        " "
+                    );
 
 
                 const matchesSearch =
@@ -1900,10 +2758,6 @@ function renderFoods() {
                         searchText
                     );
 
-
-                // -------------------------
-                // Filter
-                // -------------------------
 
                 const matchesFilter =
                     matchesLocationFilter(
@@ -1932,6 +2786,7 @@ function renderFoods() {
                 getDaysUntilExpiry(
                     a.export_date
                 );
+
 
             const bDays =
                 getDaysUntilExpiry(
@@ -1965,7 +2820,8 @@ function renderFoods() {
     // -------------------------
 
     if (
-        filtered.length === 0
+        filtered.length ===
+        0
     ) {
 
         list.innerHTML = `
@@ -1974,15 +2830,19 @@ function renderFoods() {
                 class="col-span-full bg-white rounded-2xl border border-slate-200 p-10 text-center"
             >
 
-                <div class="text-4xl mb-3">
+                <div
+                    class="text-4xl mb-3"
+                >
                     🧊
                 </div>
+
 
                 <p
                     class="font-semibold text-slate-600"
                 >
                     ยังไม่มีรายการอาหาร
                 </p>
+
 
                 <p
                     class="text-xs text-slate-400 mt-1"
@@ -2001,8 +2861,12 @@ function renderFoods() {
 
         list.innerHTML =
             filtered
-                .map(createFoodCard)
-                .join("");
+                .map(
+                    createFoodCard
+                )
+                .join(
+                    ""
+                );
 
     }
 
@@ -2034,7 +2898,8 @@ function matchesLocationFilter(
 
     const value =
         String(
-            location || ""
+            location ||
+            ""
         ).trim();
 
 
@@ -2079,14 +2944,14 @@ function matchesLocationFilter(
 
         return (
             value !== "" &&
-            !STANDARD_LOCATIONS
-                .includes(value)
+            !STANDARD_LOCATIONS.includes(
+                value
+            )
         );
 
     }
 
 
-    // รองรับ filter รุ่นเก่า
     if (
         filter === "chiller"
     ) {
@@ -2105,7 +2970,7 @@ function matchesLocationFilter(
 
 
 // =====================================================
-// FILTER BUTTON UI
+// FILTER BUTTON
 // =====================================================
 
 function updateFilterButtons() {
@@ -2134,7 +2999,9 @@ function updateFilterButtons() {
 
     const active =
         document.querySelector(
-            `[data-food-filter="${currentFilter}"]`
+            `[data-food-filter="${CSS.escape(
+                currentFilter
+            )}"]`
         );
 
 
@@ -2157,6 +3024,69 @@ function updateFilterButtons() {
 
 
 // =====================================================
+// GET ADDED BY NAME
+// =====================================================
+
+function getFoodAddedByName(
+    food
+) {
+
+    const userId =
+        food?.added_by ||
+        food?.user_id;
+
+
+    const user =
+        userId
+            ? foodUserMap.get(
+                String(
+                    userId
+                )
+            )
+            : null;
+
+
+    if (
+        user?.name
+    ) {
+
+        return user.name;
+
+    }
+
+
+    if (
+        user?.user_email
+    ) {
+
+        return user.user_email;
+
+    }
+
+
+    if (
+        String(
+            userId
+        ) ===
+        String(
+            currentUser?.user_id
+        )
+    ) {
+
+        return (
+            authUser?.email ||
+            "ฉัน"
+        );
+
+    }
+
+
+    return "ไม่ทราบชื่อ";
+
+}
+
+
+// =====================================================
 // FOOD CARD
 // =====================================================
 
@@ -2174,7 +3104,8 @@ function createFoodCard(
         Math.max(
             0,
             Number(
-                food.quantity ?? 0
+                food.quantity ??
+                0
             )
         );
 
@@ -2182,15 +3113,20 @@ function createFoodCard(
     const foodId =
         escapeHtml(
             String(
-                food.food_id ?? ""
+                food.food_id ??
+                ""
             )
         );
 
 
-    const icon =
-        getFoodIcon(
-            food.food_name
+    const addedBy =
+        getFoodAddedByName(
+            food
         );
+
+
+    const canEdit =
+        canEditCurrentFridge();
 
 
     return `
@@ -2212,8 +3148,11 @@ function createFoodCard(
                     <div
                         class="w-11 h-11 rounded-xl bg-violet-50 flex items-center justify-center text-2xl shrink-0"
                     >
-                        ${icon}
+                        ${getFoodIcon(
+                            food.food_name
+                        )}
                     </div>
+
 
                     <div
                         class="min-w-0"
@@ -2227,12 +3166,23 @@ function createFoodCard(
                             )}
                         </h3>
 
+
                         <p
                             class="text-xs text-slate-400 mt-1"
                         >
                             🏷️
                             ${escapeHtml(
                                 food.manu
+                            )}
+                        </p>
+
+
+                        <p
+                            class="text-[11px] text-violet-600 font-semibold mt-1"
+                        >
+                            👤 เพิ่มโดย:
+                            ${escapeHtml(
+                                addedBy
                             )}
                         </p>
 
@@ -2257,7 +3207,9 @@ function createFoodCard(
             >
 
                 <p>
+
                     📍 ตำแหน่ง:
+
                     <span
                         class="font-medium text-slate-700"
                     >
@@ -2265,21 +3217,27 @@ function createFoodCard(
                             food.location
                         )}
                     </span>
+
                 </p>
 
 
                 <p>
+
                     📦 จำนวน:
+
                     <span
                         class="font-medium text-slate-700"
                     >
                         ${quantity} ชิ้น
                     </span>
+
                 </p>
 
 
                 <p>
+
                     📥 วันที่นำเข้า:
+
                     <span
                         class="font-medium text-slate-700"
                     >
@@ -2287,11 +3245,14 @@ function createFoodCard(
                             food.import_date
                         )}
                     </span>
+
                 </p>
 
 
                 <p>
+
                     📅 วันหมดอายุ:
+
                     <span
                         class="font-medium text-slate-700"
                     >
@@ -2299,6 +3260,7 @@ function createFoodCard(
                             food.export_date
                         )}
                     </span>
+
                 </p>
 
             </div>
@@ -2306,94 +3268,137 @@ function createFoodCard(
 
             <!-- Stock -->
 
-            <div
-                class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between gap-3"
-            >
+            ${
+                canEdit
 
-                <div>
-
-                    <p
-                        class="text-xs font-medium text-slate-500"
-                    >
-                        จำนวนคงเหลือ
-                    </p>
-
-                    <p
-                        class="text-[11px] text-slate-400 mt-0.5"
-                    >
-                        กด − เมื่อนำไปใช้
-                        และ + เมื่อนำมาเพิ่ม
-                    </p>
-
-                </div>
-
+                    ? `
 
                 <div
-                    class="flex items-center bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shrink-0"
+                    class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between gap-3"
                 >
 
-                    <button
-                        type="button"
-                        onclick="decreaseStock('${foodId}')"
-                        ${
-                            quantity <= 0
-                                ? "disabled"
-                                : ""
-                        }
-                        class="w-10 h-10 flex items-center justify-center text-lg font-semibold ${
-                            quantity <= 0
-                                ? "text-slate-300 cursor-not-allowed"
-                                : "text-rose-500 hover:bg-rose-50"
-                        } transition"
+                    <div>
+
+                        <p
+                            class="text-xs font-medium text-slate-500"
+                        >
+                            จำนวนคงเหลือ
+                        </p>
+
+
+                        <p
+                            class="text-[11px] text-slate-400 mt-0.5"
+                        >
+                            กด − เมื่อนำไปใช้
+                            และ + เมื่อนำมาเพิ่ม
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        class="flex items-center bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shrink-0"
                     >
-                        −
-                    </button>
+
+                        <button
+                            type="button"
+                            onclick="decreaseStock('${foodId}')"
+                            ${
+                                quantity <= 0
+                                    ? "disabled"
+                                    : ""
+                            }
+                            class="w-10 h-10 flex items-center justify-center text-lg font-semibold ${
+                                quantity <= 0
+                                    ? "text-slate-300 cursor-not-allowed"
+                                    : "text-rose-500 hover:bg-rose-50"
+                            } transition"
+                        >
+                            −
+                        </button>
 
 
-                    <span
-                        class="min-w-[52px] text-center text-sm font-bold text-slate-700"
-                    >
-                        ${quantity}
-                    </span>
+                        <span
+                            class="min-w-[52px] text-center text-sm font-bold text-slate-700"
+                        >
+                            ${quantity}
+                        </span>
 
 
-                    <button
-                        type="button"
-                        onclick="increaseStock('${foodId}')"
-                        class="w-10 h-10 flex items-center justify-center text-lg font-semibold text-emerald-500 hover:bg-emerald-50 transition"
-                    >
-                        +
-                    </button>
+                        <button
+                            type="button"
+                            onclick="increaseStock('${foodId}')"
+                            class="w-10 h-10 flex items-center justify-center text-lg font-semibold text-emerald-500 hover:bg-emerald-50 transition"
+                        >
+                            +
+                        </button>
+
+                    </div>
 
                 </div>
 
-            </div>
+            `
+
+                    : `
+
+                <div
+                    class="mt-5 pt-4 border-t border-slate-100"
+                >
+
+                    <p
+                        class="text-xs text-slate-400"
+                    >
+                        👁️ สิทธิ์ดูอย่างเดียว
+                        • จำนวนคงเหลือ:
+
+                        <span
+                            class="font-semibold text-slate-600"
+                        >
+                            ${quantity}
+                        </span>
+
+                    </p>
+
+                </div>
+
+            `
+            }
 
 
             <!-- Edit / Delete -->
 
-            <div
-                class="flex justify-end gap-2 mt-3"
-            >
+            ${
+                canEdit
 
-                <button
-                    type="button"
-                    onclick="editFood('${foodId}')"
-                    class="px-3 py-1.5 text-xs font-medium text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-lg"
+                    ? `
+
+                <div
+                    class="flex justify-end gap-2 mt-3"
                 >
-                    ✏️ แก้ไขข้อมูล
-                </button>
+
+                    <button
+                        type="button"
+                        onclick="editFood('${foodId}')"
+                        class="px-3 py-1.5 text-xs font-medium text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-lg"
+                    >
+                        ✏️ แก้ไขข้อมูล
+                    </button>
 
 
-                <button
-                    type="button"
-                    onclick="deleteFood('${foodId}')"
-                    class="px-3 py-1.5 text-xs font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg"
-                >
-                    🗑️ ลบ
-                </button>
+                    <button
+                        type="button"
+                        onclick="deleteFood('${foodId}')"
+                        class="px-3 py-1.5 text-xs font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg"
+                    >
+                        🗑️ ลบ
+                    </button>
 
-            </div>
+                </div>
+
+            `
+
+                    : ""
+            }
 
         </div>
 
@@ -2417,7 +3422,8 @@ function updateStats(
                 return (
                     sum +
                     Number(
-                        food.quantity || 0
+                        food.quantity ||
+                        0
                     )
                 );
 
@@ -2561,8 +3567,12 @@ function getDaysUntilExpiry(
     dateString
 ) {
 
-    if (!dateString) {
+    if (
+        !dateString
+    ) {
+
         return null;
+
     }
 
 
@@ -2607,7 +3617,8 @@ function getDaysUntilExpiry(
         (
             expiry.getTime() -
             today.getTime()
-        ) / 86400000
+        ) /
+        86400000
     );
 
 }
@@ -2627,21 +3638,27 @@ function calculateStatus(
         );
 
 
-    if (days === null) {
+    if (
+        days === null
+    ) {
 
         return "ไม่มีวันหมดอายุ";
 
     }
 
 
-    if (days < 0) {
+    if (
+        days < 0
+    ) {
 
         return "หมดอายุ";
 
     }
 
 
-    if (days <= 3) {
+    if (
+        days <= 3
+    ) {
 
         return "ใกล้หมดอายุ";
 
@@ -2667,7 +3684,9 @@ function getStatusInfo(
         );
 
 
-    if (days === null) {
+    if (
+        days === null
+    ) {
 
         return {
 
@@ -2682,7 +3701,9 @@ function getStatusInfo(
     }
 
 
-    if (days < 0) {
+    if (
+        days < 0
+    ) {
 
         return {
 
@@ -2697,7 +3718,9 @@ function getStatusInfo(
     }
 
 
-    if (days === 0) {
+    if (
+        days === 0
+    ) {
 
         return {
 
@@ -2712,7 +3735,9 @@ function getStatusInfo(
     }
 
 
-    if (days <= 3) {
+    if (
+        days <= 3
+    ) {
 
         return {
 
@@ -2750,21 +3775,26 @@ function getFoodIcon(
 
     const value =
         String(
-            name || ""
+            name ||
+            ""
         ).toLowerCase();
 
 
     if (
         value.includes("นม")
     ) {
+
         return "🥛";
+
     }
 
 
     if (
         value.includes("ไข่")
     ) {
+
         return "🥚";
+
     }
 
 
@@ -2772,14 +3802,18 @@ function getFoodIcon(
         value.includes("ชีส") ||
         value.includes("เนยแข็ง")
     ) {
+
         return "🧀";
+
     }
 
 
     if (
         value.includes("โยเกิร์ต")
     ) {
+
         return "🥛";
+
     }
 
 
@@ -2787,7 +3821,9 @@ function getFoodIcon(
         value.includes("ข้าว") ||
         value.includes("กล่อง")
     ) {
+
         return "🍱";
+
     }
 
 
@@ -2795,7 +3831,9 @@ function getFoodIcon(
         value.includes("น้ำผลไม้") ||
         value.includes("น้ำส้ม")
     ) {
+
         return "🧃";
+
     }
 
 
@@ -2803,21 +3841,27 @@ function getFoodIcon(
         value.includes("นมถั่วเหลือง") ||
         value.includes("นมถั่ว")
     ) {
+
         return "🥛";
+
     }
 
 
     if (
         value.includes("ซอสมะเขือเทศ")
     ) {
+
         return "🍅";
+
     }
 
 
     if (
         value.includes("น้ำปลา")
     ) {
+
         return "🧴";
+
     }
 
 
@@ -2825,21 +3869,27 @@ function getFoodIcon(
         value.includes("แอปเปิ้ล") ||
         value.includes("แอปเปิล")
     ) {
+
         return "🍎";
+
     }
 
 
     if (
         value.includes("แครอท")
     ) {
+
         return "🥕";
+
     }
 
 
     if (
         value.includes("ไก่")
     ) {
+
         return "🍗";
+
     }
 
 
@@ -2847,7 +3897,9 @@ function getFoodIcon(
         value.includes("ไอศกรีม") ||
         value.includes("ไอติม")
     ) {
+
         return "🍦";
+
     }
 
 
@@ -2855,7 +3907,9 @@ function getFoodIcon(
         value.includes("เฟรนช์ฟราย") ||
         value.includes("เฟรนฟราย")
     ) {
+
         return "🍟";
+
     }
 
 
@@ -2872,8 +3926,12 @@ function formatDate(
     dateString
 ) {
 
-    if (!dateString) {
+    if (
+        !dateString
+    ) {
+
         return "-";
+
     }
 
 
@@ -2899,9 +3957,14 @@ function formatDate(
     return date.toLocaleDateString(
         "th-TH",
         {
-            day: "numeric",
-            month: "short",
-            year: "numeric"
+            day:
+                "numeric",
+
+            month:
+                "short",
+
+            year:
+                "numeric"
         }
     );
 
@@ -2925,7 +3988,8 @@ function setText(
 
         element.textContent =
             String(
-                value ?? ""
+                value ??
+                ""
             );
 
     }
@@ -2946,7 +4010,9 @@ function showMessage(
 
 
     if (!list) {
+
         return;
+
     }
 
 
@@ -2984,7 +4050,9 @@ function showError(
 
 
     if (!list) {
+
         return;
+
     }
 
 
@@ -2999,6 +4067,7 @@ function showError(
             >
                 โหลดรายการอาหารไม่สำเร็จ
             </p>
+
 
             <p
                 class="text-xs text-rose-600 mt-1"
@@ -3024,7 +4093,8 @@ function escapeHtml(
 ) {
 
     return String(
-        value ?? ""
+        value ??
+        ""
     )
         .replaceAll(
             "&",
@@ -3051,6 +4121,153 @@ function escapeHtml(
 
 
 // =====================================================
+// SYNC FRIDGE FROM OTHER PAGE / TAB
+// =====================================================
+// เวลา Settings เปลี่ยน fridge
+// หน้า index ที่เปิดอยู่ในอีก tab/page จะเปลี่ยนตาม
+// =====================================================
+
+window.addEventListener(
+    "storage",
+    async (event) => {
+
+        if (
+            event.key !==
+            CURRENT_FRIDGE_STORAGE_KEY
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            !event.newValue
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+            // -------------------------
+            // ตรวจ session
+            // -------------------------
+
+            const sb =
+                getSB();
+
+
+            const {
+                data,
+                error
+            } =
+                await sb.auth.getSession();
+
+
+            if (error) {
+
+                console.error(
+                    "ตรวจ Session จาก storage event ไม่สำเร็จ:",
+                    error
+                );
+
+
+                return;
+
+            }
+
+
+            const user =
+                data?.session?.user;
+
+
+            if (!user) {
+
+                redirectToLogin();
+
+                return;
+
+            }
+
+
+            authUser =
+                user;
+
+
+            currentUser =
+                await getCurrentDBUser(
+                    user
+                );
+
+
+            if (
+                !currentUser?.user_id
+            ) {
+
+                return;
+
+            }
+
+
+            const previousFridgeId =
+                currentFridgeId;
+
+
+            currentFridgeId =
+                null;
+
+            currentFridgeRole =
+                null;
+
+
+            await getCurrentFridgeForUser();
+
+
+            // -------------------------
+            // ถ้า fridge เปลี่ยน
+            // -------------------------
+
+            if (
+                String(
+                    previousFridgeId
+                ) !==
+                String(
+                    currentFridgeId
+                )
+            ) {
+
+                await loadFoods();
+
+                setupRealtime();
+
+            }
+
+            else {
+
+                // เผื่อข้อมูลในตู้นั้นมีการเปลี่ยน
+                await loadFoods();
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "เปลี่ยนตู้เย็นตามหน้าอื่นไม่สำเร็จ:",
+                error
+            );
+
+        }
+
+    }
+);
+
+
+// =====================================================
 // KEEP SESSION WHEN RETURNING TO PAGE
 // =====================================================
 
@@ -3062,7 +4279,9 @@ document.addEventListener(
             document.visibilityState !==
             "visible"
         ) {
+
             return;
+
         }
 
 
@@ -3075,7 +4294,8 @@ document.addEventListener(
             const {
                 data,
                 error
-            } = await sb.auth.getSession();
+            } =
+                await sb.auth.getSession();
 
 
             if (error) {
@@ -3084,6 +4304,7 @@ document.addEventListener(
                     "ตรวจ Session หลังกลับหน้า:",
                     error
                 );
+
 
                 return;
 
@@ -3094,7 +4315,7 @@ document.addEventListener(
                 data?.session?.user;
 
 
-            // ถ้าไม่มี session จริง ๆ
+            // ไม่มี session
             if (!user) {
 
                 redirectToLogin();
@@ -3132,7 +4353,55 @@ document.addEventListener(
                 currentUser?.user_id
             ) {
 
+                // รีเฟรช fridge ปัจจุบันด้วย
+                // เพราะ Settings อาจเปลี่ยนตู้ไว้แล้ว
+
+                const previousFridgeId =
+                    currentFridgeId;
+
+
+                currentFridgeId =
+                    null;
+
+
+                currentFridgeRole =
+                    null;
+
+
+                const selectedFridge =
+                    await getCurrentFridgeForUser();
+
+
+                if (
+                    !selectedFridge
+                ) {
+
+                    showError(
+                        "ยังไม่มีตู้เย็นที่สามารถเข้าถึงได้"
+                    );
+
+
+                    return;
+
+                }
+
+
                 await loadFoods();
+
+
+                // ถ้าตู้เปลี่ยน
+                if (
+                    String(
+                        previousFridgeId
+                    ) !==
+                    String(
+                        currentFridgeId
+                    )
+                ) {
+
+                    setupRealtime();
+
+                }
 
             }
 
@@ -3142,6 +4411,80 @@ document.addEventListener(
 
             console.error(
                 "Session check error:",
+                error
+            );
+
+        }
+
+    }
+);
+
+
+// =====================================================
+// OPTIONAL: REFRESH WHEN PAGE IS SHOWN
+// =====================================================
+
+window.addEventListener(
+    "pageshow",
+    async () => {
+
+        try {
+
+            if (
+                document.visibilityState !==
+                "visible"
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                !currentUser?.user_id
+            ) {
+
+                return;
+
+            }
+
+
+            const previousFridgeId =
+                currentFridgeId;
+
+
+            currentFridgeId =
+                null;
+
+
+            currentFridgeRole =
+                null;
+
+
+            await getCurrentFridgeForUser();
+
+            await loadFoods();
+
+
+            if (
+                String(
+                    previousFridgeId
+                ) !==
+                String(
+                    currentFridgeId
+                )
+            ) {
+
+                setupRealtime();
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.warn(
+                "pageshow refresh error:",
                 error
             );
 

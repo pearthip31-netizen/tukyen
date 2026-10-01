@@ -56,7 +56,7 @@
         <nav class="hidden md:flex items-center gap-2 text-sm font-medium">
 
             <a
-                href="#"
+                href="index.html"
                 class="text-violet-600 flex items-center gap-2 bg-violet-50 px-4 py-2 rounded-xl"
             >
                 <img
@@ -76,7 +76,7 @@
             </a>
 
             <a
-                href="#"
+                href="setting.html"
                 class="text-slate-600 hover:text-violet-600 hover:bg-violet-50 px-4 py-2 rounded-xl"
             >
                 ⚙️ ตั้งค่า
@@ -341,7 +341,7 @@
                     </h3>
 
                     <p class="text-[11px] text-slate-200 mt-1">
-                        เลือกหมวดหมู่เพื่อดูอาหารตามตำแหน่งในตู้เย็น
+                        อาหารของสมาชิกทุกคนในตู้เย็นนี้จะแสดงรวมกัน
                     </p>
 
                 </div>
@@ -468,7 +468,9 @@
 
     </main>
 
+    <!-- ================================================= -->
     <!-- FOOTER -->
+    <!-- ================================================= -->
 
     <footer
         class="bg-white border-t border-slate-200 py-3 text-center text-[11px] text-slate-400 mt-2"
@@ -772,8 +774,7 @@
 
     <script src="config.js"></script>
 
-    <script src="auth.js"></script>
-
+    <!-- ไม่โหลด auth.js ซ้ำ เพราะ app.js จัดการ Session/Logout อยู่แล้ว -->
     <script src="app.js"></script>
 
     <script>
@@ -822,97 +823,285 @@
 
         }
 
+
         /* ================================================= */
         /* LOAD USER EMAIL */
         /* ================================================= */
 
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener(
+            'DOMContentLoaded',
+            async () => {
 
-            try {
+                try {
 
-                if (typeof getSupabase === 'function') {
+                    if (
+                        typeof getSupabase ===
+                        'function'
+                    ) {
 
-                    const sb = getSupabase();
+                        const sb =
+                            getSupabase();
 
-                    const { data } = await sb.auth.getUser();
+                        const {
+                            data
+                        } =
+                            await sb.auth.getUser();
 
-                    if (data && data.user) {
+                        if (
+                            data &&
+                            data.user
+                        ) {
 
-                        const email = data.user.email || '';
+                            const email =
+                                data.user.email ||
+                                '';
 
-                        const el =
-                            document.getElementById('form-user-email');
+                            const formEmail =
+                                document.getElementById(
+                                    'form-user-email'
+                                );
 
-                        if (el) {
-                            el.textContent = email;
+                            if (formEmail) {
+
+                                formEmail.textContent =
+                                    email;
+
+                            }
+
+                            const headerEmail =
+                                document.getElementById(
+                                    'user-email'
+                                );
+
+                            if (headerEmail) {
+
+                                headerEmail.textContent =
+                                    email;
+
+                            }
+
                         }
 
                     }
 
                 }
+                catch (error) {
 
-            } catch (error) {
+                    console.error(
+                        'ไม่สามารถโหลด Email ผู้ใช้:',
+                        error
+                    );
 
-                console.error(
-                    'ไม่สามารถโหลด Email ผู้ใช้:',
-                    error
-                );
+                }
 
             }
+        );
 
-        });
 
         /* ================================================= */
         /* EXPIRY STATUS PREVIEW */
         /* ================================================= */
 
         const exportDateInput =
-            document.getElementById('f-export-date');
+            document.getElementById(
+                'f-export-date'
+            );
 
         if (exportDateInput) {
 
-            exportDateInput.addEventListener('change', () => {
+            exportDateInput.addEventListener(
+                'change',
+                () => {
 
-                const value = exportDateInput.value;
+                    const value =
+                        exportDateInput.value;
 
-                const preview =
-                    document.getElementById('form-status-preview');
+                    const preview =
+                        document.getElementById(
+                            'form-status-preview'
+                        );
 
-                if (!value || !preview) {
+                    if (
+                        !value ||
+                        !preview
+                    ) {
+
+                        return;
+
+                    }
+
+                    const today =
+                        new Date();
+
+                    today.setHours(
+                        0,
+                        0,
+                        0,
+                        0
+                    );
+
+                    const expiry =
+                        new Date(
+                            `${value}T00:00:00`
+                        );
+
+                    expiry.setHours(
+                        0,
+                        0,
+                        0,
+                        0
+                    );
+
+                    const days =
+                        Math.round(
+                            (
+                                expiry -
+                                today
+                            ) /
+                            (
+                                1000 *
+                                60 *
+                                60 *
+                                24
+                            )
+                        );
+
+
+                    if (
+                        days < 0
+                    ) {
+
+                        preview.textContent =
+                            'หมดอายุ';
+
+                    }
+
+                    else if (
+                        days <= 3
+                    ) {
+
+                        preview.textContent =
+                            'ใกล้หมดอายุ';
+
+                    }
+
+                    else {
+
+                        preview.textContent =
+                            'ปกติ';
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* ================================================= */
+        /* FORCE LOGOUT */
+        /* ================================================= */
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            () => {
+
+                const logoutButton =
+                    document.getElementById(
+                        'logout-btn'
+                    );
+
+                if (!logoutButton) {
                     return;
                 }
 
-                const today = new Date();
+                /*
+                 * ใช้ capture phase เพื่อให้ handler นี้
+                 * ทำงานก่อน event ของ app.js ถ้ามี
+                 */
+                logoutButton.addEventListener(
+                    'click',
+                    async (event) => {
 
-                today.setHours(0, 0, 0, 0);
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
 
-                const expiry = new Date(`${value}T00:00:00`);
+                        logoutButton.disabled = true;
+                        logoutButton.textContent =
+                            'กำลังออก...';
 
-                expiry.setHours(0, 0, 0, 0);
+                        try {
 
-                const days = Math.round(
-                    (expiry - today) / (1000 * 60 * 60 * 24)
+                            if (
+                                typeof getSupabase ===
+                                'function'
+                            ) {
+
+                                const sb =
+                                    getSupabase();
+
+                                await sb.auth.signOut();
+
+                            }
+
+                        }
+                        catch (error) {
+
+                            console.error(
+                                'ออกจากระบบไม่สำเร็จ:',
+                                error
+                            );
+
+                        }
+                        finally {
+
+                            try {
+
+                                localStorage.removeItem(
+                                    'currentUser'
+                                );
+
+                                localStorage.removeItem(
+                                    'user'
+                                );
+
+                                localStorage.removeItem(
+                                    'loggedInUser'
+                                );
+
+                                localStorage.removeItem(
+                                    'tuyenUser'
+                                );
+
+                                localStorage.removeItem(
+                                    'tuyen_current_fridge_id'
+                                );
+
+                            }
+                            catch (error) {
+
+                                console.warn(
+                                    'ล้าง localStorage ไม่สำเร็จ:',
+                                    error
+                                );
+
+                            }
+
+                            window.location.replace(
+                                'login.html'
+                            );
+
+                        }
+
+                    },
+                    true
                 );
 
-                if (days < 0) {
-
-                    preview.textContent = 'หมดอายุ';
-
-                } else if (days <= 3) {
-
-                    preview.textContent = 'ใกล้หมดอายุ';
-
-                } else {
-
-                    preview.textContent = 'ปกติ';
-
-                }
-
-            });
-
-        }
+            }
+        );
 
     </script>
 
 </body>
+
 </html>
