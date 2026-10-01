@@ -1976,6 +1976,24 @@
 
 
         // =================================================
+        // CLOSE ZONE MODAL
+        // =================================================
+
+        function closeZoneModal() {
+
+            const modal = $("zone-modal");
+
+            if (!modal) {
+                return;
+            }
+
+            modal.classList.add("hidden");
+            document.body.classList.remove("modal-open");
+
+        }
+
+
+        // =================================================
         // CREATE FOOD CARD
         // =================================================
 
@@ -3097,6 +3115,17 @@
                 try {
 
                     setupSearch();
+                    $("zone-modal-close")?.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    closeZoneModal();
+            });
+
+                    $("zone-modal")?.addEventListener("click", (event) => {
+                    if (event.target === event.currentTarget) {
+                    closeZoneModal();
+            }
+            });
 
 
                     await refreshCurrentData();
