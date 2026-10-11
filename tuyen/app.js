@@ -14,10 +14,23 @@
 // user_id
 // fridge_id
 // added_by
+//
+// Supabase table: notify  (ใช้สำหรับนับจำนวนการแจ้งเตือน)
+//
+// notify_id
+// notify_text
+// notify_date
+// user_id
+// food_id
+// is_read
 // =====================================================
 
 const FOOD_TABLE = "food";
 const USERS_TABLE = "users";
+
+// ตารางแจ้งเตือน + element ที่ใช้แสดงจำนวนบนเมนู "การแจ้งเตือน"
+const NOTIFY_TABLE = "notify";
+const NOTIFY_COUNT_ELEMENT_ID = "tuyen-notification-count";
 
 const CURRENT_FRIDGE_STORAGE_KEY =
     "tuyen_current_fridge_id";
@@ -37,6 +50,252 @@ let searchText = "";
 
 let realtimeChannel = null;
 
+
+// =====================================================
+// NOTIFICATION COUNT
+// =====================================================
+// นับจากฐานข้อมูล Supabase เท่านั้น
+//   notify.user_id = ผู้ใช้ปัจจุบัน และ notify.is_read = false
+//
+// - การเปิดหน้า notification.html หรือดูรายละเอียดคำเชิญ
+//   ไม่ทำให้จำนวนเปลี่ยน (ไม่มีการเก็บ "เปิดดูแล้ว" ใน localStorage)
+// - จำนวนจะลดลงก็ต่อเมื่อ is_read ในฐานข้อมูลเปลี่ยนเป็น true
+//   ซึ่งต้องทำโดย notification.html หลังตอบรับ/ปฏิเสธสำเร็จ
+// - ทุกหน้าที่เปิดอยู่จะอัปเดตตามผ่าน Realtime (และ polling สำรอง)
+// - รวมคำเชิญที่ยัง pending ด้วย (ดู getNotificationCount)
+
+function renderNotificationCount(count) {
+    const element = document.getElementById(
+        NOTIFY_COUNT_ELEMENT_ID
+    );
+
+    if (!element) return;
+
+    const total = Math.max(0, Number(count) || 0);
+
+    element.textContent = total > 99 ? "99+" : String(total);
+    element.hidden = total === 0;
+    element.style.display = total === 0 ? "none" : "";
+    element.classList.toggle("hidden", total === 0);
+    element.setAttribute("aria-hidden", String(total === 0));
+
+    if (total > 0) {
+        element.setAttribute(
+            "title",
+            `${total} การแจ้งเตือนที่ยังไม่ได้อ่าน`
+        );
+    } else {
+        element.removeAttribute("title");
+    }
+}
+
+// คืนค่าจำนวนที่ยังไม่อ่านของผู้ใช้ปัจจุบัน หรือ null ถ้านับไม่สำเร็จ
+// = notify ที่ is_read = false และมี food_id ของผู้ใช้นี้
+// + คำเชิญเข้าตู้เย็นที่ยัง status = 'pending' ส่งถึงอีเมลของบัญชีนี้
+//   (คำเชิญอยู่ในตาราง fridge_invitations ซึ่งหน้า notification.html
+//   นับรวมอยู่แล้ว จึงต้องนับสูตรเดียวกันเพื่อให้กระดิ่งทุกหน้าตรงกัน)
+// ใช้ count: "exact" + head: true จึงไม่ดึงแถวข้อมูลมาเลย
+// ทั้งสองส่วนนับจากฐานข้อมูลเท่านั้น ไม่มี localStorage มาหักออก
+async function getNotificationCount() {
+    const userId = currentUser?.user_id;
+
+    if (!userId) return null;
+
+    try {
+        const sb = getSB();
+
+        // นับเฉพาะแจ้งเตือนอาหาร (food_id ไม่ว่าง)
+        // แจ้งเตือนที่ไม่มี food_id (เช่น แถวที่เกี่ยวกับคำเชิญ) ไม่นับตรงนี้
+        // เพราะคำเชิญนับจาก fridge_invitations ด้านล่างอยู่แล้ว ถ้านับสองทางจะนับซ้ำ
+        // ทำให้ตอบรับ/ปฏิเสธ 1 ครั้งแล้วจำนวนไม่ลด "1" พอดี
+        const notifyQuery = sb
+            .from(NOTIFY_TABLE)
+            .select("notify_id", { count: "exact", head: true })
+            .eq("user_id", userId)
+            .eq("is_read", false)
+            .not("food_id", "is", null);
+
+        // escape ตัวอักษรพิเศษของ ILIKE (\\ % _) ในอีเมล
+        const email = String(authUser?.email || currentUser?.user_email || "")
+            .trim()
+            .replace(/[\\%_]/g, "\\$&");
+
+        const inviteQuery = email
+            ? sb
+                .from("fridge_invitations")
+                .select("invitation_id", { count: "exact", head: true })
+                .eq("status", "pending")
+                .ilike("invited_email", email)
+            : Promise.resolve({ count: 0, error: null });
+
+        const [notifyResult, inviteResult] = await Promise.all([
+            notifyQuery,
+            inviteQuery
+        ]);
+
+        // นับ notify ไม่ได้ -> คืน null (คงตัวเลขเดิม)
+        if (notifyResult.error) throw notifyResult.error;
+
+        // นับคำเชิญไม่ได้ (เช่น RLS) -> เตือนแล้วนับเป็น 0 ไม่ให้ระบบหยุด
+        if (inviteResult.error) {
+            console.warn("นับคำเชิญไม่สำเร็จ:", inviteResult.error);
+        }
+
+        const total =
+            Number(notifyResult.count ?? 0) +
+            (inviteResult.error ? 0 : Number(inviteResult.count ?? 0));
+
+        return Number.isFinite(total) ? total : 0;
+    } catch (error) {
+        console.warn("นับแจ้งเตือนไม่สำเร็จ:", error);
+        return null;
+    }
+}
+
+let notifyUpdating = false;
+let notifyUpdatePending = false;
+let notifyRefreshTimer = null;
+let notifyRealtimeChannel = null;
+let notifyRealtimeUserId = null;
+let notifyPollTimer = null;
+
+async function updateNotificationCount() {
+    if (!currentUser?.user_id) {
+        renderNotificationCount(0);
+        return;
+    }
+
+    if (notifyUpdating) {
+        notifyUpdatePending = true;
+        return;
+    }
+
+    notifyUpdating = true;
+
+    try {
+        do {
+            notifyUpdatePending = false;
+
+            const userIdAtStart = String(currentUser.user_id);
+            const total = await getNotificationCount();
+
+            // ไม่ใช้ผลเก่าถ้าผู้ใช้เปลี่ยนระหว่างโหลด
+            if (
+                userIdAtStart !== String(currentUser?.user_id)
+            ) {
+                notifyUpdatePending = true;
+                continue;
+            }
+
+            // นับไม่สำเร็จ -> คงตัวเลขเดิมไว้ ไม่เด้งเป็น 0
+            if (total !== null) {
+                renderNotificationCount(total);
+            }
+        } while (
+            notifyUpdatePending &&
+            currentUser?.user_id
+        );
+    } catch (error) {
+        console.warn("อัปเดตจำนวนแจ้งเตือนไม่สำเร็จ:", error);
+    } finally {
+        notifyUpdating = false;
+    }
+}
+
+window.updateNotificationCount = updateNotificationCount;
+
+function scheduleNotificationRefresh() {
+    clearTimeout(notifyRefreshTimer);
+
+    notifyRefreshTimer = setTimeout(() => {
+        updateNotificationCount();
+    }, 300);
+}
+
+function teardownNotificationRealtime() {
+    clearTimeout(notifyRefreshTimer);
+    notifyRefreshTimer = null;
+
+    if (notifyPollTimer) {
+        clearInterval(notifyPollTimer);
+        notifyPollTimer = null;
+    }
+
+    const channel = notifyRealtimeChannel;
+
+    notifyRealtimeChannel = null;
+    notifyRealtimeUserId = null;
+
+    if (channel) {
+        try {
+            Promise.resolve(getSB().removeChannel(channel))
+                .catch(error => {
+                    console.warn("ปิด Notification Realtime ไม่สำเร็จ:", error);
+                });
+        } catch (error) {
+            console.warn("ปิด Notification Realtime ไม่สำเร็จ:", error);
+        }
+    }
+}
+
+function setupNotificationRealtime() {
+    if (!currentUser?.user_id) return;
+
+    const userId = String(currentUser.user_id);
+
+    // ติดตาม user นี้อยู่แล้ว -> ไม่สมัครซ้ำ (และไม่สร้าง polling ซ้ำ)
+    if (
+        notifyRealtimeChannel &&
+        notifyRealtimeUserId === userId
+    ) {
+        return;
+    }
+
+    // user เปลี่ยน หรือยังไม่เคยสมัคร -> ล้างของเก่าก่อน
+    teardownNotificationRealtime();
+
+    try {
+        notifyRealtimeUserId = userId;
+
+        // ไม่ใช้ filter เพราะ DELETE กรองด้วย filter ไม่ได้
+        // การนับกรอง user_id อยู่แล้วใน getNotificationCount()
+        // event UPDATE (is_read เปลี่ยนจากหน้าอื่น) จะมาที่นี่ด้วย
+        notifyRealtimeChannel = getSB()
+            .channel(`tuyen-notify-${userId}`)
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: NOTIFY_TABLE
+                },
+                scheduleNotificationRefresh
+            )
+            // คำเชิญใหม่ / ตอบรับ / ปฏิเสธ (status เปลี่ยน) -> นับใหม่
+            // ช่องเดียวกัน จึงไม่เพิ่ม subscription ซ้ำ
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "fridge_invitations"
+                },
+                scheduleNotificationRefresh
+            )
+            .subscribe();
+
+        // สำรองกรณี Realtime ไม่ส่ง event มา (ชุดเดียวต่อผู้ใช้)
+        notifyPollTimer = setInterval(() => {
+            if (document.visibilityState === "visible") {
+                updateNotificationCount();
+            }
+        }, 10000);
+    } catch (error) {
+        console.warn("ตั้ง Realtime แจ้งเตือนไม่สำเร็จ:", error);
+        notifyRealtimeChannel = null;
+        notifyRealtimeUserId = null;
+    }
+}
 
 // =====================================================
 // SHARED FRIDGE
@@ -191,6 +450,13 @@ function bindEvents() {
 
         }
     );
+
+
+    // -------------------------
+    // Global Search (ค้นหาข้ามตู้เย็น)
+    // -------------------------
+
+    setupGlobalSearch();
 
 
     // -------------------------
@@ -396,6 +662,17 @@ async function initialize() {
             return;
 
         }
+
+
+        // -------------------------
+        // จำนวนแจ้งเตือน
+        // (ไม่ await เพื่อไม่ให้หน่วงการโหลดอาหาร
+        // และถ้าล้มเหลวจะไม่กระทบระบบหลัก)
+        // -------------------------
+
+        updateNotificationCount();
+
+        setupNotificationRealtime();
 
 
         // -------------------------
@@ -1050,6 +1327,18 @@ async function handleLogout() {
 
     finally {
 
+        // เลิกติดตามแจ้งเตือนและซ่อนตัวเลข
+        teardownNotificationRealtime();
+
+        renderNotificationCount(
+            0
+        );
+
+
+        // ปิดผลค้นหา/รายละเอียดที่เปิดค้างอยู่
+        teardownGlobalSearchUI();
+
+
         const keys = [
 
             "currentUser",
@@ -1353,6 +1642,11 @@ async function loadFoods() {
 
 
         renderFoods();
+
+
+        // อัปเดตจำนวนแจ้งเตือนหลังโหลดข้อมูลอาหารสำเร็จ
+        // (ไม่ await และไม่ throw จึงไม่กระทบการโหลดอาหาร)
+        updateNotificationCount();
 
     }
 
@@ -4121,6 +4415,1021 @@ function escapeHtml(
 
 
 // =====================================================
+// GLOBAL FOOD SEARCH (ค้นหาอาหารข้ามตู้เย็น)
+// =====================================================
+// ใช้ช่องค้นหาเดิม #search-food
+// - ค้นหาตั้งแต่พิมพ์ตัวอักษรแรก (debounce) ไม่ต้องกด Enter
+// - ค้นหาจากทุกตู้ที่ผู้ใช้เป็นสมาชิก status = 'active'
+//   (ค้นจาก food_name และ manu)
+// - ผลค้นหาแสดงใน panel ที่สร้างด้วย JavaScript (ไม่แตะ #food-list
+//   และไม่แตะสถิติของตู้ปัจจุบัน)
+// - คลิกผลค้นหา:
+//     ตู้ปัจจุบัน -> เปิดรายละเอียด (owner/editor แก้ไข ลบ ปรับจำนวนได้
+//                    ผ่านฟังก์ชันเดิม, viewer ดูอย่างเดียว)
+//     ตู้อื่น     -> เปิดรายละเอียดแบบอ่านอย่างเดียว + ปุ่ม "ไปยังตู้เย็นนี้"
+// - การค้นหา/เปิดรายละเอียดตู้อื่น ไม่เปลี่ยนตู้ปัจจุบัน
+//   จะเปลี่ยนก็ต่อเมื่อกด "ไปยังตู้เย็นนี้" (ตรวจ membership ซ้ำก่อน)
+// - ข้อมูลที่แสดงสร้างด้วย textContent ทั้งหมด (ไม่ต่อ HTML)
+// - สิทธิ์จริงยังขึ้นกับ Supabase RLS ฝั่งฐานข้อมูล
+
+const GLOBAL_SEARCH_PANEL_ID = "global-search-results";
+const GLOBAL_SEARCH_DETAIL_ID = "global-search-detail";
+const GLOBAL_SEARCH_DEBOUNCE_MS = 250;
+const GLOBAL_SEARCH_LIMIT = 30;
+const GLOBAL_SEARCH_CACHE_MS = 15000;
+
+let globalSearchInitialized = false;
+let globalSearchTimer = null;
+let globalSearchSeq = 0;
+let globalSearchResults = [];
+let globalSearchCache = {
+    userId: null,
+    time: 0,
+    roleMap: new Map(),
+    nameMap: new Map()
+};
+
+
+function createEl(tag, className, text) {
+
+    const element = document.createElement(tag);
+
+    if (className) {
+        element.className = className;
+    }
+
+    if (text !== undefined && text !== null) {
+        element.textContent = text;
+    }
+
+    return element;
+
+}
+
+
+// escape ตัวอักษรพิเศษของ LIKE/ILIKE (\ % _) ในคำค้นหา
+function escapeLikePattern(value) {
+
+    return String(value ?? "").replace(/[\\%_]/g, "\\$&");
+
+}
+
+
+function isCurrentFridgeResult(item) {
+
+    return (
+        currentFridgeId !== null &&
+        currentFridgeId !== undefined &&
+        String(item?.fridge_id) === String(currentFridgeId)
+    );
+
+}
+
+
+// ชื่อที่แสดงในผลค้นหา: ตู้ปัจจุบันแสดงชื่ออาหารเฉย ๆ
+// ตู้อื่นแสดง "ชื่ออาหาร (ชื่อตู้เย็น)"
+function getGlobalSearchTitle(item) {
+
+    const name = item?.food_name || "-";
+
+    if (isCurrentFridgeResult(item)) {
+        return name;
+    }
+
+    return `${name} (${item?.fridge_name || "ตู้เย็น"})`;
+
+}
+
+
+// -----------------------------------------------------
+// โหลดตู้เย็นที่ผู้ใช้เป็นสมาชิก active (cache สั้น ๆ)
+// -----------------------------------------------------
+
+async function loadSearchableFridges(forceRefresh = false) {
+
+    const userId = currentUser?.user_id;
+
+    if (!userId) {
+        return null;
+    }
+
+    const cache = globalSearchCache;
+
+    if (
+        !forceRefresh &&
+        cache.userId === String(userId) &&
+        Date.now() - cache.time < GLOBAL_SEARCH_CACHE_MS
+    ) {
+        return cache;
+    }
+
+    const sb = getSB();
+
+    const { data: memberships, error: memberError } = await sb
+        .from("fridge_members")
+        .select("fridge_id, role, status")
+        .eq("user_id", userId)
+        .eq("status", "active");
+
+    if (memberError) {
+        throw memberError;
+    }
+
+    const roleMap = new Map();
+
+    (memberships || []).forEach((row) => {
+        roleMap.set(String(row.fridge_id), row.role);
+    });
+
+    const nameMap = new Map();
+
+    if (roleMap.size > 0) {
+
+        const { data: fridges, error: fridgeError } = await sb
+            .from("fridges")
+            .select("fridge_id, fridge_name")
+            .in("fridge_id", [...roleMap.keys()]);
+
+        if (fridgeError) {
+            throw fridgeError;
+        }
+
+        (fridges || []).forEach((fridge) => {
+            nameMap.set(String(fridge.fridge_id), fridge.fridge_name);
+        });
+
+    }
+
+    globalSearchCache = {
+        userId: String(userId),
+        time: Date.now(),
+        roleMap,
+        nameMap
+    };
+
+    return globalSearchCache;
+
+}
+
+
+// -----------------------------------------------------
+// ค้นหาอาหารจากทุกตู้ที่มีสิทธิ์
+// -----------------------------------------------------
+
+async function searchFoodsAcrossFridges(keyword) {
+
+    const info = await loadSearchableFridges();
+
+    if (!info || info.roleMap.size === 0) {
+        return [];
+    }
+
+    const sb = getSB();
+
+    const fridgeIds = [...info.roleMap.keys()];
+
+    const pattern = `%${escapeLikePattern(keyword)}%`;
+
+    const columns =
+        "food_id, food_name, manu, location, quantity, import_date, export_date, status, user_id, fridge_id, added_by";
+
+    // แยกค้นหาชื่อ/ยี่ห้อเป็นสองคำขอ แล้วรวมผล
+    // (หลีกเลี่ยงการต่อคำค้นหาลงใน filter string ของ .or())
+    const [byName, byManu] = await Promise.all([
+        sb.from(FOOD_TABLE)
+            .select(columns)
+            .in("fridge_id", fridgeIds)
+            .ilike("food_name", pattern)
+            .limit(GLOBAL_SEARCH_LIMIT),
+        sb.from(FOOD_TABLE)
+            .select(columns)
+            .in("fridge_id", fridgeIds)
+            .ilike("manu", pattern)
+            .limit(GLOBAL_SEARCH_LIMIT)
+    ]);
+
+    if (byName.error) {
+        throw byName.error;
+    }
+
+    if (byManu.error) {
+        throw byManu.error;
+    }
+
+    const merged = new Map();
+
+    [...(byName.data || []), ...(byManu.data || [])].forEach((row) => {
+
+        // กันข้อมูลจากตู้ที่ไม่ได้อยู่ในรายการสมาชิก active
+        if (!info.roleMap.has(String(row.fridge_id))) {
+            return;
+        }
+
+        merged.set(String(row.food_id), row);
+
+    });
+
+    const results = [...merged.values()].map((row) => ({
+        ...row,
+        fridge_name:
+            info.nameMap.get(String(row.fridge_id)) || "ตู้เย็น",
+        role:
+            info.roleMap.get(String(row.fridge_id)) || null,
+        added_by_name: ""
+    }));
+
+    // ตู้ปัจจุบันขึ้นก่อน แล้วเรียงตามชื่ออาหาร
+    results.sort((a, b) => {
+
+        const aCurrent = isCurrentFridgeResult(a) ? 0 : 1;
+        const bCurrent = isCurrentFridgeResult(b) ? 0 : 1;
+
+        if (aCurrent !== bCurrent) {
+            return aCurrent - bCurrent;
+        }
+
+        return String(a.food_name || "").localeCompare(
+            String(b.food_name || ""),
+            "th"
+        );
+
+    });
+
+    const limited = results.slice(0, 50);
+
+    // ชื่อผู้เพิ่มอาหาร (ถ้าดึงไม่ได้ ไม่กระทบผลค้นหา)
+    try {
+
+        const addedByIds = [
+            ...new Set(
+                limited
+                    .map((item) => item.added_by || item.user_id)
+                    .filter(Boolean)
+            )
+        ];
+
+        if (addedByIds.length > 0) {
+
+            const { data: users, error: usersError } = await sb
+                .from(USERS_TABLE)
+                .select("user_id, name, user_email")
+                .in("user_id", addedByIds);
+
+            if (!usersError) {
+
+                const userMap = new Map(
+                    (users || []).map((user) => [String(user.user_id), user])
+                );
+
+                limited.forEach((item) => {
+
+                    const user = userMap.get(
+                        String(item.added_by || item.user_id)
+                    );
+
+                    item.added_by_name =
+                        user?.name || user?.user_email || "";
+
+                });
+
+            }
+
+        }
+
+    } catch (error) {
+
+        console.warn("โหลดชื่อผู้เพิ่มอาหารของผลค้นหาไม่สำเร็จ:", error);
+
+    }
+
+    return limited;
+
+}
+
+
+// -----------------------------------------------------
+// PANEL ผลการค้นหา
+// -----------------------------------------------------
+
+function ensureGlobalSearchPanel() {
+
+    let panel = $(GLOBAL_SEARCH_PANEL_ID);
+
+    if (panel) {
+        return panel;
+    }
+
+    panel = createEl(
+        "div",
+        "bg-white border border-slate-200 rounded-2xl shadow-xl overflow-y-auto"
+    );
+
+    panel.id = GLOBAL_SEARCH_PANEL_ID;
+    panel.setAttribute("role", "listbox");
+    panel.style.position = "absolute";
+    panel.style.zIndex = "70";
+    panel.style.maxHeight = "70vh";
+    panel.style.display = "none";
+
+    document.body.appendChild(panel);
+
+    return panel;
+
+}
+
+
+function positionGlobalSearchPanel() {
+
+    const input = $("search-food");
+    const panel = $(GLOBAL_SEARCH_PANEL_ID);
+
+    if (!input || !panel || panel.style.display === "none") {
+        return;
+    }
+
+    const rect = input.getBoundingClientRect();
+
+    const width = Math.min(
+        Math.max(rect.width, 360),
+        window.innerWidth - 16
+    );
+
+    let left = rect.left + window.scrollX;
+
+    if (rect.left + width > window.innerWidth - 8) {
+        left = window.scrollX + window.innerWidth - width - 8;
+    }
+
+    panel.style.top = `${rect.bottom + window.scrollY + 6}px`;
+    panel.style.left = `${Math.max(8, left)}px`;
+    panel.style.width = `${width}px`;
+
+}
+
+
+function hideGlobalSearchPanel() {
+
+    const panel = $(GLOBAL_SEARCH_PANEL_ID);
+
+    if (panel) {
+        panel.style.display = "none";
+        panel.replaceChildren();
+    }
+
+}
+
+
+function showGlobalSearchMessage(message, isError = false) {
+
+    const panel = ensureGlobalSearchPanel();
+
+    panel.replaceChildren(
+        createEl(
+            "div",
+            `px-4 py-4 text-sm ${isError ? "text-rose-600" : "text-slate-500"}`,
+            message
+        )
+    );
+
+    panel.style.display = "block";
+
+    positionGlobalSearchPanel();
+
+}
+
+
+function renderGlobalSearchResults(results) {
+
+    if (!Array.isArray(results) || results.length === 0) {
+        showGlobalSearchMessage("ไม่พบอาหารที่ตรงกับคำค้นหา");
+        return;
+    }
+
+    const panel = ensureGlobalSearchPanel();
+
+    panel.replaceChildren();
+
+    results.forEach((item) => {
+
+        const row = createEl(
+            "button",
+            "w-full text-left flex items-start gap-3 px-4 py-3 hover:bg-violet-50 border-b border-slate-100"
+        );
+
+        row.type = "button";
+        row.setAttribute("role", "option");
+
+        row.appendChild(
+            createEl(
+                "div",
+                "w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center text-xl shrink-0",
+                getFoodIcon(item.food_name)
+            )
+        );
+
+        const body = createEl("div", "min-w-0 flex-1");
+
+        body.appendChild(
+            createEl(
+                "p",
+                "text-sm font-semibold text-slate-800 truncate",
+                getGlobalSearchTitle(item)
+            )
+        );
+
+        const parts = [];
+
+        if (item.manu) {
+            parts.push(`🏷️ ${item.manu}`);
+        }
+
+        parts.push(`📍 ${item.location || "-"}`);
+        parts.push(`🔢 ${Math.max(0, Number(item.quantity ?? 0))}`);
+        parts.push(`📅 ${formatDate(item.export_date)}`);
+
+        body.appendChild(
+            createEl("p", "text-xs text-slate-400 mt-1", parts.join("  ·  "))
+        );
+
+        row.appendChild(body);
+
+        const status = getStatusInfo(item.export_date);
+
+        row.appendChild(
+            createEl(
+                "span",
+                `${status.className} text-[10px] px-2 py-1 rounded-lg font-semibold whitespace-nowrap`,
+                status.text
+            )
+        );
+
+        row.addEventListener("click", () => {
+            openGlobalSearchDetail(item);
+        });
+
+        panel.appendChild(row);
+
+    });
+
+    panel.style.display = "block";
+
+    positionGlobalSearchPanel();
+
+}
+
+
+// -----------------------------------------------------
+// รายละเอียดอาหาร (modal)
+// -----------------------------------------------------
+
+function closeGlobalSearchDetail() {
+
+    $(GLOBAL_SEARCH_DETAIL_ID)?.remove();
+
+}
+
+
+function openGlobalSearchDetail(sourceItem) {
+
+    hideGlobalSearchPanel();
+
+    closeGlobalSearchDetail();
+
+    // ตู้ปัจจุบัน: ใช้ข้อมูลล่าสุดจาก foods (ถ้ามี)
+    let item = sourceItem;
+
+    const isCurrent = isCurrentFridgeResult(item);
+
+    if (isCurrent) {
+
+        const fresh = foods.find(
+            (food) => String(food.food_id) === String(item.food_id)
+        );
+
+        if (fresh) {
+            item = { ...item, ...fresh };
+        }
+
+    }
+
+    const canEdit = isCurrent && canEditCurrentFridge();
+
+    const overlay = createEl(
+        "div",
+        "fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4"
+    );
+
+    overlay.id = GLOBAL_SEARCH_DETAIL_ID;
+    overlay.style.zIndex = "80";
+
+    overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+            closeGlobalSearchDetail();
+        }
+    });
+
+    const box = createEl(
+        "div",
+        "bg-white rounded-2xl shadow-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
+    );
+
+    // ---------- header ----------
+    const header = createEl("div", "flex items-start justify-between gap-3 mb-4");
+
+    const headLeft = createEl("div", "flex items-center gap-3 min-w-0");
+
+    headLeft.appendChild(
+        createEl(
+            "div",
+            "w-11 h-11 rounded-xl bg-violet-50 flex items-center justify-center text-2xl shrink-0",
+            getFoodIcon(item.food_name)
+        )
+    );
+
+    const headText = createEl("div", "min-w-0");
+
+    headText.appendChild(
+        createEl("h3", "font-bold text-slate-800 break-words", getGlobalSearchTitle(item))
+    );
+
+    headText.appendChild(
+        createEl(
+            "p",
+            "text-[11px] text-violet-600 font-semibold mt-1",
+            `🧊 ตู้เย็น: ${item.fridge_name || "ตู้เย็น"}`
+        )
+    );
+
+    headLeft.appendChild(headText);
+
+    const closeButton = createEl(
+        "button",
+        "text-slate-400 hover:text-slate-600 text-2xl leading-none",
+        "×"
+    );
+
+    closeButton.type = "button";
+    closeButton.setAttribute("aria-label", "ปิด");
+    closeButton.addEventListener("click", closeGlobalSearchDetail);
+
+    header.appendChild(headLeft);
+    header.appendChild(closeButton);
+    box.appendChild(header);
+
+    // ---------- details ----------
+    const status = getStatusInfo(item.export_date);
+
+    box.appendChild(
+        createEl(
+            "span",
+            `${status.className} inline-block text-[11px] px-2 py-1 rounded-lg font-semibold mb-3`,
+            status.text
+        )
+    );
+
+    const details = createEl("div", "space-y-2 text-xs text-slate-500");
+
+    const addRow = (label, value) => {
+
+        const line = createEl("p");
+
+        line.appendChild(document.createTextNode(`${label} `));
+
+        line.appendChild(
+            createEl("span", "font-medium text-slate-700", value)
+        );
+
+        details.appendChild(line);
+
+    };
+
+    addRow("🏷️ ยี่ห้อ:", item.manu || "-");
+    addRow("📍 ตำแหน่ง:", item.location || "-");
+    addRow("📦 จำนวน:", `${Math.max(0, Number(item.quantity ?? 0))} ชิ้น`);
+    addRow("📥 วันที่นำเข้า:", formatDate(item.import_date));
+    addRow("📅 วันหมดอายุ:", formatDate(item.export_date));
+
+    if (item.added_by_name) {
+        addRow("👤 เพิ่มโดย:", item.added_by_name);
+    }
+
+    box.appendChild(details);
+
+    // ---------- actions ----------
+    const actions = createEl("div", "mt-5 pt-4 border-t border-slate-100");
+
+    if (canEdit) {
+
+        // ปรับจำนวน (ใช้ updateStock เดิม)
+        const stockRow = createEl("div", "flex items-center justify-between gap-3");
+
+        stockRow.appendChild(
+            createEl("p", "text-xs font-medium text-slate-500", "จำนวนคงเหลือ")
+        );
+
+        const stockBox = createEl(
+            "div",
+            "flex items-center bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shrink-0"
+        );
+
+        const quantity = Math.max(0, Number(item.quantity ?? 0));
+
+        const minus = createEl(
+            "button",
+            `w-10 h-10 flex items-center justify-center text-lg font-semibold ${
+                quantity <= 0
+                    ? "text-slate-300 cursor-not-allowed"
+                    : "text-rose-500 hover:bg-rose-50"
+            }`,
+            "−"
+        );
+
+        minus.type = "button";
+        minus.disabled = quantity <= 0;
+
+        const plus = createEl(
+            "button",
+            "w-10 h-10 flex items-center justify-center text-lg font-semibold text-emerald-500 hover:bg-emerald-50",
+            "+"
+        );
+
+        plus.type = "button";
+
+        const adjust = async (change) => {
+
+            minus.disabled = true;
+            plus.disabled = true;
+
+            await updateStock(item.food_id, change);
+
+            // updateStock -> loadFoods อัปเดต foods แล้ว: เปิดรายละเอียดใหม่ด้วยค่าล่าสุด
+            if ($(GLOBAL_SEARCH_DETAIL_ID)) {
+                openGlobalSearchDetail(item);
+            }
+
+        };
+
+        minus.addEventListener("click", () => adjust(-1));
+        plus.addEventListener("click", () => adjust(1));
+
+        stockBox.appendChild(minus);
+
+        stockBox.appendChild(
+            createEl(
+                "span",
+                "min-w-[52px] text-center text-sm font-bold text-slate-700",
+                String(quantity)
+            )
+        );
+
+        stockBox.appendChild(plus);
+        stockRow.appendChild(stockBox);
+        actions.appendChild(stockRow);
+
+        // แก้ไข / ลบ (ใช้ editFood / deleteFood เดิม)
+        const editRow = createEl("div", "flex justify-end gap-2 mt-3");
+
+        const editButton = createEl(
+            "button",
+            "px-3 py-1.5 text-xs font-medium text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-lg",
+            "✏️ แก้ไขข้อมูล"
+        );
+
+        editButton.type = "button";
+
+        editButton.addEventListener("click", () => {
+            closeGlobalSearchDetail();
+            window.editFood(item.food_id);
+        });
+
+        const deleteButton = createEl(
+            "button",
+            "px-3 py-1.5 text-xs font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg",
+            "🗑️ ลบ"
+        );
+
+        deleteButton.type = "button";
+
+        deleteButton.addEventListener("click", async () => {
+
+            await deleteFood(item.food_id);
+
+            const stillExists = foods.some(
+                (food) => String(food.food_id) === String(item.food_id)
+            );
+
+            // ลบสำเร็จ (หรือไม่มีรายการแล้ว) -> ปิดรายละเอียดและค้นหาใหม่
+            if (!stillExists) {
+                closeGlobalSearchDetail();
+                refreshGlobalSearchResults();
+            }
+
+        });
+
+        editRow.appendChild(editButton);
+        editRow.appendChild(deleteButton);
+        actions.appendChild(editRow);
+
+    }
+
+    else if (isCurrent) {
+
+        // ตู้ปัจจุบัน แต่เป็น viewer: ดูอย่างเดียว ไม่มีปุ่มแก้ไข/ลบ/ปรับจำนวน
+        actions.appendChild(
+            createEl(
+                "p",
+                "text-xs text-slate-400",
+                "👁️ สิทธิ์ดูอย่างเดียวในตู้เย็นนี้"
+            )
+        );
+
+    }
+
+    else {
+
+        // ตู้เย็นอื่น: อ่านอย่างเดียว + ปุ่มไปยังตู้เย็นนี้
+        actions.appendChild(
+            createEl(
+                "p",
+                "text-xs text-slate-400 mb-3",
+                "👁️ รายการนี้อยู่ในตู้เย็นอื่น (ดูอย่างเดียว)"
+            )
+        );
+
+        const goButton = createEl(
+            "button",
+            "w-full bg-violet-600 hover:bg-violet-700 text-white text-sm px-4 py-2.5 rounded-xl font-semibold shadow-md transition",
+            "ไปยังตู้เย็นนี้"
+        );
+
+        goButton.type = "button";
+
+        goButton.addEventListener("click", () => {
+            goToSearchedFridge(item, goButton);
+        });
+
+        actions.appendChild(goButton);
+
+    }
+
+    box.appendChild(actions);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+}
+
+
+// -----------------------------------------------------
+// ไปยังตู้เย็นของผลค้นหา (เปลี่ยนตู้เฉพาะเมื่อกดปุ่มนี้)
+// -----------------------------------------------------
+
+async function goToSearchedFridge(item, button) {
+
+    const originalText = button?.textContent || "ไปยังตู้เย็นนี้";
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "กำลังตรวจสอบสิทธิ์...";
+    }
+
+    let navigating = false;
+
+    try {
+
+        if (!currentUser?.user_id) {
+            throw new Error("ไม่พบข้อมูลผู้ใช้ กรุณาเข้าสู่ระบบใหม่");
+        }
+
+        // ตรวจ membership ซ้ำ ณ ตอนกด
+        const { data, error } = await getSB()
+            .from("fridge_members")
+            .select("fridge_id, role, status")
+            .eq("fridge_id", item.fridge_id)
+            .eq("user_id", currentUser.user_id)
+            .eq("status", "active")
+            .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data) {
+
+            alert("คุณไม่มีสิทธิ์เข้าถึงตู้เย็นนี้แล้ว");
+
+            // ล้าง cache แล้วค้นหาใหม่ เพื่อไม่ให้ผลของตู้ที่หมดสิทธิ์ค้างอยู่
+            globalSearchCache.time = 0;
+
+            closeGlobalSearchDetail();
+
+            refreshGlobalSearchResults();
+
+            return;
+
+        }
+
+        localStorage.setItem(
+            CURRENT_FRIDGE_STORAGE_KEY,
+            String(item.fridge_id)
+        );
+
+        navigating = true;
+
+        window.location.href = "fridge.html";
+
+    } catch (error) {
+
+        console.error("ไปยังตู้เย็นไม่สำเร็จ:", error);
+
+        alert(
+            "ไปยังตู้เย็นไม่สำเร็จ: " +
+            (error?.message || "เกิดข้อผิดพลาด")
+        );
+
+    } finally {
+
+        if (button && !navigating) {
+            button.disabled = false;
+            button.textContent = originalText;
+        }
+
+    }
+
+}
+
+
+// -----------------------------------------------------
+// ควบคุมการพิมพ์ / debounce / กันผลเก่าทับผลใหม่
+// -----------------------------------------------------
+
+function handleGlobalSearchInput(rawValue) {
+
+    const keyword = String(rawValue || "").trim();
+
+    clearTimeout(globalSearchTimer);
+
+    // ทุกครั้งที่พิมพ์ ให้ลำดับคำขอเพิ่ม เพื่อทิ้งผลของคำค้นเก่า
+    const seq = ++globalSearchSeq;
+
+    if (!keyword) {
+
+        globalSearchResults = [];
+
+        hideGlobalSearchPanel();
+
+        return;
+
+    }
+
+    showGlobalSearchMessage("กำลังค้นหา...");
+
+    globalSearchTimer = setTimeout(() => {
+        runGlobalSearch(keyword, seq);
+    }, GLOBAL_SEARCH_DEBOUNCE_MS);
+
+}
+
+
+async function runGlobalSearch(keyword, seq) {
+
+    if (!currentUser?.user_id) {
+
+        if (seq === globalSearchSeq) {
+            showGlobalSearchMessage("กำลังโหลดข้อมูลผู้ใช้ กรุณาลองใหม่อีกครั้ง");
+        }
+
+        return;
+
+    }
+
+    try {
+
+        const results = await searchFoodsAcrossFridges(keyword);
+
+        // มีคำค้นใหม่กว่าแล้ว -> ทิ้งผลนี้
+        if (seq !== globalSearchSeq) {
+            return;
+        }
+
+        globalSearchResults = results;
+
+        renderGlobalSearchResults(results);
+
+    } catch (error) {
+
+        if (seq !== globalSearchSeq) {
+            return;
+        }
+
+        console.error("ค้นหาอาหารข้ามตู้ไม่สำเร็จ:", error);
+
+        showGlobalSearchMessage(
+            "ค้นหาไม่สำเร็จ: " + (error?.message || "เกิดข้อผิดพลาด"),
+            true
+        );
+
+    }
+
+}
+
+
+// ค้นหาซ้ำด้วยคำเดิมในช่อง (ใช้หลังลบ/หมดสิทธิ์)
+function refreshGlobalSearchResults() {
+
+    const input = $("search-food");
+
+    if (!input) {
+        return;
+    }
+
+    handleGlobalSearchInput(input.value);
+
+}
+
+
+function teardownGlobalSearchUI() {
+
+    clearTimeout(globalSearchTimer);
+
+    globalSearchTimer = null;
+
+    globalSearchSeq++;
+
+    globalSearchResults = [];
+
+    hideGlobalSearchPanel();
+
+    closeGlobalSearchDetail();
+
+}
+
+
+// ผูก event ครั้งเดียว และทำงานเฉพาะหน้าที่มี #search-food
+function setupGlobalSearch() {
+
+    const input = $("search-food");
+
+    if (!input || globalSearchInitialized) {
+        return;
+    }
+
+    globalSearchInitialized = true;
+
+    input.setAttribute("autocomplete", "off");
+
+    input.addEventListener("input", () => {
+        handleGlobalSearchInput(input.value);
+    });
+
+    // กลับมาโฟกัสช่องที่ยังมีคำค้นอยู่ -> ค้นหา/แสดงผลอีกครั้ง
+    input.addEventListener("focus", () => {
+
+        if (input.value.trim()) {
+            handleGlobalSearchInput(input.value);
+        }
+
+    });
+
+    // คลิกนอก panel / นอกช่องค้นหา -> ซ่อนผลค้นหา
+    document.addEventListener("click", (event) => {
+
+        const panel = $(GLOBAL_SEARCH_PANEL_ID);
+
+        if (!panel || panel.style.display === "none") {
+            return;
+        }
+
+        if (event.target === input || panel.contains(event.target)) {
+            return;
+        }
+
+        hideGlobalSearchPanel();
+
+    });
+
+    document.addEventListener("keydown", (event) => {
+
+        if (event.key !== "Escape") {
+            return;
+        }
+
+        if ($(GLOBAL_SEARCH_DETAIL_ID)) {
+            closeGlobalSearchDetail();
+            return;
+        }
+
+        hideGlobalSearchPanel();
+
+    });
+
+    window.addEventListener("resize", positionGlobalSearchPanel);
+
+    window.addEventListener("scroll", positionGlobalSearchPanel, true);
+
+}
+
+
+// =====================================================
 // SYNC FRIDGE FROM OTHER PAGE / TAB
 // =====================================================
 // เวลา Settings เปลี่ยน fridge
@@ -4210,6 +5519,13 @@ window.addEventListener(
                 return;
 
             }
+
+
+            // รีเฟรชจำนวนแจ้งเตือน
+            // (setup ไม่สร้างซ้ำถ้ายังเป็น user เดิม)
+            setupNotificationRealtime();
+
+            updateNotificationCount();
 
 
             const previousFridgeId =
@@ -4353,6 +5669,14 @@ document.addEventListener(
                 currentUser?.user_id
             ) {
 
+                // รีเฟรชจำนวนแจ้งเตือนเมื่อกลับมาที่หน้านี้
+                // (setup ไม่สร้างซ้ำถ้ายังเป็น user เดิม)
+
+                setupNotificationRealtime();
+
+                updateNotificationCount();
+
+
                 // รีเฟรช fridge ปัจจุบันด้วย
                 // เพราะ Settings อาจเปลี่ยนตู้ไว้แล้ว
 
@@ -4447,6 +5771,12 @@ window.addEventListener(
                 return;
 
             }
+
+
+            // รีเฟรชจำนวนแจ้งเตือน (เช่น กลับมาจากหน้าอื่นด้วยปุ่ม Back)
+            setupNotificationRealtime();
+
+            updateNotificationCount();
 
 
             const previousFridgeId =

@@ -2,823 +2,277 @@
 <html lang="th">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TUYEN - Settings</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
-
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-
     <link rel="stylesheet" href="css/settings.css">
-
+    <style>
+        .tuyen-notification-badge { display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px; padding:0 6px; border-radius:9999px; background:#ef4444; color:#fff; font-size:11px; font-weight:700; line-height:1; vertical-align:middle; box-sizing:border-box; }
+        .tuyen-notification-badge[hidden] { display:none !important; }
+    </style>
 </head>
 
-
 <body class="bg-slate-900 min-h-screen text-slate-800 flex flex-col">
-
 
 <!-- ================================================= -->
 <!-- HEADER -->
 <!-- ================================================= -->
+<header class="bg-white border-b border-slate-200 sticky top-0 z-50 px-5 lg:px-8 py-3.5 flex justify-between items-center shadow-sm">
+    <link rel="stylesheet" href="search.css">
+    <!-- LEFT : LOGO -->
+    <div class="flex items-center gap-3 min-w-fit">
+        <img src="โลโก้ตู้เย็น.png" alt="TUYEN logo" class="w-10 h-10 rounded-xl object-cover border border-violet-100 shadow-sm bg-violet-50">
+        <div>
+            <h1 class="font-bold text-slate-900 text-lg leading-tight">TUYEN</h1>
+            <p class="text-[11px] text-slate-400">Dorm Fridge Expiry Tracker</p>
+        </div>
+    </div>
 
-<header
-        class="bg-white border-b border-slate-200 sticky top-0 z-50 px-5 lg:px-8 py-3.5 flex justify-between items-center shadow-sm"
-    >
+    <!-- CENTER : NAVIGATION -->
+    <nav class="hidden md:flex items-center gap-2 text-sm font-medium">
 
-        <!-- ================================================= -->
-        <!-- LEFT : LOGO -->
-        <!-- ================================================= -->
+        <a href="index.html" class="text-slate-600 hover:text-violet-600 hover:bg-violet-50 px-4 py-2 rounded-xl flex items-center gap-2">
+            <img src="โลโก้ตู้เย็น.png" alt="TUYEN logo" class="w-6 h-6 rounded-md object-cover">
+            ตู้เย็นของฉัน
+        </a>
 
-        <div class="flex items-center gap-3 min-w-fit">
+        <a href="fridge.html" class="text-slate-600 flex items-center gap-2  px-4 py-2 rounded-xl">
+            📦 โซนตู้เย็น
+        </a>
 
-            <img
-                src="โลโก้ตู้เย็น.png"
-                alt="TUYEN logo"
-                class="w-10 h-10 rounded-xl object-cover border border-violet-100 shadow-sm bg-violet-50"
-            >
+        <a href="notification.html" class="text-slate-600 hover:text-violet-600 hover:bg-violet-50 px-4 py-2 rounded-xl inline-flex items-center gap-2">
+            <span>🔔 การแจ้งเตือน</span>
+            <span id="tuyen-notification-count" class="tuyen-notification-badge" hidden aria-label="จำนวนการแจ้งเตือน">0</span>
+        </a>
 
-            <div>
+        <a href="setting.html" class="bg-violet-50 text-violet-600 px-4 py-2 rounded-xl">
+            ⚙️ ตั้งค่า
+        </a>
 
-                <h1
-                    class="font-bold text-slate-900 text-lg leading-tight"
-                >
-                    TUYEN
-                </h1>
+    </nav>
 
-                <p class="text-[11px] text-slate-400">
-                    Dorm Fridge Expiry Tracker
-                </p>
+    <!-- RIGHT : SEARCH + ACCOUNT -->
+    <div class="flex items-center gap-3">
 
-            </div>
-
+        <div class="relative hidden lg:block">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">🔍</span>
+            <input type="text" id="search-food" placeholder="ค้นหาอาหารในตู้..." class="pl-9 pr-4 py-2 text-xs bg-slate-100 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white w-56">
         </div>
 
-
-        <!-- ================================================= -->
-        <!-- CENTER : NAVIGATION -->
-        <!-- ================================================= -->
-
-        <nav
-            class="hidden md:flex items-center gap-2 text-sm font-medium"
-        >
-
-            <!-- ตู้เย็นของฉัน -->
-
-            <a
-                href="index.html"
-                class="text-slate-600 hover:text-violet-600 hover:bg-violet-50 px-4 py-2 rounded-xl flex items-center gap-2"
-            >
-
-                <img
-                    src="โลโก้ตู้เย็น.png"
-                    alt="TUYEN logo"
-                    class="w-6 h-6 rounded-md object-cover"
-                >
-
-                ตู้เย็นของฉัน
-
-            </a>
-
-
-            <!-- โซนตู้เย็น : ACTIVE -->
-
-            <a
-                href="fridge.html"
-                class="text-slate-600 flex items-center gap-2  px-4 py-2 rounded-xl"
-            >
-
-                📦 โซนตู้เย็น
-
-            </a>
-
-            <a 
-                href="notification.html" 
-                class="text-slate-600 hover:text-violet-600 hover:bg-violet-50 px-4 py-2 rounded-xl" 
-            >
-                🔔 การแจ้งเตือน
-            </a>
-
-
-            <!-- ตั้งค่า -->
-
-            <a  href="setting.html"
-                class="bg-violet-50 text-violet-600 px-4 py-2 rounded-xl">
-                ⚙️ ตั้งค่า
-            </a>
-
-        </nav>
-
-
-        <!-- ================================================= -->
-        <!-- RIGHT : SEARCH + ACCOUNT -->
-        <!-- ================================================= -->
-
-        <div class="flex items-center gap-3">
-
-
-            <!-- SEARCH -->
-
-            <div class="relative hidden lg:block">
-
-                <span
-                    class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"
-                >
-                    🔍
-                </span>
-
-                <input
-                    type="text"
-                    id="search-food"
-                    placeholder="ค้นหาอาหารในตู้..."
-                    class="pl-9 pr-4 py-2 text-xs bg-slate-100 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white w-56"
-                >
-
+        <div class="flex items-center gap-2.5 bg-violet-50 border border-violet-100 rounded-xl px-3 py-1.5">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt="profile" class="w-8 h-8 rounded-full object-cover border-2 border-violet-200 shadow-sm">
+            <div class="leading-tight hidden sm:block">
+                <p id="user-email" class="text-xs font-semibold text-slate-700 max-w-[160px] truncate">...</p>
+                <button id="logout-btn" class="text-[10px] text-violet-600 hover:text-violet-800 font-medium">ออกจากระบบ</button>
             </div>
-
-
-            <!-- ================================================= -->
-            <!-- USER ACCOUNT -->
-            <!-- ================================================= -->
-
-            <div
-                class="flex items-center gap-2.5 bg-violet-50 border border-violet-100 rounded-xl px-3 py-1.5"
-            >
-
-                <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100"
-                    alt="profile"
-                    class="w-8 h-8 rounded-full object-cover border-2 border-violet-200 shadow-sm"
-                >
-
-                <div class="leading-tight hidden sm:block">
-
-                    <p
-                        id="user-email"
-                        class="text-xs font-semibold text-slate-700 max-w-[160px] truncate"
-                    >
-                        ...
-                    </p>
-
-                    <button
-                        id="logout-btn"
-                        class="text-[10px] text-violet-600 hover:text-violet-800 font-medium"
-                    >
-                        ออกจากระบบ
-                    </button>
-
-                </div>
-
-            </div>
-
         </div>
 
-    </header>
+    </div>
+
+</header>
 
 
 <!-- ================================================= -->
 <!-- MAIN -->
 <!-- ================================================= -->
+<main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-7">
 
-<main
-    class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-7"
->
-
-
-    <!-- ================================================= -->
     <!-- PAGE TITLE -->
-    <!-- ================================================= -->
-
-    <section
-        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-5"
-    >
-
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-5">
         <div class="flex items-center gap-3">
-
-            <div class="settings-title-icon">
-                ⚙️
-            </div>
-
-
+            <div class="settings-title-icon">⚙️</div>
             <div>
-
-                <h2
-                    class="text-xl lg:text-2xl font-bold text-slate-900"
-                >
-                    ตั้งค่า
-                </h2>
-
-
-                <p
-                    class="text-xs text-slate-400 mt-1"
-                >
-                    จัดการสมาชิก สิทธิ์การเข้าถึง และข้อมูลภายในตู้เย็น
-                </p>
-
+                <h2 class="text-xl lg:text-2xl font-bold text-slate-900">ตั้งค่า</h2>
+                <p class="text-xs text-slate-400 mt-1">จัดการสมาชิก สิทธิ์การเข้าถึง และข้อมูลภายในตู้เย็น</p>
             </div>
-
         </div>
-
     </section>
 
-
-    <!-- ================================================= -->
     <!-- ACCOUNT + FRIDGE -->
-    <!-- ================================================= -->
-
-    <section
-        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-5"
-    >
-
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-5">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-
             <div class="settings-info-box">
-
-                <div class="settings-info-icon purple">
-                    👤
-                </div>
-
-
+                <div class="settings-info-icon purple">👤</div>
                 <div class="min-w-0">
-
-                    <p
-                        class="text-[11px] text-slate-400"
-                    >
-                        บัญชีที่ลงชื่อเข้าใช้
-                    </p>
-
-
-                    <p
-                        id="current-user-email"
-                        class="text-sm font-semibold text-slate-800 truncate mt-1"
-                    >
-                        ...
-                    </p>
-
+                    <p class="text-[11px] text-slate-400">บัญชีที่ลงชื่อเข้าใช้</p>
+                    <p id="current-user-email" class="text-sm font-semibold text-slate-800 truncate mt-1">...</p>
                 </div>
-
             </div>
 
-
             <div class="settings-info-box">
-
-                <div class="settings-info-icon blue">
-                    🧊
-                </div>
-
-
+                <div class="settings-info-icon blue">🧊</div>
                 <div class="min-w-0 flex-1">
-
-                    <p
-                        class="text-[11px] text-slate-400"
-                    >
-                        ตู้เย็นที่กำลังจัดการ
-                    </p>
-
-
-                    <select
-                        id="fridge-select"
-                        class="w-full mt-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
-                    >
-
-                        <option value="">
-                            กำลังโหลด...
-                        </option>
-
+                    <p class="text-[11px] text-slate-400">ตู้เย็นที่กำลังจัดการ</p>
+                    <select id="fridge-select" class="w-full mt-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500">
+                        <option value="">กำลังโหลด...</option>
                     </select>
-
-
-                    <p
-                        id="fridge-role-text"
-                        class="text-[10px] text-violet-600 font-semibold mt-2"
-                    >
-                    </p>
-
+                    <p id="fridge-role-text" class="text-[10px] text-violet-600 font-semibold mt-2"></p>
                 </div>
-
             </div>
 
         </div>
-
     </section>
 
-
-    <!-- ================================================= -->
     <!-- FRIDGE MANAGEMENT -->
-    <!-- ================================================= -->
-
-    <section
-        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-5"
-    >
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-5">
 
         <div class="flex items-start gap-3 mb-5">
-
-            <div class="settings-section-icon purple">
-                🧊
-            </div>
-
-
+            <div class="settings-section-icon purple">🧊</div>
             <div>
-
-                <h3
-                    class="text-base font-bold text-slate-900"
-                >
-                    จัดการตู้เย็น
-                </h3>
-
-
-                <p
-                    class="text-xs text-slate-400 mt-1"
-                >
-                    สร้างตู้เย็นของตัวเองได้หลายตู้ หรือเข้าร่วมตู้เย็นของคนอื่นได้
-                </p>
-
+                <h3 class="text-base font-bold text-slate-900">จัดการตู้เย็น</h3>
+                <p class="text-xs text-slate-400 mt-1">สร้างตู้เย็นของตัวเองได้หลายตู้ หรือเข้าร่วมตู้เย็นของคนอื่นได้</p>
             </div>
-
         </div>
-
 
         <!-- OWNER LIST -->
-
         <div class="mb-5">
-
-            <p
-                class="text-xs font-semibold text-slate-600 mb-2"
-            >
-                เจ้าของตู้เย็น
-            </p>
-
-
-            <div
-                id="fridge-owners-list"
-                class="space-y-2"
-            >
-
-                <div class="settings-loading">
-                    กำลังโหลดเจ้าของตู้...
-                </div>
-
+            <p class="text-xs font-semibold text-slate-600 mb-2">เจ้าของตู้เย็น</p>
+            <div id="fridge-owners-list" class="space-y-2">
+                <div class="settings-loading">กำลังโหลดเจ้าของตู้...</div>
             </div>
-
         </div>
-
 
         <!-- CREATE -->
+        <div class="border-t border-slate-100 pt-5 mb-5">
+            <p class="text-xs font-semibold text-slate-700 mb-1">สร้างตู้เย็นใหม่</p>
+            <p class="text-[10px] text-slate-400 mb-3">ตู้ที่สร้างจะเป็นตู้ของคุณ และคุณจะเป็นเจ้าของตู้โดยอัตโนมัติ</p>
 
-        <div
-            class="border-t border-slate-100 pt-5 mb-5"
-        >
-
-            <p
-                class="text-xs font-semibold text-slate-700 mb-1"
-            >
-                สร้างตู้เย็นใหม่
-            </p>
-
-
-            <p
-                class="text-[10px] text-slate-400 mb-3"
-            >
-                ตู้ที่สร้างจะเป็นตู้ของคุณ และคุณจะเป็นเจ้าของตู้โดยอัตโนมัติ
-            </p>
-
-
-            <form
-                id="create-fridge-form"
-                class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3"
-            >
-
-                <input
-                    id="create-fridge-name"
-                    type="text"
-                    maxlength="100"
-                    required
-                    placeholder="เช่น ตู้เย็นหอพัก"
-                    class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500"
-                >
-
-
-                <button
-                    id="create-fridge-submit"
-                    type="submit"
-                    class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-5 py-2.5 rounded-xl font-semibold shadow-md transition"
-                >
-                    + สร้างตู้เย็น
-                </button>
-
+            <form id="create-fridge-form" class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3">
+                <input id="create-fridge-name" type="text" maxlength="100" required placeholder="เช่น ตู้เย็นหอพัก" class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500">
+                <button id="create-fridge-submit" type="submit" class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-5 py-2.5 rounded-xl font-semibold shadow-md transition">+ สร้างตู้เย็น</button>
             </form>
 
-
-            <div
-                id="create-fridge-message"
-                class="hidden mt-3 text-xs px-3 py-2 rounded-xl"
-            >
-            </div>
-
+            <div id="create-fridge-message" class="hidden mt-3 text-xs px-3 py-2 rounded-xl"></div>
         </div>
 
-
         <!-- RENAME -->
+        <div class="border-t border-slate-100 pt-5">
+            <p class="text-xs font-semibold text-slate-700">เปลี่ยนชื่อตู้เย็น</p>
+            <p id="rename-fridge-help" class="text-[10px] text-slate-400 mt-1">เจ้าของตู้ร่วมสามารถเปลี่ยนชื่อร่วมกันได้</p>
 
-        <div
-            class="border-t border-slate-100 pt-5"
-        >
-
-            <p
-                class="text-xs font-semibold text-slate-700"
-            >
-                เปลี่ยนชื่อตู้เย็น
-            </p>
-
-
-            <p
-                id="rename-fridge-help"
-                class="text-[10px] text-slate-400 mt-1"
-            >
-                เจ้าของตู้ร่วมสามารถเปลี่ยนชื่อร่วมกันได้
-            </p>
-
-
-            <form
-                id="rename-fridge-form"
-                class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 mt-3"
-            >
-
-                <input
-                    id="rename-fridge-name"
-                    type="text"
-                    maxlength="100"
-                    required
-                    placeholder="ชื่อตู้เย็น"
-                    class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500"
-                >
-
-
-                <button
-                    id="rename-fridge-submit"
-                    type="submit"
-                    class="bg-slate-800 hover:bg-slate-900 text-white text-xs px-5 py-2.5 rounded-xl font-semibold shadow-md transition"
-                >
-                    บันทึกชื่อ
-                </button>
-
+            <form id="rename-fridge-form" class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 mt-3">
+                <input id="rename-fridge-name" type="text" maxlength="100" required placeholder="ชื่อตู้เย็น" class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500">
+                <button id="rename-fridge-submit" type="submit" class="bg-slate-800 hover:bg-slate-900 text-white text-xs px-5 py-2.5 rounded-xl font-semibold shadow-md transition">บันทึกชื่อ</button>
             </form>
 
-
-            <p
-                id="rename-fridge-lock"
-                class="hidden text-[10px] text-amber-600 mt-2"
-            >
-                🔒 คุณไม่ได้เป็นเจ้าของตู้ จึงไม่สามารถเปลี่ยนชื่อได้
-            </p>
-
-
-            <div
-                id="rename-fridge-message"
-                class="hidden mt-3 text-xs px-3 py-2 rounded-xl"
-            >
-            </div>
-
+            <p id="rename-fridge-lock" class="hidden text-[10px] text-amber-600 mt-2">🔒 คุณไม่ได้เป็นเจ้าของตู้ จึงไม่สามารถเปลี่ยนชื่อได้</p>
+            <div id="rename-fridge-message" class="hidden mt-3 text-xs px-3 py-2 rounded-xl"></div>
         </div>
 
     </section>
 
-
-    <!-- ================================================= -->
     <!-- INVITE -->
-    <!-- ================================================= -->
-
-    <section
-        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-5"
-    >
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-5">
 
         <div class="flex items-start gap-3 mb-5">
-
-            <div class="settings-section-icon purple">
-                👥
-            </div>
-
-
+            <div class="settings-section-icon purple">👥</div>
             <div>
-
-                <h3
-                    class="text-base font-bold text-slate-900"
-                >
-                    เชิญเพื่อนเข้าตู้เย็น
-                </h3>
-
-
-                <p
-                    class="text-xs text-slate-400 mt-1"
-                >
-                    เชิญสมาชิกเข้าใช้ตู้เย็นเดียวกัน
-                </p>
-
+                <h3 class="text-base font-bold text-slate-900">เชิญเพื่อนเข้าตู้เย็น</h3>
+                <p class="text-xs text-slate-400 mt-1">เชิญสมาชิกเข้าใช้ตู้เย็นเดียวกัน</p>
             </div>
-
         </div>
 
-
-        <form
-            id="invite-form"
-            class="grid grid-cols-1 md:grid-cols-[1fr_180px_auto] gap-3"
-        >
+        <form id="invite-form" class="grid grid-cols-1 md:grid-cols-[1fr_180px_auto] gap-3">
 
             <div>
-
-                <label
-                    for="invite-email"
-                    class="block text-xs font-semibold text-slate-600 mb-1"
-                >
-                    อีเมล
-                </label>
-
-
-                <input
-                    id="invite-email"
-                    type="email"
-                    required
-                    placeholder="example@email.com"
-                    class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500"
-                >
-
+                <label for="invite-email" class="block text-xs font-semibold text-slate-600 mb-1">อีเมล</label>
+                <input id="invite-email" type="email" required placeholder="example@email.com" class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500">
             </div>
 
-
             <div>
-
-                <label
-                    for="invite-role"
-                    class="block text-xs font-semibold text-slate-600 mb-1"
-                >
-                    สิทธิ์
-                </label>
-
-
-                <select
-                    id="invite-role"
-                    class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500"
-                >
-
-                    <option value="viewer">
-                        ดูอย่างเดียว
-                    </option>
-
-
-                    <option value="editor">
-                        ดูและแก้ไข
-                    </option>
-
-
-                    <option value="owner">
-                        เจ้าของตู้
-                    </option>
-
+                <label for="invite-role" class="block text-xs font-semibold text-slate-600 mb-1">สิทธิ์</label>
+                <select id="invite-role" class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500">
+                    <option value="viewer">ดูอย่างเดียว</option>
+                    <option value="editor">ดูและแก้ไข</option>
+                    <option value="owner">เจ้าของตู้</option>
                 </select>
-
             </div>
 
-
-            <button
-                id="invite-submit"
-                type="submit"
-                class="self-end bg-violet-600 hover:bg-violet-700 text-white text-xs px-5 py-2.5 rounded-xl font-semibold shadow-md transition"
-            >
-                ส่งคำเชิญ
-            </button>
+            <button id="invite-submit" type="submit" class="self-end bg-violet-600 hover:bg-violet-700 text-white text-xs px-5 py-2.5 rounded-xl font-semibold shadow-md transition">ส่งคำเชิญ</button>
 
         </form>
 
-
-        <div
-            id="invite-message"
-            class="hidden mt-3 text-xs px-3 py-2 rounded-xl"
-        >
-        </div>
+        <div id="invite-message" class="hidden mt-3 text-xs px-3 py-2 rounded-xl"></div>
 
     </section>
 
-
-    <!-- ================================================= -->
     <!-- MEMBERS -->
-    <!-- ================================================= -->
-
-    <section
-        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-5"
-    >
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-5">
 
         <div class="flex items-start gap-3 mb-5">
-
-            <div class="settings-section-icon blue">
-                🔐
-            </div>
-
-
+            <div class="settings-section-icon blue">🔐</div>
             <div>
-
-                <h3
-                    class="text-base font-bold text-slate-900"
-                >
-                    สมาชิกและสิทธิ์การเข้าถึง
-                </h3>
-
-
-                <p
-                    class="text-xs text-slate-400 mt-1"
-                >
-                    เจ้าของตู้สามารถจัดการสิทธิ์ของสมาชิกได้
-                </p>
-
+                <h3 class="text-base font-bold text-slate-900">สมาชิกและสิทธิ์การเข้าถึง</h3>
+                <p class="text-xs text-slate-400 mt-1">เจ้าของตู้สามารถจัดการสิทธิ์ของสมาชิกได้</p>
             </div>
-
         </div>
 
-
-        <div
-            id="members-list"
-            class="space-y-3"
-        >
-
-            <div class="settings-loading">
-                กำลังโหลดสมาชิก...
-            </div>
-
+        <div id="members-list" class="space-y-3">
+            <div class="settings-loading">กำลังโหลดสมาชิก...</div>
         </div>
 
     </section>
 
-
-    <!-- ================================================= -->
     <!-- SENT INVITATIONS -->
-    <!-- ================================================= -->
-
-    <section
-        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-5"
-    >
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-5">
 
         <div class="flex items-start gap-3 mb-5">
-
-            <div class="settings-section-icon orange">
-                📩
-            </div>
-
-
+            <div class="settings-section-icon orange">📩</div>
             <div>
-
-                <h3
-                    class="text-base font-bold text-slate-900"
-                >
-                    คำเชิญที่ส่งไปแล้ว
-                </h3>
-
-
-                <p
-                    class="text-xs text-slate-400 mt-1"
-                >
-                    ดูสถานะคำเชิญของตู้เย็นนี้
-                </p>
-
+                <h3 class="text-base font-bold text-slate-900">คำเชิญที่ส่งไปแล้ว</h3>
+                <p class="text-xs text-slate-400 mt-1">ดูสถานะคำเชิญของตู้เย็นนี้</p>
             </div>
-
         </div>
 
-
-        <div
-            id="sent-invitations-list"
-            class="space-y-3"
-        >
-
-            <div class="settings-loading">
-                กำลังโหลดคำเชิญ...
-            </div>
-
+        <div id="sent-invitations-list" class="space-y-3">
+            <div class="settings-loading">กำลังโหลดคำเชิญ...</div>
         </div>
 
     </section>
 
-
-    <!-- ================================================= -->
     <!-- RECEIVED INVITATIONS -->
-    <!-- ================================================= -->
-
-    <section
-        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-5"
-    >
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-5">
 
         <div class="flex items-start gap-3 mb-5">
-
-            <div class="settings-section-icon pink">
-                💌
-            </div>
-
-
+            <div class="settings-section-icon pink">💌</div>
             <div>
-
-                <h3
-                    class="text-base font-bold text-slate-900"
-                >
-                    คำเชิญที่ได้รับ
-                </h3>
-
-
-                <p
-                    class="text-xs text-slate-400 mt-1"
-                >
-                    ตอบรับหรือปฏิเสธคำเชิญ
-                </p>
-
+                <h3 class="text-base font-bold text-slate-900">คำเชิญที่ได้รับ</h3>
+                <p class="text-xs text-slate-400 mt-1">ตอบรับหรือปฏิเสธคำเชิญ</p>
             </div>
-
         </div>
 
-
-        <div
-            id="received-invitations-list"
-            class="space-y-3"
-        >
-
-            <div class="settings-loading">
-                กำลังโหลดคำเชิญ...
-            </div>
-
+        <div id="received-invitations-list" class="space-y-3">
+            <div class="settings-loading">กำลังโหลดคำเชิญ...</div>
         </div>
 
     </section>
 
-
-    <!-- ================================================= -->
     <!-- FOOD -->
-    <!-- ================================================= -->
-
-    <section
-        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"
-    >
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
 
         <div class="flex items-start gap-3 mb-5">
-
-            <div class="settings-section-icon green">
-                🛒
-            </div>
-
-
+            <div class="settings-section-icon green">🛒</div>
             <div>
-
-                <h3
-                    class="text-base font-bold text-slate-900"
-                >
-                    รายการอาหารและผู้เพิ่ม
-                </h3>
-
-
-                <p
-                    class="text-xs text-slate-400 mt-1"
-                >
-                    อาหารในตู้จะแชร์ร่วมกัน และแสดงว่าใครเป็นคนเอาใส่
-                </p>
-
+                <h3 class="text-base font-bold text-slate-900">รายการอาหารและผู้เพิ่ม</h3>
+                <p class="text-xs text-slate-400 mt-1">อาหารในตู้จะแชร์ร่วมกัน และแสดงว่าใครเป็นคนเอาใส่</p>
             </div>
-
         </div>
 
-
-        <div
-            id="food-added-list"
-            class="grid grid-cols-1 md:grid-cols-2 gap-3"
-        >
-
-            <div
-                class="settings-loading md:col-span-2"
-            >
-                กำลังโหลดรายการอาหาร...
-            </div>
-
+        <div id="food-added-list" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="settings-loading md:col-span-2">กำลังโหลดรายการอาหาร...</div>
         </div>
 
     </section>
-
 
 </main>
 
 
-<!-- ================================================= -->
 <!-- FOOTER -->
-<!-- ================================================= -->
-
-<footer
-    class="bg-white border-t border-slate-200 py-3 text-center text-[11px] text-slate-400 mt-2"
->
+<footer class="bg-white border-t border-slate-200 py-3 text-center text-[11px] text-slate-400 mt-2">
     © 2026 TUYEN - Dorm Fridge Expiry Tracker.
 </footer>
 
@@ -826,11 +280,8 @@
 <!-- ================================================= -->
 <!-- SCRIPTS -->
 <!-- ================================================= -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script src="config.js"></script>
-
 
 <script>
 
@@ -838,8 +289,7 @@
    CONSTANT
 ===================================================== */
 
-const CURRENT_FRIDGE_STORAGE_KEY =
-    "tuyen_current_fridge_id";
+const CURRENT_FRIDGE_STORAGE_KEY = "tuyen_current_fridge_id";
 
 
 /* =====================================================
@@ -847,17 +297,11 @@ const CURRENT_FRIDGE_STORAGE_KEY =
 ===================================================== */
 
 let sb = null;
-
 let authUser = null;
-
 let appUser = null;
-
 let fridgeList = [];
-
 let currentFridge = null;
-
 let currentFridgeRole = null;
-
 let realtimeChannel = null;
 
 
@@ -866,21 +310,16 @@ let realtimeChannel = null;
 ===================================================== */
 
 function $(id) {
-
     return document.getElementById(id);
-
 }
 
-
 function escapeHtml(value) {
-
     return String(value ?? "")
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
-
 }
 
 
@@ -890,41 +329,22 @@ function escapeHtml(value) {
 
 function getSB() {
 
-    if (
-        typeof getSupabase === "function"
-    ) {
-
-        const client =
-            getSupabase();
-
-
-        if (
-            client &&
-            typeof client.auth?.getSession === "function"
-        ) {
-
+    if (typeof getSupabase === "function") {
+        const client = getSupabase();
+        if (client && typeof client.auth?.getSession === "function") {
             return client;
-
         }
-
     }
-
 
     if (
         window.supabase &&
         typeof window.supabase.from === "function" &&
         typeof window.supabase.auth?.getSession === "function"
     ) {
-
         return window.supabase;
-
     }
 
-
-    throw new Error(
-        "ไม่พบ Supabase client กรุณาตรวจสอบ config.js"
-    );
-
+    throw new Error("ไม่พบ Supabase client กรุณาตรวจสอบ config.js");
 }
 
 
@@ -932,48 +352,20 @@ function getSB() {
    ERROR
 ===================================================== */
 
-function setError(
-    id,
-    error
-) {
+function setError(id, error) {
 
-    const el =
-        $(id);
-
-
-    if (!el) {
-
-        return;
-
-    }
-
+    const el = $(id);
+    if (!el) return;
 
     el.innerHTML = `
-
-        <div
-            class="settings-empty text-rose-500"
-        >
-
+        <div class="settings-empty text-rose-500">
             โหลดข้อมูลไม่สำเร็จ
-
             <br>
-
-            <span
-                class="text-[10px] text-rose-400"
-            >
-
-                ${escapeHtml(
-                    error?.message ||
-                    error ||
-                    "เกิดข้อผิดพลาด"
-                )}
-
+            <span class="text-[10px] text-rose-400">
+                ${escapeHtml(error?.message || error || "เกิดข้อผิดพลาด")}
             </span>
-
         </div>
-
     `;
-
 }
 
 
@@ -981,61 +373,16 @@ function setError(
    ROLE
 ===================================================== */
 
-function roleText(
-    role
-) {
-
-    if (
-        role ===
-        "owner"
-    ) {
-
-        return "เจ้าของตู้";
-
-    }
-
-
-    if (
-        role ===
-        "editor"
-    ) {
-
-        return "ดูและแก้ไข";
-
-    }
-
-
+function roleText(role) {
+    if (role === "owner") return "เจ้าของตู้";
+    if (role === "editor") return "ดูและแก้ไข";
     return "ดูอย่างเดียว";
-
 }
 
-
-function roleClass(
-    role
-) {
-
-    if (
-        role ===
-        "owner"
-    ) {
-
-        return "owner";
-
-    }
-
-
-    if (
-        role ===
-        "editor"
-    ) {
-
-        return "editor";
-
-    }
-
-
+function roleClass(role) {
+    if (role === "owner") return "owner";
+    if (role === "editor") return "editor";
     return "viewer";
-
 }
 
 
@@ -1044,18 +391,11 @@ function roleClass(
 ===================================================== */
 
 function isCreator() {
-
     return !!(
         currentFridge &&
         appUser &&
-        String(
-            currentFridge.created_by
-        ) ===
-        String(
-            appUser.user_id
-        )
+        String(currentFridge.created_by) === String(appUser.user_id)
     );
-
 }
 
 
@@ -1064,12 +404,7 @@ function isCreator() {
 ===================================================== */
 
 function isOwner() {
-
-    return (
-        currentFridgeRole ===
-        "owner"
-    );
-
+    return currentFridgeRole === "owner";
 }
 
 
@@ -1077,78 +412,32 @@ function isOwner() {
    MESSAGE
 ===================================================== */
 
-function showBoxMessage(
-    elementId,
-    message,
-    success = false
-) {
+function showBoxMessage(elementId, message, success = false) {
 
-    const el =
-        $(elementId);
+    const el = $(elementId);
+    if (!el) return;
 
+    el.textContent = message;
 
-    if (!el) {
+    el.className = success
+        ? "mt-3 text-xs px-3 py-2 rounded-xl bg-emerald-50 text-emerald-600"
+        : "mt-3 text-xs px-3 py-2 rounded-xl bg-rose-50 text-rose-600";
 
-        return;
-
-    }
-
-
-    el.textContent =
-        message;
-
-
-    el.className =
-        success
-
-            ? "mt-3 text-xs px-3 py-2 rounded-xl bg-emerald-50 text-emerald-600"
-
-            : "mt-3 text-xs px-3 py-2 rounded-xl bg-rose-50 text-rose-600";
-
-
-    el.classList.remove(
-        "hidden"
-    );
-
+    el.classList.remove("hidden");
 }
 
+function showInviteMessage(message, success = false) {
 
-/* =====================================================
-   INVITE MESSAGE
-===================================================== */
+    const el = $("invite-message");
+    if (!el) return;
 
-function showInviteMessage(
-    message,
-    success = false
-) {
+    el.textContent = message;
 
-    const el =
-        $("invite-message");
+    el.className = success
+        ? "mt-3 text-xs px-3 py-2 rounded-xl bg-emerald-50 text-emerald-600"
+        : "mt-3 text-xs px-3 py-2 rounded-xl bg-rose-50 text-rose-600";
 
-
-    if (!el) {
-
-        return;
-
-    }
-
-
-    el.textContent =
-        message;
-
-
-    el.className =
-        success
-
-            ? "mt-3 text-xs px-3 py-2 rounded-xl bg-emerald-50 text-emerald-600"
-
-            : "mt-3 text-xs px-3 py-2 rounded-xl bg-rose-50 text-rose-600";
-
-
-    el.classList.remove(
-        "hidden"
-    );
-
+    el.classList.remove("hidden");
 }
 
 
@@ -1158,120 +447,57 @@ function showInviteMessage(
 
 function updateRenameUI() {
 
-    const input =
-        $("rename-fridge-name");
-
-
-    const button =
-        $("rename-fridge-submit");
-
-
-    const lock =
-        $("rename-fridge-lock");
-
-
-    const help =
-        $("rename-fridge-help");
-
+    const input = $("rename-fridge-name");
+    const button = $("rename-fridge-submit");
+    const lock = $("rename-fridge-lock");
+    const help = $("rename-fridge-help");
 
     if (!currentFridge) {
 
         if (input) {
-
-            input.value =
-                "";
-
-            input.disabled =
-                true;
-
+            input.value = "";
+            input.disabled = true;
         }
-
 
         if (button) {
-
-            button.disabled =
-                true;
-
+            button.disabled = true;
         }
-
 
         if (lock) {
-
-            lock.classList.add(
-                "hidden"
-            );
-
+            lock.classList.add("hidden");
         }
-
 
         if (help) {
-
-            help.textContent =
-                "ยังไม่มีตู้เย็น";
-
+            help.textContent = "ยังไม่มีตู้เย็น";
         }
 
-
         return;
-
     }
 
-
-    /*
-     * OWNER ร่วมทุกคนสามารถเปลี่ยนชื่อได้
-     */
-
-    const owner =
-        isOwner();
-
+    /* OWNER ร่วมทุกคนสามารถเปลี่ยนชื่อได้ */
+    const owner = isOwner();
 
     if (input) {
-
-        input.value =
-            currentFridge.fridge_name || "";
-
-        input.disabled =
-            !owner;
-
+        input.value = currentFridge.fridge_name || "";
+        input.disabled = !owner;
     }
-
 
     if (button) {
-
-        button.disabled =
-            !owner;
-
-        button.title =
-            owner
-
-                ? "เจ้าของตู้สามารถเปลี่ยนชื่อร่วมกันได้"
-
-                : "เฉพาะเจ้าของตู้เท่านั้นที่เปลี่ยนชื่อได้";
-
+        button.disabled = !owner;
+        button.title = owner
+            ? "เจ้าของตู้สามารถเปลี่ยนชื่อร่วมกันได้"
+            : "เฉพาะเจ้าของตู้เท่านั้นที่เปลี่ยนชื่อได้";
     }
-
 
     if (lock) {
-
-        lock.classList.toggle(
-            "hidden",
-            owner
-        );
-
+        lock.classList.toggle("hidden", owner);
     }
-
 
     if (help) {
-
-        help.textContent =
-            owner
-
-                ? "คุณเป็นเจ้าของตู้ สามารถเปลี่ยนชื่อร่วมกับเจ้าของคนอื่นได้"
-
-                : "เฉพาะสมาชิกที่มีสิทธิ์เจ้าของตู้เท่านั้นที่เปลี่ยนชื่อได้";
-
+        help.textContent = owner
+            ? "คุณเป็นเจ้าของตู้ สามารถเปลี่ยนชื่อร่วมกับเจ้าของคนอื่นได้"
+            : "เฉพาะสมาชิกที่มีสิทธิ์เจ้าของตู้เท่านั้นที่เปลี่ยนชื่อได้";
     }
-
 }
 
 
@@ -1281,169 +507,71 @@ function updateRenameUI() {
 
 async function loadCurrentUser() {
 
-    sb =
-        getSB();
+    sb = getSB();
 
-
-    const {
-        data,
-        error
-    } =
-        await sb.auth.getSession();
-
+    const { data, error } = await sb.auth.getSession();
 
     if (error) {
-
         throw error;
-
     }
 
-
-    authUser =
-        data?.session?.user ||
-        null;
-
+    authUser = data?.session?.user || null;
 
     if (!authUser) {
-
-        location.replace(
-            "login.html"
-        );
-
+        location.replace("login.html");
         return false;
-
     }
 
+    const email = String(authUser.email || "").trim();
 
-    const email =
-        String(
-            authUser.email || ""
-        )
-        .trim();
-
-
-    const headerEmail =
-        $("user-email");
-
-
-    const currentUserEmail =
-        $("current-user-email");
-
+    const headerEmail = $("user-email");
+    const currentUserEmail = $("current-user-email");
 
     if (headerEmail) {
-
-        headerEmail.textContent =
-            email ||
-            "...";
-
-
-        headerEmail.title =
-            email;
-
+        headerEmail.textContent = email || "...";
+        headerEmail.title = email;
     }
-
 
     if (currentUserEmail) {
-
-        currentUserEmail.textContent =
-            email ||
-            "...";
-
-
-        currentUserEmail.title =
-            email;
-
+        currentUserEmail.textContent = email || "...";
+        currentUserEmail.title = email;
     }
 
-
-    let dbUser =
-        null;
-
+    let dbUser = null;
 
     try {
 
-        const {
-            data: result,
-            error: dbError
-        } =
-            await sb
-                .from("users")
-                .select(
-                    "user_id, name, user_email"
-                )
-                .eq(
-                    "user_email",
-                    email
-                )
-                .maybeSingle();
-
+        const { data: result, error: dbError } = await sb
+            .from("users")
+            .select("user_id, name, user_email")
+            .eq("user_email", email)
+            .maybeSingle();
 
         if (dbError) {
-
-            console.warn(
-                "ค้นหา public.users ไม่สำเร็จ:",
-                dbError
-            );
-
+            console.warn("ค้นหา public.users ไม่สำเร็จ:", dbError);
+        } else {
+            dbUser = result || null;
         }
 
-        else {
-
-            dbUser =
-                result ||
-                null;
-
-        }
-
+    } catch (error) {
+        console.warn("ค้นหา public.users ไม่สำเร็จ:", error);
     }
 
-    catch (error) {
-
-        console.warn(
-            "ค้นหา public.users ไม่สำเร็จ:",
-            error
-        );
-
-    }
-
-
-    appUser =
-        dbUser || {
-
-            user_id:
-                authUser.id,
-
-            name:
-                "",
-
-            user_email:
-                email
-
-        };
-
+    appUser = dbUser || {
+        user_id: authUser.id,
+        name: "",
+        user_email: email
+    };
 
     if (headerEmail) {
-
-        headerEmail.textContent =
-            appUser.user_email ||
-            email ||
-            "...";
-
+        headerEmail.textContent = appUser.user_email || email || "...";
     }
-
 
     if (currentUserEmail) {
-
-        currentUserEmail.textContent =
-            appUser.user_email ||
-            email ||
-            "...";
-
+        currentUserEmail.textContent = appUser.user_email || email || "...";
     }
 
-
     return true;
-
 }
 
 
@@ -1451,300 +579,122 @@ async function loadCurrentUser() {
    LOAD FRIDGES
 ===================================================== */
 
-async function loadFridges(
-    preferredFridgeId = null
-) {
+async function loadFridges(preferredFridgeId = null) {
 
-    const select =
-        $("fridge-select");
-
+    const select = $("fridge-select");
 
     try {
 
         if (!appUser?.user_id) {
-
-            throw new Error(
-                "ไม่พบ user_id ของผู้ใช้"
-            );
-
+            throw new Error("ไม่พบ user_id ของผู้ใช้");
         }
 
-
-        const {
-            data: fridges,
-            error: fridgeError
-        } =
-            await sb
-                .from("fridges")
-                .select(
-                    "fridge_id, fridge_name, created_by, created_at"
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending:
-                            true
-                    }
-                );
-
+        const { data: fridges, error: fridgeError } = await sb
+            .from("fridges")
+            .select("fridge_id, fridge_name, created_by, created_at")
+            .order("created_at", { ascending: true });
 
         if (fridgeError) {
-
             throw fridgeError;
-
         }
 
+        const fridgeRows = Array.isArray(fridges) ? fridges : [];
 
-        const fridgeRows =
-            Array.isArray(fridges)
-                ? fridges
-                : [];
-
-
-        const {
-            data: memberships,
-            error: memberError
-        } =
-            await sb
-                .from("fridge_members")
-                .select(
-                    "fridge_id, role, status"
-                )
-                .eq(
-                    "user_id",
-                    appUser.user_id
-                )
-                .eq(
-                    "status",
-                    "active"
-                );
-
+        const { data: memberships, error: memberError } = await sb
+            .from("fridge_members")
+            .select("fridge_id, role, status")
+            .eq("user_id", appUser.user_id)
+            .eq("status", "active");
 
         if (memberError) {
-
             throw memberError;
-
         }
 
+        const membershipRows = Array.isArray(memberships) ? memberships : [];
 
-        const membershipRows =
-            Array.isArray(memberships)
-                ? memberships
-                : [];
+        const roleMap = new Map();
 
+        membershipRows.forEach(membership => {
+            roleMap.set(String(membership.fridge_id), membership.role);
+        });
 
-        const roleMap =
-            new Map();
-
-
-        membershipRows.forEach(
-            membership => {
-
-                roleMap.set(
-                    String(
-                        membership.fridge_id
-                    ),
-                    membership.role
-                );
-
-            }
+        fridgeList = fridgeRows.filter(
+            fridge => roleMap.has(String(fridge.fridge_id))
         );
-
-
-        fridgeList =
-            fridgeRows.filter(
-                fridge =>
-                    roleMap.has(
-                        String(
-                            fridge.fridge_id
-                        )
-                    )
-            );
-
 
         if (!fridgeList.length) {
 
-            select.innerHTML = `
+            select.innerHTML = `<option value="">ยังไม่มีตู้เย็น</option>`;
 
-                <option value="">
-                    ยังไม่มีตู้เย็น
-                </option>
+            currentFridge = null;
+            currentFridgeRole = null;
 
-            `;
-
-
-            currentFridge =
-                null;
-
-
-            currentFridgeRole =
-                null;
-
-
-            $("fridge-role-text").textContent =
-                "";
-
+            $("fridge-role-text").textContent = "";
 
             updateRenameUI();
 
-
             await refreshAll();
 
-
             return;
-
         }
 
+        select.innerHTML = "";
 
-        select.innerHTML =
-            "";
+        fridgeList.forEach(fridge => {
+            const option = document.createElement("option");
+            option.value = fridge.fridge_id;
+            option.textContent = fridge.fridge_name;
+            select.appendChild(option);
+        });
 
-
-        fridgeList.forEach(
-            fridge => {
-
-                const option =
-                    document.createElement(
-                        "option"
-                    );
-
-
-                option.value =
-                    fridge.fridge_id;
-
-
-                option.textContent =
-                    fridge.fridge_name;
-
-
-                select.appendChild(
-                    option
-                );
-
-            }
-        );
-
-
-        const savedId =
-            localStorage.getItem(
-                CURRENT_FRIDGE_STORAGE_KEY
-            );
-
+        const savedId = localStorage.getItem(CURRENT_FRIDGE_STORAGE_KEY);
 
         currentFridge =
-
             fridgeList.find(
-                fridge =>
-                    String(
-                        fridge.fridge_id
-                    ) ===
-                    String(
-                        preferredFridgeId
-                    )
+                fridge => String(fridge.fridge_id) === String(preferredFridgeId)
             )
-
             ||
-
             fridgeList.find(
-                fridge =>
-                    String(
-                        fridge.fridge_id
-                    ) ===
-                    String(
-                        savedId
-                    )
+                fridge => String(fridge.fridge_id) === String(savedId)
             )
-
             ||
-
             fridgeList.find(
-                fridge =>
-                    roleMap.get(
-                        String(
-                            fridge.fridge_id
-                        )
-                    ) ===
-                    "owner"
+                fridge => roleMap.get(String(fridge.fridge_id)) === "owner"
             )
-
             ||
-
             fridgeList[0];
 
-
-        currentFridgeRole =
-            roleMap.get(
-                String(
-                    currentFridge.fridge_id
-                )
-            ) ||
-            null;
-
+        currentFridgeRole = roleMap.get(String(currentFridge.fridge_id)) || null;
 
         localStorage.setItem(
             CURRENT_FRIDGE_STORAGE_KEY,
-            String(
-                currentFridge.fridge_id
-            )
+            String(currentFridge.fridge_id)
         );
 
-
-        select.value =
-            currentFridge.fridge_id;
-
+        select.value = currentFridge.fridge_id;
 
         $("fridge-role-text").textContent =
-            `สิทธิ์ของฉัน: ${roleText(
-                currentFridgeRole
-            )}`;
-
+            `สิทธิ์ของฉัน: ${roleText(currentFridgeRole)}`;
 
         updateRenameUI();
-
 
         await refreshAll();
 
-    }
+    } catch (error) {
 
-    catch (error) {
-
-        console.error(
-            "โหลดตู้เย็นไม่สำเร็จ:",
-            error
-        );
-
+        console.error("โหลดตู้เย็นไม่สำเร็จ:", error);
 
         if (select) {
-
-            select.innerHTML = `
-
-                <option value="">
-                    โหลดตู้เย็นไม่สำเร็จ
-                </option>
-
-            `;
-
+            select.innerHTML = `<option value="">โหลดตู้เย็นไม่สำเร็จ</option>`;
         }
 
-
-        currentFridge =
-            null;
-
-
-        currentFridgeRole =
-            null;
-
+        currentFridge = null;
+        currentFridgeRole = null;
 
         updateRenameUI();
 
-
-        /*
-         * ไม่เรียก refreshAll() ซ้ำตรงนี้
-         * เพื่อไม่ให้เกิด loop เมื่อ loadFridges พัง
-         */
-
+        /* ไม่เรียก refreshAll() ซ้ำตรงนี้ เพื่อไม่ให้เกิด loop เมื่อ loadFridges พัง */
     }
-
 }
 
 
@@ -1752,89 +702,43 @@ async function loadFridges(
    SWITCH FRIDGE
 ===================================================== */
 
-async function switchFridge(
-    fridgeId
-) {
+async function switchFridge(fridgeId) {
 
-    const selected =
-        fridgeList.find(
-            fridge =>
-                String(
-                    fridge.fridge_id
-                ) ===
-                String(
-                    fridgeId
-                )
-        );
-
+    const selected = fridgeList.find(
+        fridge => String(fridge.fridge_id) === String(fridgeId)
+    );
 
     if (!selected) {
-
         return;
-
     }
 
-
-    currentFridge =
-        selected;
-
+    currentFridge = selected;
 
     localStorage.setItem(
         CURRENT_FRIDGE_STORAGE_KEY,
-        String(
-            currentFridge.fridge_id
-        )
+        String(currentFridge.fridge_id)
     );
 
-
-    const {
-        data,
-        error
-    } =
-        await sb
-            .from("fridge_members")
-            .select("role")
-            .eq(
-                "fridge_id",
-                currentFridge.fridge_id
-            )
-            .eq(
-                "user_id",
-                appUser.user_id
-            )
-            .eq(
-                "status",
-                "active"
-            )
-            .maybeSingle();
-
+    const { data, error } = await sb
+        .from("fridge_members")
+        .select("role")
+        .eq("fridge_id", currentFridge.fridge_id)
+        .eq("user_id", appUser.user_id)
+        .eq("status", "active")
+        .maybeSingle();
 
     if (error) {
-
-        console.warn(
-            "ตรวจสิทธิ์ตู้เย็นไม่สำเร็จ:",
-            error
-        );
-
+        console.warn("ตรวจสิทธิ์ตู้เย็นไม่สำเร็จ:", error);
     }
 
-
-    currentFridgeRole =
-        data?.role ||
-        null;
-
+    currentFridgeRole = data?.role || null;
 
     $("fridge-role-text").textContent =
-        `สิทธิ์ของฉัน: ${roleText(
-            currentFridgeRole
-        )}`;
-
+        `สิทธิ์ของฉัน: ${roleText(currentFridgeRole)}`;
 
     updateRenameUI();
 
-
     await refreshAll();
-
 }
 
 
@@ -1842,133 +746,60 @@ async function switchFridge(
    CREATE FRIDGE
 ===================================================== */
 
-async function handleCreateFridge(
-    event
-) {
+async function handleCreateFridge(event) {
 
     event.preventDefault();
 
+    const input = $("create-fridge-name");
+    const button = $("create-fridge-submit");
 
-    const input =
-        $("create-fridge-name");
-
-
-    const button =
-        $("create-fridge-submit");
-
-
-    const name =
-        String(
-            input?.value ||
-            ""
-        )
-        .trim();
-
+    const name = String(input?.value || "").trim();
 
     if (!name) {
-
-        showBoxMessage(
-            "create-fridge-message",
-            "กรุณาระบุชื่อตู้เย็น"
-        );
-
+        showBoxMessage("create-fridge-message", "กรุณาระบุชื่อตู้เย็น");
         return;
-
     }
 
-
-    button.disabled =
-        true;
-
-
-    button.textContent =
-        "กำลังสร้าง...";
-
+    button.disabled = true;
+    button.textContent = "กำลังสร้าง...";
 
     try {
 
-        const {
-            data,
-            error
-        } =
-            await sb.rpc(
-                "create_fridge",
-                {
-                    p_fridge_name:
-                        name
-                }
-            );
-
+        const { data, error } = await sb.rpc("create_fridge", {
+            p_fridge_name: name
+        });
 
         if (error) {
-
             throw error;
-
         }
-
 
         if (!data) {
-
-            throw new Error(
-                "ไม่พบ fridge_id ของตู้ที่สร้าง"
-            );
-
+            throw new Error("ไม่พบ fridge_id ของตู้ที่สร้าง");
         }
 
+        localStorage.setItem(CURRENT_FRIDGE_STORAGE_KEY, String(data));
 
-        localStorage.setItem(
-            CURRENT_FRIDGE_STORAGE_KEY,
-            String(data)
-        );
+        input.value = "";
 
+        showBoxMessage("create-fridge-message", "สร้างตู้เย็นเรียบร้อยแล้ว", true);
 
-        input.value =
-            "";
+        await loadFridges(String(data));
 
+    } catch (error) {
 
-        showBoxMessage(
-            "create-fridge-message",
-            "สร้างตู้เย็นเรียบร้อยแล้ว",
-            true
-        );
-
-
-        await loadFridges(
-            String(data)
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "สร้างตู้เย็นไม่สำเร็จ:",
-            error
-        );
-
+        console.error("สร้างตู้เย็นไม่สำเร็จ:", error);
 
         showBoxMessage(
             "create-fridge-message",
-            "สร้างตู้เย็นไม่สำเร็จ: " +
-            (
-                error?.message ||
-                "เกิดข้อผิดพลาด"
-            )
+            "สร้างตู้เย็นไม่สำเร็จ: " + (error?.message || "เกิดข้อผิดพลาด")
         );
 
-    }
+    } finally {
 
-    finally {
-
-        button.disabled =
-            false;
-
-
-        button.textContent =
-            "+ สร้างตู้เย็น";
+        button.disabled = false;
+        button.textContent = "+ สร้างตู้เย็น";
 
     }
-
 }
 
 
@@ -1976,29 +807,16 @@ async function handleCreateFridge(
    RENAME FRIDGE
 ===================================================== */
 
-async function renameCurrentFridge(
-    event
-) {
+async function renameCurrentFridge(event) {
 
     event.preventDefault();
 
-
     if (!currentFridge) {
-
-        showBoxMessage(
-            "rename-fridge-message",
-            "ยังไม่มีตู้เย็น"
-        );
-
+        showBoxMessage("rename-fridge-message", "ยังไม่มีตู้เย็น");
         return;
-
     }
 
-
-    /*
-     * OWNER ร่วมทุกคนสามารถเปลี่ยนชื่อได้
-     */
-
+    /* OWNER ร่วมทุกคนสามารถเปลี่ยนชื่อได้ */
     if (!isOwner()) {
 
         showBoxMessage(
@@ -2006,168 +824,73 @@ async function renameCurrentFridge(
             "เฉพาะเจ้าของตู้เท่านั้นที่สามารถเปลี่ยนชื่อได้"
         );
 
-
         updateRenameUI();
 
-
         return;
-
     }
 
+    const input = $("rename-fridge-name");
+    const button = $("rename-fridge-submit");
 
-    const input =
-        $("rename-fridge-name");
-
-
-    const button =
-        $("rename-fridge-submit");
-
-
-    const name =
-        String(
-            input?.value ||
-            ""
-        )
-        .trim();
-
+    const name = String(input?.value || "").trim();
 
     if (!name) {
-
-        showBoxMessage(
-            "rename-fridge-message",
-            "กรุณาระบุชื่อตู้เย็น"
-        );
-
+        showBoxMessage("rename-fridge-message", "กรุณาระบุชื่อตู้เย็น");
         return;
-
     }
-
 
     if (name.length > 100) {
-
-        showBoxMessage(
-            "rename-fridge-message",
-            "ชื่อตู้เย็นยาวเกิน 100 ตัวอักษร"
-        );
-
+        showBoxMessage("rename-fridge-message", "ชื่อตู้เย็นยาวเกิน 100 ตัวอักษร");
         return;
-
     }
 
-
-    button.disabled =
-        true;
-
-
-    button.textContent =
-        "กำลังบันทึก...";
-
+    button.disabled = true;
+    button.textContent = "กำลังบันทึก...";
 
     try {
 
-        const {
-            data,
-            error
-        } =
-            await sb
-                .from("fridges")
-                .update({
-                    fridge_name:
-                        name
-                })
-                .eq(
-                    "fridge_id",
-                    currentFridge.fridge_id
-                )
-                .select(
-                    "fridge_id, fridge_name, created_by, created_at"
-                )
-                .maybeSingle();
-
+        const { data, error } = await sb
+            .from("fridges")
+            .update({ fridge_name: name })
+            .eq("fridge_id", currentFridge.fridge_id)
+            .select("fridge_id, fridge_name, created_by, created_at")
+            .maybeSingle();
 
         if (error) {
-
             throw error;
-
         }
-
 
         if (!data) {
-
-            throw new Error(
-                "ไม่สามารถเปลี่ยนชื่อตู้ได้ หรือคุณไม่มีสิทธิ์"
-            );
-
+            throw new Error("ไม่สามารถเปลี่ยนชื่อตู้ได้ หรือคุณไม่มีสิทธิ์");
         }
 
+        currentFridge = data;
 
-        currentFridge =
-            data;
-
-
-        const index =
-            fridgeList.findIndex(
-                fridge =>
-                    String(
-                        fridge.fridge_id
-                    ) ===
-                    String(
-                        data.fridge_id
-                    )
-            );
-
+        const index = fridgeList.findIndex(
+            fridge => String(fridge.fridge_id) === String(data.fridge_id)
+        );
 
         if (index >= 0) {
-
-            fridgeList[index] =
-                data;
-
+            fridgeList[index] = data;
         }
 
-
-        const select =
-            $("fridge-select");
-
+        const select = $("fridge-select");
 
         if (select) {
 
-            select.innerHTML =
-                "";
+            select.innerHTML = "";
 
+            fridgeList.forEach(fridge => {
+                const option = document.createElement("option");
+                option.value = fridge.fridge_id;
+                option.textContent = fridge.fridge_name;
+                select.appendChild(option);
+            });
 
-            fridgeList.forEach(
-                fridge => {
-
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
-
-
-                    option.value =
-                        fridge.fridge_id;
-
-
-                    option.textContent =
-                        fridge.fridge_name;
-
-
-                    select.appendChild(
-                        option
-                    );
-
-                }
-            );
-
-
-            select.value =
-                data.fridge_id;
-
+            select.value = data.fridge_id;
         }
 
-
         updateRenameUI();
-
 
         showBoxMessage(
             "rename-fridge-message",
@@ -2175,41 +898,23 @@ async function renameCurrentFridge(
             true
         );
 
-
         await refreshAll();
 
-    }
+    } catch (error) {
 
-    catch (error) {
-
-        console.error(
-            "เปลี่ยนชื่อตู้เย็นไม่สำเร็จ:",
-            error
-        );
-
+        console.error("เปลี่ยนชื่อตู้เย็นไม่สำเร็จ:", error);
 
         showBoxMessage(
             "rename-fridge-message",
-            "เปลี่ยนชื่อตู้เย็นไม่สำเร็จ: " +
-            (
-                error?.message ||
-                "เกิดข้อผิดพลาด"
-            )
+            "เปลี่ยนชื่อตู้เย็นไม่สำเร็จ: " + (error?.message || "เกิดข้อผิดพลาด")
         );
 
-    }
+    } finally {
 
-    finally {
-
-        button.disabled =
-            !isOwner();
-
-
-        button.textContent =
-            "บันทึกชื่อ";
+        button.disabled = !isOwner();
+        button.textContent = "บันทึกชื่อ";
 
     }
-
 }
 
 
@@ -2219,248 +924,88 @@ async function renameCurrentFridge(
 
 async function loadFridgeOwners() {
 
-    const container =
-        $("fridge-owners-list");
-
+    const container = $("fridge-owners-list");
 
     if (!container) {
-
         return;
-
     }
-
 
     if (!currentFridge) {
-
-        container.innerHTML = `
-
-            <div class="settings-empty">
-                ยังไม่มีตู้เย็น
-            </div>
-
-        `;
-
+        container.innerHTML = `<div class="settings-empty">ยังไม่มีตู้เย็น</div>`;
         return;
-
     }
-
 
     try {
 
-        const {
-            data: members,
-            error: memberError
-        } =
-            await sb
-                .from("fridge_members")
-                .select(
-                    "user_id, role, status, joined_at"
-                )
-                .eq(
-                    "fridge_id",
-                    currentFridge.fridge_id
-                )
-                .eq(
-                    "role",
-                    "owner"
-                )
-                .eq(
-                    "status",
-                    "active"
-                )
-                .order(
-                    "joined_at",
-                    {
-                        ascending:
-                            true
-                    }
-                );
-
+        const { data: members, error: memberError } = await sb
+            .from("fridge_members")
+            .select("user_id, role, status, joined_at")
+            .eq("fridge_id", currentFridge.fridge_id)
+            .eq("role", "owner")
+            .eq("status", "active")
+            .order("joined_at", { ascending: true });
 
         if (memberError) {
-
             throw memberError;
-
         }
 
-
-        const rows =
-            members || [];
-
+        const rows = members || [];
 
         if (!rows.length) {
-
-            container.innerHTML = `
-
-                <div class="settings-empty">
-                    ยังไม่พบเจ้าของตู้เย็น
-                </div>
-
-            `;
-
+            container.innerHTML = `<div class="settings-empty">ยังไม่พบเจ้าของตู้เย็น</div>`;
             return;
-
         }
 
+        const ownerIds = [
+            ...new Set(rows.map(row => row.user_id).filter(Boolean))
+        ];
 
-        const ownerIds =
-            [
-                ...new Set(
-                    rows
-                        .map(
-                            row =>
-                                row.user_id
-                        )
-                        .filter(Boolean)
-                )
-            ];
-
-
-        const {
-            data: users,
-            error: userError
-        } =
-            await sb
-                .from("users")
-                .select(
-                    "user_id, user_email"
-                )
-                .in(
-                    "user_id",
-                    ownerIds
-                );
-
+        const { data: users, error: userError } = await sb
+            .from("users")
+            .select("user_id, user_email")
+            .in("user_id", ownerIds);
 
         if (userError) {
-
             throw userError;
-
         }
 
-
-        const userMap =
-            new Map(
-                (users || [])
-                    .map(
-                        user => [
-
-                            String(
-                                user.user_id
-                            ),
-
-                            user.user_email
-
-                        ]
-                    )
-            );
-
-
-        container.innerHTML =
-            rows
-                .map(
-                    row => {
-
-                        let email =
-                            userMap.get(
-                                String(
-                                    row.user_id
-                                )
-                            );
-
-
-                        if (
-                            !email &&
-                            String(
-                                row.user_id
-                            ) ===
-                            String(
-                                appUser?.user_id
-                            )
-                        ) {
-
-                            email =
-                                authUser?.email ||
-                                "-";
-
-                        }
-
-
-                        email =
-                            email ||
-                            "ไม่พบอีเมล";
-
-
-                        return `
-
-                            <div class="member-row">
-
-                                <div
-                                    class="flex items-center gap-3 min-w-0"
-                                >
-
-                                    <div
-                                        class="member-avatar"
-                                    >
-                                        👤
-                                    </div>
-
-
-                                    <div
-                                        class="min-w-0"
-                                    >
-
-                                        <p
-                                            class="text-sm font-semibold text-slate-800 truncate"
-                                            title="${escapeHtml(
-                                                email
-                                            )}"
-                                        >
-
-                                            📧
-                                            ${escapeHtml(
-                                                email
-                                            )}
-
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-
-                                <span
-                                    class="role-badge owner"
-                                >
-
-                                    👑 Owner
-
-                                </span>
-
-                            </div>
-
-                        `;
-
-                    }
-                )
-                .join("");
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "โหลด Email Owner ไม่สำเร็จ:",
-            error
+        const userMap = new Map(
+            (users || []).map(user => [String(user.user_id), user.user_email])
         );
 
+        container.innerHTML = rows.map(row => {
 
-        setError(
-            "fridge-owners-list",
-            error
-        );
+            let email = userMap.get(String(row.user_id));
+
+            if (!email && String(row.user_id) === String(appUser?.user_id)) {
+                email = authUser?.email || "-";
+            }
+
+            email = email || "ไม่พบอีเมล";
+
+            return `
+                <div class="member-row">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="member-avatar">👤</div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-slate-800 truncate" title="${escapeHtml(email)}">
+                                📧 ${escapeHtml(email)}
+                            </p>
+                        </div>
+                    </div>
+                    <span class="role-badge owner">👑 Owner</span>
+                </div>
+            `;
+
+        }).join("");
+
+    } catch (error) {
+
+        console.error("โหลด Email Owner ไม่สำเร็จ:", error);
+
+        setError("fridge-owners-list", error);
 
     }
-
 }
 
 
@@ -2470,595 +1015,215 @@ async function loadFridgeOwners() {
 
 async function loadMembers() {
 
-    const container =
-        $("members-list");
-
+    const container = $("members-list");
 
     if (!currentFridge) {
-
-        container.innerHTML = `
-
-            <div class="settings-empty">
-                ยังไม่มีตู้เย็น
-            </div>
-
-        `;
-
+        container.innerHTML = `<div class="settings-empty">ยังไม่มีตู้เย็น</div>`;
         return;
-
     }
-
 
     try {
 
-        const {
-            data: members,
-            error
-        } =
-            await sb
-                .from("fridge_members")
-                .select(
-                    "fridge_member_id, fridge_id, user_id, role, status, joined_at"
-                )
-                .eq(
-                    "fridge_id",
-                    currentFridge.fridge_id
-                )
-                .eq(
-                    "status",
-                    "active"
-                )
-                .order(
-                    "joined_at",
-                    {
-                        ascending:
-                            true
-                    }
-                );
-
+        const { data: members, error } = await sb
+            .from("fridge_members")
+            .select("fridge_member_id, fridge_id, user_id, role, status, joined_at")
+            .eq("fridge_id", currentFridge.fridge_id)
+            .eq("status", "active")
+            .order("joined_at", { ascending: true });
 
         if (error) {
-
             throw error;
-
         }
 
-
-        const rows =
-            members || [];
-
+        const rows = members || [];
 
         if (!rows.length) {
-
-            container.innerHTML = `
-
-                <div class="settings-empty">
-                    ยังไม่มีสมาชิก
-                </div>
-
-            `;
-
+            container.innerHTML = `<div class="settings-empty">ยังไม่มีสมาชิก</div>`;
             return;
-
         }
 
+        const ids = [
+            ...new Set(rows.map(row => row.user_id).filter(Boolean))
+        ];
 
-        const ids =
-            [
-                ...new Set(
-                    rows
-                        .map(
-                            row =>
-                                row.user_id
-                        )
-                        .filter(Boolean)
-                )
-            ];
-
-
-        let users =
-            [];
-
+        let users = [];
 
         if (ids.length) {
 
-            const {
-                data,
-                error: userError
-            } =
-                await sb
-                    .from("users")
-                    .select(
-                        "user_id, name, user_email"
-                    )
-                    .in(
-                        "user_id",
-                        ids
-                    );
-
+            const { data, error: userError } = await sb
+                .from("users")
+                .select("user_id, name, user_email")
+                .in("user_id", ids);
 
             if (userError) {
-
                 throw userError;
-
             }
 
-
-            users =
-                data || [];
-
+            users = data || [];
         }
 
+        const userMap = new Map(
+            users.map(user => [String(user.user_id), user])
+        );
 
-        const userMap =
-            new Map(
-                users.map(
-                    user => [
+        container.innerHTML = rows.map(member => {
 
-                        String(
-                            user.user_id
-                        ),
+            const user = userMap.get(String(member.user_id));
 
-                        user
+            const isMe = String(member.user_id) === String(appUser.user_id);
 
-                    ]
-                )
-            );
+            /* ถ้ามีชื่อใช้ชื่อ ถ้าไม่มีชื่อใช้อีเมล ไม่ใช้ "ไม่ทราบชื่อ" */
+            const email =
+                user?.user_email ||
+                (isMe ? (authUser?.email || "ไม่พบอีเมล") : "ไม่พบอีเมล");
 
+            const name = user?.name || email;
 
-        container.innerHTML =
-            rows
-                .map(
-                    member => {
+            const canManage = isOwner() && !isMe;
 
-                        const user =
-                            userMap.get(
-                                String(
-                                    member.user_id
-                                )
-                            );
+            return `
+                <div class="member-row">
 
+                    <div class="flex items-center gap-3 min-w-0">
 
-                        const isMe =
-                            String(
-                                member.user_id
-                            ) ===
-                            String(
-                                appUser.user_id
-                            );
+                        <div class="member-avatar">
+                            ${escapeHtml(String(name).charAt(0).toUpperCase())}
+                        </div>
 
+                        <div class="min-w-0">
 
-                        /*
-                         * ถ้ามีชื่อใช้ชื่อ
-                         * ถ้าไม่มีชื่อใช้อีเมล
-                         * ไม่ใช้ "ไม่ทราบชื่อ"
-                         */
-
-                        const email =
-                            user?.user_email ||
-                            (
-                                isMe
-                                    ? (
-                                        authUser?.email ||
-                                        "ไม่พบอีเมล"
-                                    )
-                                    : "ไม่พบอีเมล"
-                            );
-
-
-                        const name =
-                            user?.name ||
-                            email;
-
-
-                        const canManage =
-                            isOwner() &&
-                            !isMe;
-
-
-                        return `
-
-                            <div class="member-row">
-
-                                <div
-                                    class="flex items-center gap-3 min-w-0"
-                                >
-
-                                    <div
-                                        class="member-avatar"
-                                    >
-
-                                        ${escapeHtml(
-                                            String(
-                                                name
-                                            )
-                                                .charAt(0)
-                                                .toUpperCase()
-                                        )}
-
-                                    </div>
-
-
-                                    <div
-                                        class="min-w-0"
-                                    >
-
-                                        <div
-                                            class="flex items-center gap-2"
-                                        >
-
-                                            <p
-                                                class="text-sm font-semibold text-slate-800 truncate"
-                                                title="${escapeHtml(
-                                                    email
-                                                )}"
-                                            >
-
-                                                ${escapeHtml(
-                                                    name
-                                                )}
-
-                                            </p>
-
-
-                                            ${
-                                                isMe
-
-                                                    ? `
-
-                                                        <span
-                                                            class="text-[9px] px-1.5 py-0.5 rounded-md bg-violet-50 text-violet-600 font-semibold"
-                                                        >
-
-                                                            คุณ
-
-                                                        </span>
-
-                                                    `
-
-                                                    : ""
-
-                                            }
-
-                                        </div>
-
-
-                                        <p
-                                            class="text-xs text-slate-400 truncate"
-                                            title="${escapeHtml(
-                                                email
-                                            )}"
-                                        >
-
-                                            📧
-                                            ${escapeHtml(
-                                                email
-                                            )}
-
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div
-                                    class="flex items-center gap-2 shrink-0"
-                                >
-
-                                    ${
-                                        canManage
-
-                                            ? `
-
-                                                <select
-                                                    class="role-select"
-                                                    data-member-id="${escapeHtml(
-                                                        member.fridge_member_id
-                                                    )}"
-                                                >
-
-                                                    <option
-                                                        value="owner"
-                                                        ${
-                                                            member.role ===
-                                                            "owner"
-
-                                                                ? "selected"
-
-                                                                : ""
-                                                        }
-                                                    >
-
-                                                        เจ้าของตู้
-
-                                                    </option>
-
-
-                                                    <option
-                                                        value="editor"
-                                                        ${
-                                                            member.role ===
-                                                            "editor"
-
-                                                                ? "selected"
-
-                                                                : ""
-                                                        }
-                                                    >
-
-                                                        ดูและแก้ไข
-
-                                                    </option>
-
-
-                                                    <option
-                                                        value="viewer"
-                                                        ${
-                                                            member.role ===
-                                                            "viewer"
-
-                                                                ? "selected"
-
-                                                                : ""
-                                                        }
-                                                    >
-
-                                                        ดูอย่างเดียว
-
-                                                    </option>
-
-                                                </select>
-
-
-                                                <button
-                                                    type="button"
-                                                    class="member-delete-btn"
-                                                    data-member-id="${escapeHtml(
-                                                        member.fridge_member_id
-                                                    )}"
-                                                >
-
-                                                    ลบ
-
-                                                </button>
-
-                                            `
-
-                                            : `
-
-                                                <span
-                                                    class="role-badge ${roleClass(
-                                                        member.role
-                                                    )}"
-                                                >
-
-                                                    ${roleText(
-                                                        member.role
-                                                    )}
-
-                                                </span>
-
-                                            `
-
-                                    }
-
-                                </div>
-
+                            <div class="flex items-center gap-2">
+                                <p class="text-sm font-semibold text-slate-800 truncate" title="${escapeHtml(email)}">
+                                    ${escapeHtml(name)}
+                                </p>
+                                ${isMe
+                                    ? `<span class="text-[9px] px-1.5 py-0.5 rounded-md bg-violet-50 text-violet-600 font-semibold">คุณ</span>`
+                                    : ""}
                             </div>
 
-                        `;
+                            <p class="text-xs text-slate-400 truncate" title="${escapeHtml(email)}">
+                                📧 ${escapeHtml(email)}
+                            </p>
 
+                        </div>
+
+                    </div>
+
+                    <div class="flex items-center gap-2 shrink-0">
+                        ${canManage
+                            ? `
+                                <select class="role-select" data-member-id="${escapeHtml(member.fridge_member_id)}">
+                                    <option value="owner" ${member.role === "owner" ? "selected" : ""}>เจ้าของตู้</option>
+                                    <option value="editor" ${member.role === "editor" ? "selected" : ""}>ดูและแก้ไข</option>
+                                    <option value="viewer" ${member.role === "viewer" ? "selected" : ""}>ดูอย่างเดียว</option>
+                                </select>
+
+                                <button type="button" class="member-delete-btn" data-member-id="${escapeHtml(member.fridge_member_id)}">
+                                    ลบ
+                                </button>
+                            `
+                            : `
+                                <span class="role-badge ${roleClass(member.role)}">
+                                    ${roleText(member.role)}
+                                </span>
+                            `}
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
+
+        container.querySelectorAll(".role-select").forEach(select => {
+
+            select.addEventListener("change", async event => {
+
+                const memberId = event.target.dataset.memberId;
+                const role = event.target.value;
+
+                if (!["owner", "editor", "viewer"].includes(role)) {
+                    return;
+                }
+
+                if (!isOwner()) {
+                    alert("เฉพาะเจ้าของตู้เท่านั้นที่เปลี่ยนสิทธิ์ได้");
+                    await refreshAll();
+                    return;
+                }
+
+                try {
+
+                    const { error } = await sb
+                        .from("fridge_members")
+                        .update({ role: role })
+                        .eq("fridge_member_id", memberId)
+                        .eq("fridge_id", currentFridge.fridge_id);
+
+                    if (error) {
+                        throw error;
                     }
-                )
-                .join("");
 
+                    await refreshAll();
 
-        container
-            .querySelectorAll(
-                ".role-select"
-            )
-            .forEach(
-                select => {
+                } catch (error) {
 
-                    select.addEventListener(
-                        "change",
-                        async event => {
+                    alert("เปลี่ยนสิทธิ์ไม่สำเร็จ: " + error.message);
 
-                            const memberId =
-                                event.target
-                                    .dataset
-                                    .memberId;
-
-
-                            const role =
-                                event.target.value;
-
-
-                            if (
-                                ![
-                                    "owner",
-                                    "editor",
-                                    "viewer"
-                                ].includes(
-                                    role
-                                )
-                            ) {
-
-                                return;
-
-                            }
-
-
-                            if (!isOwner()) {
-
-                                alert(
-                                    "เฉพาะเจ้าของตู้เท่านั้นที่เปลี่ยนสิทธิ์ได้"
-                                );
-
-
-                                await refreshAll();
-
-
-                                return;
-
-                            }
-
-
-                            try {
-
-                                const {
-                                    error
-                                } =
-                                    await sb
-                                        .from(
-                                            "fridge_members"
-                                        )
-                                        .update({
-                                            role:
-                                                role
-                                        })
-                                        .eq(
-                                            "fridge_member_id",
-                                            memberId
-                                        )
-                                        .eq(
-                                            "fridge_id",
-                                            currentFridge.fridge_id
-                                        );
-
-
-                                if (error) {
-
-                                    throw error;
-
-                                }
-
-
-                                await refreshAll();
-
-                            }
-
-                            catch (error) {
-
-                                alert(
-                                    "เปลี่ยนสิทธิ์ไม่สำเร็จ: " +
-                                    error.message
-                                );
-
-
-                                await refreshAll();
-
-                            }
-
-                        }
-                    );
+                    await refreshAll();
 
                 }
-            );
 
+            });
 
-        container
-            .querySelectorAll(
-                ".member-delete-btn"
-            )
-            .forEach(
-                button => {
+        });
 
-                    button.addEventListener(
-                        "click",
-                        async event => {
+        container.querySelectorAll(".member-delete-btn").forEach(button => {
 
-                            if (!isOwner()) {
+            button.addEventListener("click", async event => {
 
-                                return;
+                if (!isOwner()) {
+                    return;
+                }
 
-                            }
+                const memberId = event.target.dataset.memberId;
 
+                if (!confirm("ต้องการลบสมาชิกคนนี้ออกจากตู้เย็นหรือไม่?")) {
+                    return;
+                }
 
-                            const memberId =
-                                event.target
-                                    .dataset
-                                    .memberId;
+                try {
 
+                    const { error } = await sb
+                        .from("fridge_members")
+                        .delete()
+                        .eq("fridge_member_id", memberId)
+                        .eq("fridge_id", currentFridge.fridge_id);
 
-                            if (
-                                !confirm(
-                                    "ต้องการลบสมาชิกคนนี้ออกจากตู้เย็นหรือไม่?"
-                                )
-                            ) {
+                    if (error) {
+                        throw error;
+                    }
 
-                                return;
+                    await refreshAll();
 
-                            }
+                } catch (error) {
 
+                    alert("ลบสมาชิกไม่สำเร็จ: " + error.message);
 
-                            try {
-
-                                const {
-                                    error
-                                } =
-                                    await sb
-                                        .from(
-                                            "fridge_members"
-                                        )
-                                        .delete()
-                                        .eq(
-                                            "fridge_member_id",
-                                            memberId
-                                        )
-                                        .eq(
-                                            "fridge_id",
-                                            currentFridge.fridge_id
-                                        );
-
-
-                                if (error) {
-
-                                    throw error;
-
-                                }
-
-
-                                await refreshAll();
-
-                            }
-
-                            catch (error) {
-
-                                alert(
-                                    "ลบสมาชิกไม่สำเร็จ: " +
-                                    error.message
-                                );
-
-
-                                await refreshAll();
-
-                            }
-
-                        }
-                    );
+                    await refreshAll();
 
                 }
-            );
+
+            });
+
+        });
+
+    } catch (error) {
+
+        console.error("โหลดสมาชิกไม่สำเร็จ:", error);
+
+        setError("members-list", error);
 
     }
-
-    catch (error) {
-
-        console.error(
-            "โหลดสมาชิกไม่สำเร็จ:",
-            error
-        );
-
-
-        setError(
-            "members-list",
-            error
-        );
-
-    }
-
 }
 
 
@@ -3068,283 +1233,117 @@ async function loadMembers() {
 
 async function loadSentInvitations() {
 
-    const container =
-        $("sent-invitations-list");
-
+    const container = $("sent-invitations-list");
 
     if (!currentFridge) {
-
-        container.innerHTML = `
-
-            <div class="settings-empty">
-                ยังไม่มีตู้เย็น
-            </div>
-
-        `;
-
+        container.innerHTML = `<div class="settings-empty">ยังไม่มีตู้เย็น</div>`;
         return;
-
     }
-
 
     try {
 
-        const {
-            data,
-            error
-        } =
-            await sb
-                .from("fridge_invitations")
-                .select(
-                    "invitation_id, invited_email, role, status, created_at"
-                )
-                .eq(
-                    "fridge_id",
-                    currentFridge.fridge_id
-                )
-                .eq(
-                    "invited_by",
-                    appUser.user_id
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending:
-                            false
-                    }
-                );
-
+        const { data, error } = await sb
+            .from("fridge_invitations")
+            .select("invitation_id, invited_email, role, status, created_at")
+            .eq("fridge_id", currentFridge.fridge_id)
+            .eq("invited_by", appUser.user_id)
+            .order("created_at", { ascending: false });
 
         if (error) {
-
             throw error;
-
         }
 
-
-        const rows =
-            data || [];
-
+        const rows = data || [];
 
         if (!rows.length) {
-
-            container.innerHTML = `
-
-                <div class="settings-empty">
-                    ยังไม่มีคำเชิญที่ส่งไป
-                </div>
-
-            `;
-
+            container.innerHTML = `<div class="settings-empty">ยังไม่มีคำเชิญที่ส่งไป</div>`;
             return;
-
         }
 
+        container.innerHTML = rows.map(inv => {
 
-        container.innerHTML =
-            rows
-                .map(
-                    inv => {
+            const statusText =
+                inv.status === "accepted" ? "ตอบรับแล้ว"
+                : inv.status === "rejected" ? "ปฏิเสธ"
+                : inv.status === "cancelled" ? "ยกเลิกแล้ว"
+                : "รอตอบรับ";
 
-                        const statusText =
+            return `
+                <div class="invitation-row">
 
-                            inv.status ===
-                            "accepted"
+                    <div class="min-w-0">
+                        <p class="text-sm font-semibold text-slate-700 truncate">
+                            ${escapeHtml(inv.invited_email)}
+                        </p>
+                        <p class="text-xs text-slate-400 mt-1">
+                            สิทธิ์: ${roleText(inv.role)}
+                        </p>
+                    </div>
 
-                                ? "ตอบรับแล้ว"
+                    <div class="flex items-center gap-2">
 
-                            : inv.status ===
-                              "rejected"
+                        <span class="invitation-status ${escapeHtml(inv.status)}">
+                            ${statusText}
+                        </span>
 
-                                ? "ปฏิเสธ"
+                        ${inv.status === "pending" && isOwner()
+                            ? `
+                                <button type="button" class="invitation-cancel-btn" data-id="${escapeHtml(inv.invitation_id)}">
+                                    ยกเลิก
+                                </button>
+                            `
+                            : ""}
 
-                            : inv.status ===
-                              "cancelled"
+                    </div>
 
-                                ? "ยกเลิกแล้ว"
+                </div>
+            `;
 
-                                : "รอตอบรับ";
+        }).join("");
 
+        container.querySelectorAll(".invitation-cancel-btn").forEach(button => {
 
-                        return `
+            button.addEventListener("click", async event => {
 
-                            <div class="invitation-row">
+                if (!isOwner()) {
+                    return;
+                }
 
-                                <div class="min-w-0">
+                if (!confirm("ต้องการยกเลิกคำเชิญนี้หรือไม่?")) {
+                    return;
+                }
 
-                                    <p
-                                        class="text-sm font-semibold text-slate-700 truncate"
-                                    >
+                try {
 
-                                        ${escapeHtml(
-                                            inv.invited_email
-                                        )}
+                    const { error } = await sb
+                        .from("fridge_invitations")
+                        .update({ status: "cancelled" })
+                        .eq("invitation_id", event.target.dataset.id)
+                        .eq("fridge_id", currentFridge.fridge_id);
 
-                                    </p>
-
-
-                                    <p
-                                        class="text-xs text-slate-400 mt-1"
-                                    >
-
-                                        สิทธิ์:
-                                        ${roleText(
-                                            inv.role
-                                        )}
-
-                                    </p>
-
-                                </div>
-
-
-                                <div
-                                    class="flex items-center gap-2"
-                                >
-
-                                    <span
-                                        class="invitation-status ${escapeHtml(
-                                            inv.status
-                                        )}"
-                                    >
-
-                                        ${statusText}
-
-                                    </span>
-
-
-                                    ${
-                                        inv.status ===
-                                        "pending" &&
-                                        isOwner()
-
-                                            ? `
-
-                                                <button
-                                                    type="button"
-                                                    class="invitation-cancel-btn"
-                                                    data-id="${escapeHtml(
-                                                        inv.invitation_id
-                                                    )}"
-                                                >
-
-                                                    ยกเลิก
-
-                                                </button>
-
-                                            `
-
-                                            : ""
-
-                                    }
-
-                                </div>
-
-                            </div>
-
-                        `;
-
+                    if (error) {
+                        throw error;
                     }
-                )
-                .join("");
 
+                    await loadSentInvitations();
 
-        container
-            .querySelectorAll(
-                ".invitation-cancel-btn"
-            )
-            .forEach(
-                button => {
+                } catch (error) {
 
-                    button.addEventListener(
-                        "click",
-                        async event => {
-
-                            if (!isOwner()) {
-
-                                return;
-
-                            }
-
-
-                            if (
-                                !confirm(
-                                    "ต้องการยกเลิกคำเชิญนี้หรือไม่?"
-                                )
-                            ) {
-
-                                return;
-
-                            }
-
-
-                            try {
-
-                                const {
-                                    error
-                                } =
-                                    await sb
-                                        .from(
-                                            "fridge_invitations"
-                                        )
-                                        .update({
-                                            status:
-                                                "cancelled"
-                                        })
-                                        .eq(
-                                            "invitation_id",
-                                            event.target
-                                                .dataset
-                                                .id
-                                        )
-                                        .eq(
-                                            "fridge_id",
-                                            currentFridge.fridge_id
-                                        );
-
-
-                                if (error) {
-
-                                    throw error;
-
-                                }
-
-
-                                await loadSentInvitations();
-
-                            }
-
-                            catch (error) {
-
-                                alert(
-                                    "ยกเลิกคำเชิญไม่สำเร็จ: " +
-                                    error.message
-                                );
-
-                            }
-
-                        }
-                    );
+                    alert("ยกเลิกคำเชิญไม่สำเร็จ: " + error.message);
 
                 }
-            );
+
+            });
+
+        });
+
+    } catch (error) {
+
+        console.error("โหลดคำเชิญที่ส่งไม่สำเร็จ:", error);
+
+        setError("sent-invitations-list", error);
 
     }
-
-    catch (error) {
-
-        console.error(
-            "โหลดคำเชิญที่ส่งไม่สำเร็จ:",
-            error
-        );
-
-
-        setError(
-            "sent-invitations-list",
-            error
-        );
-
-    }
-
 }
 
 
@@ -3354,547 +1353,197 @@ async function loadSentInvitations() {
 
 async function loadReceivedInvitations() {
 
-    const container =
-        $("received-invitations-list");
-
+    const container = $("received-invitations-list");
 
     try {
 
-        const email =
-            String(
-                authUser?.email ||
-                ""
-            )
-            .trim()
-            .toLowerCase();
-
+        const email = String(authUser?.email || "").trim().toLowerCase();
 
         if (!email) {
-
-            container.innerHTML = `
-
-                <div class="settings-empty">
-                    ไม่พบข้อมูลบัญชี
-                </div>
-
-            `;
-
+            container.innerHTML = `<div class="settings-empty">ไม่พบข้อมูลบัญชี</div>`;
             return;
-
         }
 
-
-        const {
-            data,
-            error
-        } =
-            await sb
-                .from("fridge_invitations")
-                .select(
-                    "invitation_id, fridge_id, invited_email, invited_by, role, status, created_at"
-                )
-                .eq(
-                    "invited_email",
-                    email
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending:
-                            false
-                    }
-                );
-
+        const { data, error } = await sb
+            .from("fridge_invitations")
+            .select("invitation_id, fridge_id, invited_email, invited_by, role, status, created_at")
+            .eq("invited_email", email)
+            .order("created_at", { ascending: false });
 
         if (error) {
-
             throw error;
-
         }
 
-
-        const rows =
-            data || [];
-
+        const rows = data || [];
 
         if (!rows.length) {
+            container.innerHTML = `<div class="settings-empty">ยังไม่มีคำเชิญที่ได้รับ</div>`;
+            return;
+        }
 
-            container.innerHTML = `
+        const fridgeIds = [
+            ...new Set(rows.map(row => row.fridge_id).filter(Boolean))
+        ];
 
-                <div class="settings-empty">
-                    ยังไม่มีคำเชิญที่ได้รับ
+        const inviterIds = [
+            ...new Set(rows.map(row => row.invited_by).filter(Boolean))
+        ];
+
+        const [fridgeResult, inviterResult] = await Promise.all([
+            sb.from("fridges").select("fridge_id, fridge_name").in("fridge_id", fridgeIds),
+            sb.from("users").select("user_id, name, user_email").in("user_id", inviterIds)
+        ]);
+
+        if (fridgeResult.error) {
+            throw fridgeResult.error;
+        }
+
+        if (inviterResult.error) {
+            throw inviterResult.error;
+        }
+
+        const fridgeMap = new Map(
+            (fridgeResult.data || []).map(fridge => [String(fridge.fridge_id), fridge])
+        );
+
+        const inviterMap = new Map(
+            (inviterResult.data || []).map(user => [String(user.user_id), user])
+        );
+
+        container.innerHTML = rows.map(inv => {
+
+            const fridge = fridgeMap.get(String(inv.fridge_id));
+            const inviter = inviterMap.get(String(inv.invited_by));
+
+            return `
+                <div class="invitation-row">
+
+                    <div class="min-w-0">
+
+                        <p class="text-sm font-semibold text-slate-700">
+                            ${escapeHtml(fridge?.fridge_name || "ตู้เย็น")}
+                        </p>
+
+                        <p class="text-xs text-slate-400 mt-1">
+                            เชิญโดย: ${escapeHtml(inviter?.name || inviter?.user_email || "ไม่พบอีเมล")}
+                        </p>
+
+                        <p class="text-xs text-slate-400 mt-1">
+                            สิทธิ์: ${roleText(inv.role)}
+                        </p>
+
+                    </div>
+
+                    ${inv.status === "pending"
+                        ? `
+                            <div class="flex gap-2 shrink-0">
+                                <button type="button" class="accept-invite-btn" data-id="${escapeHtml(inv.invitation_id)}">ยอมรับ</button>
+                                <button type="button" class="reject-invite-btn" data-id="${escapeHtml(inv.invitation_id)}">ปฏิเสธ</button>
+                            </div>
+                        `
+                        : `
+                            <span class="invitation-status ${escapeHtml(inv.status)}">
+                                ${inv.status === "accepted" ? "ตอบรับแล้ว"
+                                    : inv.status === "rejected" ? "ปฏิเสธแล้ว"
+                                    : "ยกเลิกแล้ว"}
+                            </span>
+                        `}
+
                 </div>
-
             `;
 
-            return;
+        }).join("");
 
-        }
+        container.querySelectorAll(".accept-invite-btn").forEach(button => {
 
+            button.addEventListener("click", async event => {
 
-        const fridgeIds =
-            [
-                ...new Set(
-                    rows
-                        .map(
-                            row =>
-                                row.fridge_id
-                        )
-                        .filter(Boolean)
-                )
-            ];
+                try {
 
+                    const invitationId = event.target.dataset.id;
 
-        const inviterIds =
-            [
-                ...new Set(
-                    rows
-                        .map(
-                            row =>
-                                row.invited_by
-                        )
-                        .filter(Boolean)
-                )
-            ];
+                    const { data, error } = await sb.rpc("accept_fridge_invitation", {
+                        p_invitation_id: invitationId
+                    });
 
-
-        const [
-            fridgeResult,
-            inviterResult
-        ] =
-            await Promise.all([
-
-                sb
-                    .from("fridges")
-                    .select(
-                        "fridge_id, fridge_name"
-                    )
-                    .in(
-                        "fridge_id",
-                        fridgeIds
-                    ),
-
-                sb
-                    .from("users")
-                    .select(
-                        "user_id, name, user_email"
-                    )
-                    .in(
-                        "user_id",
-                        inviterIds
-                    )
-
-            ]);
-
-
-        if (
-            fridgeResult.error
-        ) {
-
-            throw fridgeResult.error;
-
-        }
-
-
-        if (
-            inviterResult.error
-        ) {
-
-            throw inviterResult.error;
-
-        }
-
-
-        const fridgeMap =
-            new Map(
-                (fridgeResult.data || [])
-                    .map(
-                        fridge => [
-
-                            String(
-                                fridge.fridge_id
-                            ),
-
-                            fridge
-
-                        ]
-                    )
-            );
-
-
-        const inviterMap =
-            new Map(
-                (inviterResult.data || [])
-                    .map(
-                        user => [
-
-                            String(
-                                user.user_id
-                            ),
-
-                            user
-
-                        ]
-                    )
-            );
-
-
-        container.innerHTML =
-            rows
-                .map(
-                    inv => {
-
-                        const fridge =
-                            fridgeMap.get(
-                                String(
-                                    inv.fridge_id
-                                )
-                            );
-
-
-                        const inviter =
-                            inviterMap.get(
-                                String(
-                                    inv.invited_by
-                                )
-                            );
-
-
-                        return `
-
-                            <div class="invitation-row">
-
-                                <div class="min-w-0">
-
-                                    <p
-                                        class="text-sm font-semibold text-slate-700"
-                                    >
-
-                                        ${escapeHtml(
-                                            fridge?.fridge_name ||
-                                            "ตู้เย็น"
-                                        )}
-
-                                    </p>
-
-
-                                    <p
-                                        class="text-xs text-slate-400 mt-1"
-                                    >
-
-                                        เชิญโดย:
-                                        ${escapeHtml(
-                                            inviter?.name ||
-                                            inviter?.user_email ||
-                                            "ไม่พบอีเมล"
-                                        )}
-
-                                    </p>
-
-
-                                    <p
-                                        class="text-xs text-slate-400 mt-1"
-                                    >
-
-                                        สิทธิ์:
-                                        ${roleText(
-                                            inv.role
-                                        )}
-
-                                    </p>
-
-                                </div>
-
-
-                                ${
-                                    inv.status ===
-                                    "pending"
-
-                                        ? `
-
-                                            <div
-                                                class="flex gap-2 shrink-0"
-                                            >
-
-                                                <button
-                                                    type="button"
-                                                    class="accept-invite-btn"
-                                                    data-id="${escapeHtml(
-                                                        inv.invitation_id
-                                                    )}"
-                                                >
-
-                                                    ยอมรับ
-
-                                                </button>
-
-
-                                                <button
-                                                    type="button"
-                                                    class="reject-invite-btn"
-                                                    data-id="${escapeHtml(
-                                                        inv.invitation_id
-                                                    )}"
-                                                >
-
-                                                    ปฏิเสธ
-
-                                                </button>
-
-                                            </div>
-
-                                        `
-
-                                        : `
-
-                                            <span
-                                                class="invitation-status ${escapeHtml(
-                                                    inv.status
-                                                )}"
-                                            >
-
-                                                ${
-                                                    inv.status ===
-                                                    "accepted"
-
-                                                        ? "ตอบรับแล้ว"
-
-                                                        : inv.status ===
-                                                          "rejected"
-
-                                                            ? "ปฏิเสธแล้ว"
-
-                                                            : "ยกเลิกแล้ว"
-                                                }
-
-                                            </span>
-
-                                        `
-                                }
-
-                            </div>
-
-                        `;
-
+                    if (error) {
+                        throw error;
                     }
-                )
-                .join("");
 
+                    if (data === false) {
+                        throw new Error("ไม่สามารถรับคำเชิญได้");
+                    }
 
-        container
-            .querySelectorAll(
-                ".accept-invite-btn"
-            )
-            .forEach(
-                button => {
-
-                    button.addEventListener(
-                        "click",
-                        async event => {
-
-                            try {
-
-                                const invitationId =
-                                    event.target
-                                        .dataset
-                                        .id;
-
-
-                                const {
-                                    data,
-                                    error
-                                } =
-                                    await sb.rpc(
-                                        "accept_fridge_invitation",
-                                        {
-                                            p_invitation_id:
-                                                invitationId
-                                        }
-                                    );
-
-
-                                if (error) {
-
-                                    throw error;
-
-                                }
-
-
-                                if (
-                                    data ===
-                                    false
-                                ) {
-
-                                    throw new Error(
-                                        "ไม่สามารถรับคำเชิญได้"
-                                    );
-
-                                }
-
-
-                                const accepted =
-                                    rows.find(
-                                        row =>
-                                            String(
-                                                row.invitation_id
-                                            ) ===
-                                            String(
-                                                invitationId
-                                            )
-                                    );
-
-
-                                if (
-                                    accepted?.fridge_id
-                                ) {
-
-                                    localStorage.setItem(
-                                        CURRENT_FRIDGE_STORAGE_KEY,
-                                        String(
-                                            accepted.fridge_id
-                                        )
-                                    );
-
-                                }
-
-
-                                alert(
-                                    "เข้าร่วมตู้เย็นเรียบร้อยแล้ว"
-                                );
-
-
-                                await loadReceivedInvitations();
-
-
-                                await loadFridges(
-                                    accepted?.fridge_id ||
-                                    null
-                                );
-
-                            }
-
-                            catch (error) {
-
-                                console.error(
-                                    "รับคำเชิญไม่สำเร็จ:",
-                                    error
-                                );
-
-
-                                alert(
-                                    "รับคำเชิญไม่สำเร็จ: " +
-                                    (
-                                        error?.message ||
-                                        "เกิดข้อผิดพลาด"
-                                    )
-                                );
-
-                            }
-
-                        }
+                    const accepted = rows.find(
+                        row => String(row.invitation_id) === String(invitationId)
                     );
 
-                }
-            );
+                    if (accepted?.fridge_id) {
+                        localStorage.setItem(
+                            CURRENT_FRIDGE_STORAGE_KEY,
+                            String(accepted.fridge_id)
+                        );
+                    }
 
+                    alert("เข้าร่วมตู้เย็นเรียบร้อยแล้ว");
 
-        container
-            .querySelectorAll(
-                ".reject-invite-btn"
-            )
-            .forEach(
-                button => {
+                    await loadReceivedInvitations();
 
-                    button.addEventListener(
-                        "click",
-                        async event => {
+                    await loadFridges(accepted?.fridge_id || null);
 
-                            if (
-                                !confirm(
-                                    "ต้องการปฏิเสธคำเชิญนี้หรือไม่?"
-                                )
-                            ) {
+                } catch (error) {
 
-                                return;
+                    console.error("รับคำเชิญไม่สำเร็จ:", error);
 
-                            }
-
-
-                            try {
-
-                                const {
-                                    data,
-                                    error
-                                } =
-                                    await sb.rpc(
-                                        "reject_fridge_invitation",
-                                        {
-                                            p_invitation_id:
-                                                event.target
-                                                    .dataset
-                                                    .id
-                                        }
-                                    );
-
-
-                                if (error) {
-
-                                    throw error;
-
-                                }
-
-
-                                if (
-                                    data ===
-                                    false
-                                ) {
-
-                                    throw new Error(
-                                        "ไม่สามารถปฏิเสธคำเชิญได้"
-                                    );
-
-                                }
-
-
-                                await loadReceivedInvitations();
-
-                            }
-
-                            catch (error) {
-
-                                alert(
-                                    "ปฏิเสธคำเชิญไม่สำเร็จ: " +
-                                    (
-                                        error?.message ||
-                                        "เกิดข้อผิดพลาด"
-                                    )
-                                );
-
-                            }
-
-                        }
-                    );
+                    alert("รับคำเชิญไม่สำเร็จ: " + (error?.message || "เกิดข้อผิดพลาด"));
 
                 }
-            );
+
+            });
+
+        });
+
+        container.querySelectorAll(".reject-invite-btn").forEach(button => {
+
+            button.addEventListener("click", async event => {
+
+                if (!confirm("ต้องการปฏิเสธคำเชิญนี้หรือไม่?")) {
+                    return;
+                }
+
+                try {
+
+                    const { data, error } = await sb.rpc("reject_fridge_invitation", {
+                        p_invitation_id: event.target.dataset.id
+                    });
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    if (data === false) {
+                        throw new Error("ไม่สามารถปฏิเสธคำเชิญได้");
+                    }
+
+                    await loadReceivedInvitations();
+
+                } catch (error) {
+
+                    alert("ปฏิเสธคำเชิญไม่สำเร็จ: " + (error?.message || "เกิดข้อผิดพลาด"));
+
+                }
+
+            });
+
+        });
+
+    } catch (error) {
+
+        console.error("โหลดคำเชิญที่ได้รับไม่สำเร็จ:", error);
+
+        setError("received-invitations-list", error);
 
     }
-
-    catch (error) {
-
-        console.error(
-            "โหลดคำเชิญที่ได้รับไม่สำเร็จ:",
-            error
-        );
-
-
-        setError(
-            "received-invitations-list",
-            error
-        );
-
-    }
-
 }
 
 
@@ -3902,300 +1551,123 @@ async function loadReceivedInvitations() {
    INVITE
 ===================================================== */
 
-async function handleInvite(
-    event
-) {
+async function handleInvite(event) {
 
     event.preventDefault();
 
-
-    $("invite-message")
-        ?.classList
-        .add(
-            "hidden"
-        );
-
+    $("invite-message")?.classList.add("hidden");
 
     if (!currentFridge) {
-
-        showInviteMessage(
-            "ยังไม่มีตู้เย็น"
-        );
-
+        showInviteMessage("ยังไม่มีตู้เย็น");
         return;
-
     }
-
 
     if (!isOwner()) {
-
-        showInviteMessage(
-            "เฉพาะเจ้าของตู้เท่านั้นที่สามารถเชิญเพื่อนได้"
-        );
-
+        showInviteMessage("เฉพาะเจ้าของตู้เท่านั้นที่สามารถเชิญเพื่อนได้");
         return;
-
     }
 
+    const email = $("invite-email").value.trim().toLowerCase();
+    const role = $("invite-role").value;
 
-    const email =
-        $("invite-email")
-            .value
-            .trim()
-            .toLowerCase();
-
-
-    const role =
-        $("invite-role")
-            .value;
-
-
-    if (
-        ![
-            "owner",
-            "editor",
-            "viewer"
-        ].includes(
-            role
-        )
-    ) {
-
-        showInviteMessage(
-            "สิทธิ์ไม่ถูกต้อง"
-        );
-
+    if (!["owner", "editor", "viewer"].includes(role)) {
+        showInviteMessage("สิทธิ์ไม่ถูกต้อง");
         return;
-
     }
 
+    const myEmail = String(authUser?.email || "").trim().toLowerCase();
 
-    const myEmail =
-        String(
-            authUser?.email ||
-            ""
-        )
-        .trim()
-        .toLowerCase();
-
-
-    if (
-        email ===
-        myEmail
-    ) {
-
-        showInviteMessage(
-            "อีเมลนี้เป็นบัญชีที่กำลังเข้าสู่ระบบอยู่แล้ว"
-        );
-
+    if (email === myEmail) {
+        showInviteMessage("อีเมลนี้เป็นบัญชีที่กำลังเข้าสู่ระบบอยู่แล้ว");
         return;
-
     }
 
+    const button = $("invite-submit");
 
-    const button =
-        $("invite-submit");
-
-
-    button.disabled =
-        true;
-
-
-    button.textContent =
-        "กำลังส่ง...";
-
+    button.disabled = true;
+    button.textContent = "กำลังส่ง...";
 
     try {
 
-        const {
-            data: invitedUser,
-            error: userError
-        } =
-            await sb
-                .from("users")
-                .select(
-                    "user_id"
-                )
-                .eq(
-                    "user_email",
-                    email
-                )
-                .maybeSingle();
-
+        const { data: invitedUser, error: userError } = await sb
+            .from("users")
+            .select("user_id")
+            .eq("user_email", email)
+            .maybeSingle();
 
         if (userError) {
-
             throw userError;
-
         }
 
+        if (invitedUser?.user_id) {
 
-        if (
-            invitedUser?.user_id
-        ) {
-
-            const {
-                data: existingMember,
-                error: memberError
-            } =
-                await sb
-                    .from("fridge_members")
-                    .select(
-                        "fridge_member_id"
-                    )
-                    .eq(
-                        "fridge_id",
-                        currentFridge.fridge_id
-                    )
-                    .eq(
-                        "user_id",
-                        invitedUser.user_id
-                    )
-                    .maybeSingle();
-
-
-            if (memberError) {
-
-                throw memberError;
-
-            }
-
-
-            if (existingMember) {
-
-                throw new Error(
-                    "อีเมลนี้เป็นสมาชิกในตู้เย็นอยู่แล้ว"
-                );
-
-            }
-
-        }
-
-
-        const {
-            data: existingInvitation,
-            error: invitationError
-        } =
-            await sb
-                .from("fridge_invitations")
-                .select(
-                    "invitation_id"
-                )
-                .eq(
-                    "fridge_id",
-                    currentFridge.fridge_id
-                )
-                .eq(
-                    "invited_email",
-                    email
-                )
-                .eq(
-                    "status",
-                    "pending"
-                )
+            const { data: existingMember, error: memberError } = await sb
+                .from("fridge_members")
+                .select("fridge_member_id")
+                .eq("fridge_id", currentFridge.fridge_id)
+                .eq("user_id", invitedUser.user_id)
                 .maybeSingle();
 
+            if (memberError) {
+                throw memberError;
+            }
+
+            if (existingMember) {
+                throw new Error("อีเมลนี้เป็นสมาชิกในตู้เย็นอยู่แล้ว");
+            }
+        }
+
+        const { data: existingInvitation, error: invitationError } = await sb
+            .from("fridge_invitations")
+            .select("invitation_id")
+            .eq("fridge_id", currentFridge.fridge_id)
+            .eq("invited_email", email)
+            .eq("status", "pending")
+            .maybeSingle();
 
         if (invitationError) {
-
             throw invitationError;
-
         }
 
-
-        if (
-            existingInvitation
-        ) {
-
-            throw new Error(
-                "อีเมลนี้มีคำเชิญที่รอการตอบรับอยู่แล้ว"
-            );
-
+        if (existingInvitation) {
+            throw new Error("อีเมลนี้มีคำเชิญที่รอการตอบรับอยู่แล้ว");
         }
 
-
-        const {
-            error
-        } =
-            await sb
-                .from(
-                    "fridge_invitations"
-                )
-                .insert({
-
-                    fridge_id:
-                        currentFridge.fridge_id,
-
-                    invited_email:
-                        email,
-
-                    invited_by:
-                        appUser.user_id,
-
-                    role:
-                        role,
-
-                    status:
-                        "pending"
-
-                });
-
+        const { error } = await sb
+            .from("fridge_invitations")
+            .insert({
+                fridge_id: currentFridge.fridge_id,
+                invited_email: email,
+                invited_by: appUser.user_id,
+                role: role,
+                status: "pending"
+            });
 
         if (error) {
-
             throw error;
-
         }
 
+        $("invite-email").value = "";
+        $("invite-role").value = "viewer";
 
-        $("invite-email")
-            .value =
-            "";
-
-
-        $("invite-role")
-            .value =
-            "viewer";
-
-
-        showInviteMessage(
-            "ส่งคำเชิญเรียบร้อยแล้ว",
-            true
-        );
-
+        showInviteMessage("ส่งคำเชิญเรียบร้อยแล้ว", true);
 
         await loadSentInvitations();
 
-    }
+    } catch (error) {
 
-    catch (error) {
-
-        console.error(
-            "ส่งคำเชิญไม่สำเร็จ:",
-            error
-        );
-
+        console.error("ส่งคำเชิญไม่สำเร็จ:", error);
 
         showInviteMessage(
-            "ส่งคำเชิญไม่สำเร็จ: " +
-            (
-                error?.message ||
-                "เกิดข้อผิดพลาด"
-            )
+            "ส่งคำเชิญไม่สำเร็จ: " + (error?.message || "เกิดข้อผิดพลาด")
         );
 
-    }
+    } finally {
 
-    finally {
-
-        button.disabled =
-            false;
-
-
-        button.textContent =
-            "ส่งคำเชิญ";
+        button.disabled = false;
+        button.textContent = "ส่งคำเชิญ";
 
     }
-
 }
 
 
@@ -4205,322 +1677,126 @@ async function handleInvite(
 
 async function loadFoodAddedBy() {
 
-    const container =
-        $("food-added-list");
-
+    const container = $("food-added-list");
 
     if (!currentFridge) {
-
-        container.innerHTML = `
-
-            <div
-                class="settings-empty md:col-span-2"
-            >
-
-                ยังไม่มีตู้เย็น
-
-            </div>
-
-        `;
-
+        container.innerHTML = `<div class="settings-empty md:col-span-2">ยังไม่มีตู้เย็น</div>`;
         return;
-
     }
-
 
     try {
 
-        const {
-            data: foods,
-            error
-        } =
-            await sb
-                .from("food")
-                .select(
-                    "food_id, food_name, manu, location, quantity, import_date, export_date, status, added_by, user_id"
-                )
-                .eq(
-                    "fridge_id",
-                    currentFridge.fridge_id
-                )
-                .order(
-                    "export_date",
-                    {
-                        ascending:
-                            true
-                    }
-                );
-
+        const { data: foods, error } = await sb
+            .from("food")
+            .select("food_id, food_name, manu, location, quantity, import_date, export_date, status, added_by, user_id")
+            .eq("fridge_id", currentFridge.fridge_id)
+            .order("export_date", { ascending: true });
 
         if (error) {
-
             throw error;
-
         }
 
-
-        const rows =
-            foods || [];
-
+        const rows = foods || [];
 
         if (!rows.length) {
-
-            container.innerHTML = `
-
-                <div
-                    class="settings-empty md:col-span-2"
-                >
-
-                    ยังไม่มีรายการอาหารในตู้เย็นนี้
-
-                </div>
-
-            `;
-
+            container.innerHTML = `<div class="settings-empty md:col-span-2">ยังไม่มีรายการอาหารในตู้เย็นนี้</div>`;
             return;
-
         }
 
+        const ids = [
+            ...new Set(
+                rows.map(food => food.added_by || food.user_id).filter(Boolean)
+            )
+        ];
 
-        const ids =
-            [
-                ...new Set(
-                    rows
-                        .map(
-                            food =>
-                                food.added_by ||
-                                food.user_id
-                        )
-                        .filter(Boolean)
-                )
-            ];
-
-
-        let users =
-            [];
-
+        let users = [];
 
         if (ids.length) {
 
-            const {
-                data,
-                error: userError
-            } =
-                await sb
-                    .from("users")
-                    .select(
-                        "user_id, name, user_email"
-                    )
-                    .in(
-                        "user_id",
-                        ids
-                    );
-
+            const { data, error: userError } = await sb
+                .from("users")
+                .select("user_id, name, user_email")
+                .in("user_id", ids);
 
             if (userError) {
-
                 throw userError;
-
             }
 
-
-            users =
-                data || [];
-
+            users = data || [];
         }
 
-
-        const userMap =
-            new Map(
-                users.map(
-                    user => [
-
-                        String(
-                            user.user_id
-                        ),
-
-                        user
-
-                    ]
-                )
-            );
-
-
-        container.innerHTML =
-            rows
-                .map(
-                    food => {
-
-                        const addedById =
-                            food.added_by ||
-                            food.user_id;
-
-
-                        const person =
-                            userMap.get(
-                                String(
-                                    addedById
-                                )
-                            );
-
-
-                        const addedBy =
-                            person?.name ||
-                            person?.user_email ||
-                            (
-                                String(
-                                    addedById
-                                ) ===
-                                String(
-                                    appUser.user_id
-                                )
-
-                                    ? (
-                                        authUser?.email ||
-                                        "ฉัน"
-                                    )
-
-                                    : "ไม่พบอีเมล"
-                            );
-
-
-                        return `
-
-                            <div
-                                class="food-added-row"
-                            >
-
-                                <div
-                                    class="food-added-icon"
-                                >
-
-                                    ${getFoodIcon(
-                                        food.food_name
-                                    )}
-
-                                </div>
-
-
-                                <div
-                                    class="min-w-0 flex-1"
-                                >
-
-                                    <p
-                                        class="text-sm font-semibold text-slate-800 truncate"
-                                    >
-
-                                        ${escapeHtml(
-                                            food.food_name
-                                        )}
-
-                                    </p>
-
-
-                                    ${
-                                        food.manu
-
-                                            ? `
-
-                                                <p
-                                                    class="text-[11px] text-slate-400 mt-1 truncate"
-                                                >
-
-                                                    🏷️
-                                                    ${escapeHtml(
-                                                        food.manu
-                                                    )}
-
-                                                </p>
-
-                                            `
-
-                                            : ""
-
-                                    }
-
-
-                                    <div
-                                        class="flex flex-wrap gap-x-3 gap-y-1 mt-2"
-                                    >
-
-                                        <span
-                                            class="text-[10px] text-slate-500"
-                                        >
-
-                                            📍
-                                            ${escapeHtml(
-                                                food.location ||
-                                                "-"
-                                            )}
-
-                                        </span>
-
-
-                                        <span
-                                            class="text-[10px] text-slate-500"
-                                        >
-
-                                            🔢
-                                            ${Number(
-                                                food.quantity ||
-                                                0
-                                            )}
-
-                                        </span>
-
-
-                                        <span
-                                            class="text-[10px] text-slate-500"
-                                        >
-
-                                            📅
-                                            ${formatDate(
-                                                food.export_date
-                                            )}
-
-                                        </span>
-
-                                    </div>
-
-
-                                    <p
-                                        class="text-[10px] text-violet-600 font-semibold mt-2"
-                                    >
-
-                                        👤 เพิ่มโดย:
-                                        ${escapeHtml(
-                                            addedBy
-                                        )}
-
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                        `;
-
-                    }
-                )
-                .join("");
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "โหลดอาหารไม่สำเร็จ:",
-            error
+        const userMap = new Map(
+            users.map(user => [String(user.user_id), user])
         );
 
+        container.innerHTML = rows.map(food => {
 
-        setError(
-            "food-added-list",
-            error
-        );
+            const addedById = food.added_by || food.user_id;
+
+            const person = userMap.get(String(addedById));
+
+            const addedBy =
+                person?.name ||
+                person?.user_email ||
+                (String(addedById) === String(appUser.user_id)
+                    ? (authUser?.email || "ฉัน")
+                    : "ไม่พบอีเมล");
+
+            return `
+                <div class="food-added-row">
+
+                    <div class="food-added-icon">
+                        ${getFoodIcon(food.food_name)}
+                    </div>
+
+                    <div class="min-w-0 flex-1">
+
+                        <p class="text-sm font-semibold text-slate-800 truncate">
+                            ${escapeHtml(food.food_name)}
+                        </p>
+
+                        ${food.manu
+                            ? `
+                                <p class="text-[11px] text-slate-400 mt-1 truncate">
+                                    🏷️ ${escapeHtml(food.manu)}
+                                </p>
+                            `
+                            : ""}
+
+                        <div class="flex flex-wrap gap-x-3 gap-y-1 mt-2">
+
+                            <span class="text-[10px] text-slate-500">
+                                📍 ${escapeHtml(food.location || "-")}
+                            </span>
+
+                            <span class="text-[10px] text-slate-500">
+                                🔢 ${Number(food.quantity || 0)}
+                            </span>
+
+                            <span class="text-[10px] text-slate-500">
+                                📅 ${formatDate(food.export_date)}
+                            </span>
+
+                        </div>
+
+                        <p class="text-[10px] text-violet-600 font-semibold mt-2">
+                            👤 เพิ่มโดย: ${escapeHtml(addedBy)}
+                        </p>
+
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
+
+    } catch (error) {
+
+        console.error("โหลดอาหารไม่สำเร็จ:", error);
+
+        setError("food-added-list", error);
 
     }
-
 }
 
 
@@ -4528,82 +1804,22 @@ async function loadFoodAddedBy() {
    FOOD ICON
 ===================================================== */
 
-function getFoodIcon(
-    name
-) {
+function getFoodIcon(name) {
 
-    const value =
-        String(
-            name ||
-            ""
-        )
-        .toLowerCase();
+    const value = String(name || "").toLowerCase();
 
-
-    if (
-        value.includes("นม")
-    )
-        return "🥛";
-
-
-    if (
-        value.includes("ไข่")
-    )
-        return "🥚";
-
-
-    if (
-        value.includes("ชีส")
-    )
-        return "🧀";
-
-
-    if (
-        value.includes("ข้าว")
-    )
-        return "🍚";
-
-
-    if (
-        value.includes("ไก่")
-    )
-        return "🍗";
-
-
-    if (
-        value.includes("ปลา")
-    )
-        return "🐟";
-
-
-    if (
-        value.includes("แอปเปิ้ล") ||
-        value.includes("แอปเปิล")
-    )
-        return "🍎";
-
-
-    if (
-        value.includes("ผัก")
-    )
-        return "🥬";
-
-
-    if (
-        value.includes("โยเกิร์ต")
-    )
-        return "🥛";
-
-
-    if (
-        value.includes("ไอศกรีม") ||
-        value.includes("ไอติม")
-    )
-        return "🍦";
-
+    if (value.includes("นม")) return "🥛";
+    if (value.includes("ไข่")) return "🥚";
+    if (value.includes("ชีส")) return "🧀";
+    if (value.includes("ข้าว")) return "🍚";
+    if (value.includes("ไก่")) return "🍗";
+    if (value.includes("ปลา")) return "🐟";
+    if (value.includes("แอปเปิ้ล") || value.includes("แอปเปิล")) return "🍎";
+    if (value.includes("ผัก")) return "🥬";
+    if (value.includes("โยเกิร์ต")) return "🥛";
+    if (value.includes("ไอศกรีม") || value.includes("ไอติม")) return "🍦";
 
     return "🍽️";
-
 }
 
 
@@ -4611,50 +1827,23 @@ function getFoodIcon(
    DATE
 ===================================================== */
 
-function formatDate(
-    value
-) {
+function formatDate(value) {
 
     if (!value) {
-
         return "-";
-
     }
 
+    const date = new Date(`${value}T00:00:00`);
 
-    const date =
-        new Date(
-            `${value}T00:00:00`
-        );
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return String(
-            value
-        );
-
+    if (Number.isNaN(date.getTime())) {
+        return String(value);
     }
 
-
-    return date.toLocaleDateString(
-        "th-TH",
-        {
-            day:
-                "numeric",
-
-            month:
-                "short",
-
-            year:
-                "numeric"
-        }
-    );
-
+    return date.toLocaleDateString("th-TH", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+    });
 }
 
 
@@ -4665,31 +1854,19 @@ function formatDate(
 async function refreshAll() {
 
     if (!currentFridge) {
-
         updateRenameUI();
-
         return;
-
     }
-
 
     updateRenameUI();
 
-
     await Promise.allSettled([
-
         loadFridgeOwners(),
-
         loadMembers(),
-
         loadSentInvitations(),
-
         loadReceivedInvitations(),
-
         loadFoodAddedBy()
-
     ]);
-
 }
 
 
@@ -4700,196 +1877,87 @@ async function refreshAll() {
 async function setupRealtime() {
 
     if (!sb) {
-
         return;
-
     }
-
 
     if (realtimeChannel) {
 
         try {
-
-            await sb.removeChannel(
-                realtimeChannel
-            );
-
+            await sb.removeChannel(realtimeChannel);
+        } catch (error) {
+            console.warn("ลบ realtime channel เดิมไม่สำเร็จ:", error);
         }
 
-        catch (error) {
-
-            console.warn(
-                "ลบ realtime channel เดิมไม่สำเร็จ:",
-                error
-            );
-
-        }
-
-
-        realtimeChannel =
-            null;
-
+        realtimeChannel = null;
     }
 
+    realtimeChannel = sb
+        .channel(`tuyen-settings-${Date.now()}`)
 
-    realtimeChannel =
-        sb
-            .channel(
-                `tuyen-settings-${Date.now()}`
-            )
+        .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "fridges" },
+            async () => {
+                await loadFridges(currentFridge?.fridge_id || null);
+            }
+        )
 
+        .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "fridge_members" },
+            async payload => {
 
-            .on(
-                "postgres_changes",
-                {
-                    event:
-                        "*",
+                const changedFridgeId =
+                    payload?.new?.fridge_id ||
+                    payload?.old?.fridge_id ||
+                    null;
 
-                    schema:
-                        "public",
-
-                    table:
-                        "fridges"
-                },
-                async () => {
-
-                    await loadFridges(
-                        currentFridge?.fridge_id ||
-                        null
-                    );
-
+                if (
+                    !currentFridge ||
+                    (
+                        changedFridgeId &&
+                        String(changedFridgeId) !== String(currentFridge.fridge_id)
+                    )
+                ) {
+                    await loadFridges(currentFridge?.fridge_id || null);
+                    return;
                 }
-            )
 
+                await loadFridges(currentFridge.fridge_id);
+            }
+        )
 
-            .on(
-                "postgres_changes",
-                {
-                    event:
-                        "*",
+        .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "fridge_invitations" },
+            async () => {
+                await loadSentInvitations();
+                await loadReceivedInvitations();
+            }
+        )
 
-                    schema:
-                        "public",
+        .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "food" },
+            async payload => {
 
-                    table:
-                        "fridge_members"
-                },
-                async payload => {
+                const changedFridgeId =
+                    payload?.new?.fridge_id ||
+                    payload?.old?.fridge_id ||
+                    null;
 
-                    const changedFridgeId =
-                        payload?.new?.fridge_id ||
-                        payload?.old?.fridge_id ||
-                        null;
-
-
-                    if (
-                        !currentFridge ||
-
-                        (
-                            changedFridgeId &&
-
-                            String(
-                                changedFridgeId
-                            ) !==
-                            String(
-                                currentFridge.fridge_id
-                            )
-                        )
-                    ) {
-
-                        await loadFridges(
-                            currentFridge?.fridge_id ||
-                            null
-                        );
-
-
-                        return;
-
-                    }
-
-
-                    await loadFridges(
-                        currentFridge.fridge_id
-                    );
-
+                if (
+                    currentFridge &&
+                    String(changedFridgeId || "") === String(currentFridge.fridge_id)
+                ) {
+                    await loadFoodAddedBy();
                 }
-            )
+            }
+        )
 
-
-            .on(
-                "postgres_changes",
-                {
-                    event:
-                        "*",
-
-                    schema:
-                        "public",
-
-                    table:
-                        "fridge_invitations"
-                },
-                async () => {
-
-                    await loadSentInvitations();
-
-                    await loadReceivedInvitations();
-
-                }
-            )
-
-
-            .on(
-                "postgres_changes",
-                {
-                    event:
-                        "*",
-
-                    schema:
-                        "public",
-
-                    table:
-                        "food"
-                },
-                async payload => {
-
-                    const changedFridgeId =
-                        payload?.new?.fridge_id ||
-                        payload?.old?.fridge_id ||
-                        null;
-
-
-                    if (
-                        currentFridge &&
-
-                        String(
-                            changedFridgeId ||
-                            ""
-                        ) ===
-
-                        String(
-                            currentFridge.fridge_id
-                        )
-                    ) {
-
-                        await loadFoodAddedBy();
-
-                    }
-
-                }
-            )
-
-
-            .subscribe(
-                status => {
-
-                    console.log(
-                        "Settings realtime:",
-                        status
-                    );
-
-                }
-            );
-
+        .subscribe(status => {
+            console.log("Settings realtime:", status);
+        });
 }
 
 
@@ -4899,93 +1967,44 @@ async function setupRealtime() {
 
 function setupSearch() {
 
-    const searchInput =
-        $("search-food");
-
+    const searchInput = $("search-food");
 
     if (!searchInput) {
-
         return;
-
     }
 
+    searchInput.addEventListener("keydown", event => {
 
-    searchInput.addEventListener(
-        "keydown",
-        event => {
-
-            if (
-                event.key !==
-                "Enter"
-            ) {
-
-                return;
-
-            }
-
-
-            const keyword =
-                searchInput.value
-                    .trim()
-                    .toLowerCase();
-
-
-            if (!keyword) {
-
-                return;
-
-            }
-
-
-            const foodSection =
-                $("food-added-list");
-
-
-            if (!foodSection) {
-
-                return;
-
-            }
-
-
-            const found =
-                [
-                    ...foodSection.children
-                ].some(
-                    card =>
-                        card.textContent
-                            .toLowerCase()
-                            .includes(
-                                keyword
-                            )
-                );
-
-
-            if (found) {
-
-                foodSection.scrollIntoView({
-
-                    behavior:
-                        "smooth",
-
-                    block:
-                        "center"
-
-                });
-
-            }
-
-            else {
-
-                alert(
-                    "ไม่พบรายการอาหารที่ค้นหา"
-                );
-
-            }
-
+        if (event.key !== "Enter") {
+            return;
         }
-    );
 
+        const keyword = searchInput.value.trim().toLowerCase();
+
+        if (!keyword) {
+            return;
+        }
+
+        const foodSection = $("food-added-list");
+
+        if (!foodSection) {
+            return;
+        }
+
+        const found = [...foodSection.children].some(
+            card => card.textContent.toLowerCase().includes(keyword)
+        );
+
+        if (found) {
+            foodSection.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+        } else {
+            alert("ไม่พบรายการอาหารที่ค้นหา");
+        }
+
+    });
 }
 
 
@@ -5000,55 +2019,27 @@ async function logout() {
         if (realtimeChannel) {
 
             try {
-
-                await sb.removeChannel(
-                    realtimeChannel
-                );
-
+                await sb.removeChannel(realtimeChannel);
+            } catch (error) {
+                console.warn("ปิด realtime ไม่สำเร็จ:", error);
             }
 
-            catch (error) {
-
-                console.warn(
-                    "ปิด realtime ไม่สำเร็จ:",
-                    error
-                );
-
-            }
-
-
-            realtimeChannel =
-                null;
-
+            realtimeChannel = null;
         }
-
 
         await sb.auth.signOut();
 
-    }
+    } catch (error) {
 
-    catch (error) {
+        console.error("ออกจากระบบไม่สำเร็จ:", error);
 
-        console.error(
-            "ออกจากระบบไม่สำเร็จ:",
-            error
-        );
+    } finally {
 
-    }
+        localStorage.removeItem(CURRENT_FRIDGE_STORAGE_KEY);
 
-    finally {
-
-        localStorage.removeItem(
-            CURRENT_FRIDGE_STORAGE_KEY
-        );
-
-
-        location.replace(
-            "login.html"
-        );
+        location.replace("login.html");
 
     }
-
 }
 
 
@@ -5056,351 +2047,269 @@ async function logout() {
    STORAGE SYNC
 ===================================================== */
 
-window.addEventListener(
-    "storage",
-    async event => {
+window.addEventListener("storage", async event => {
 
-        if (
-            event.key !==
-            CURRENT_FRIDGE_STORAGE_KEY
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            !sb ||
-            !appUser
-        ) {
-
-            return;
-
-        }
-
-
-        try {
-
-            await loadFridges(
-                event.newValue ||
-                null
-            );
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "เปลี่ยนตู้ตามหน้าอื่นไม่สำเร็จ:",
-                error
-            );
-
-        }
-
+    if (event.key !== CURRENT_FRIDGE_STORAGE_KEY) {
+        return;
     }
-);
+
+    if (!sb || !appUser) {
+        return;
+    }
+
+    try {
+        await loadFridges(event.newValue || null);
+    } catch (error) {
+        console.error("เปลี่ยนตู้ตามหน้าอื่นไม่สำเร็จ:", error);
+    }
+
+});
 
 
 /* =====================================================
    VISIBILITY SYNC
 ===================================================== */
 
-document.addEventListener(
-    "visibilitychange",
-    async () => {
+document.addEventListener("visibilitychange", async () => {
 
-        if (
-            document.visibilityState !==
-            "visible"
-        ) {
+    if (document.visibilityState !== "visible") {
+        return;
+    }
 
-            return;
+    if (!sb || !appUser) {
+        return;
+    }
 
-        }
+    try {
 
+        await loadCurrentUser();
 
-        if (
-            !sb ||
-            !appUser
-        ) {
+        await loadFridges(localStorage.getItem(CURRENT_FRIDGE_STORAGE_KEY));
 
-            return;
+    } catch (error) {
 
-        }
-
-
-        try {
-
-            await loadCurrentUser();
-
-
-            await loadFridges(
-                localStorage.getItem(
-                    CURRENT_FRIDGE_STORAGE_KEY
-                )
-            );
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "รีเฟรช Settings ไม่สำเร็จ:",
-                error
-            );
-
-        }
+        console.error("รีเฟรช Settings ไม่สำเร็จ:", error);
 
     }
-);
+
+});
 
 
 /* =====================================================
    PAGE SHOW
 ===================================================== */
 
-window.addEventListener(
-    "pageshow",
-    async () => {
+window.addEventListener("pageshow", async () => {
 
-        if (
-            !sb ||
-            !appUser
-        ) {
-
-            return;
-
-        }
-
-
-        try {
-
-            await loadFridges(
-                localStorage.getItem(
-                    CURRENT_FRIDGE_STORAGE_KEY
-                )
-            );
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "โหลด Settings ตอนกลับเข้าหน้าไม่สำเร็จ:",
-                error
-            );
-
-        }
-
+    if (!sb || !appUser) {
+        return;
     }
-);
+
+    try {
+        await loadFridges(localStorage.getItem(CURRENT_FRIDGE_STORAGE_KEY));
+    } catch (error) {
+        console.error("โหลด Settings ตอนกลับเข้าหน้าไม่สำเร็จ:", error);
+    }
+
+});
 
 
 /* =====================================================
    INIT
 ===================================================== */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
-        $("create-fridge-form")
-            ?.addEventListener(
-                "submit",
-                handleCreateFridge
-            );
+    $("create-fridge-form")?.addEventListener("submit", handleCreateFridge);
 
+    $("rename-fridge-form")?.addEventListener("submit", renameCurrentFridge);
 
-        $("rename-fridge-form")
-            ?.addEventListener(
-                "submit",
-                renameCurrentFridge
-            );
+    $("fridge-select")?.addEventListener("change", event => {
+        switchFridge(event.target.value);
+    });
 
+    $("invite-form")?.addEventListener("submit", handleInvite);
 
-        $("fridge-select")
-            ?.addEventListener(
-                "change",
-                event => {
+    $("logout-btn")?.addEventListener("click", logout);
 
-                    switchFridge(
-                        event.target.value
-                    );
+    setupSearch();
 
-                }
-            );
+    try {
 
+        sb = getSB();
 
-        $("invite-form")
-            ?.addEventListener(
-                "submit",
-                handleInvite
-            );
+        const ok = await loadCurrentUser();
 
-
-        $("logout-btn")
-            ?.addEventListener(
-                "click",
-                logout
-            );
-
-
-        setupSearch();
-
-
-        try {
-
-            sb =
-                getSB();
-
-
-            const ok =
-                await loadCurrentUser();
-
-
-            if (!ok) {
-
-                return;
-
-            }
-
-
-            await loadFridges();
-
-
-            await setupRealtime();
-
+        if (!ok) {
+            return;
         }
 
-        catch (error) {
+        await loadFridges();
 
-            console.error(
-                "Settings initialization error:",
-                error
-            );
+        await setupRealtime();
 
+    } catch (error) {
 
-            const message =
-                error?.message ||
-                "เกิดข้อผิดพลาด";
+        console.error("Settings initialization error:", error);
 
+        const message = error?.message || "เกิดข้อผิดพลาด";
 
-            const currentUserEmail =
-                $("current-user-email");
+        const currentUserEmail = $("current-user-email");
+        const headerEmail = $("user-email");
 
-
-            const headerEmail =
-                $("user-email");
-
-
-            if (currentUserEmail) {
-
-                currentUserEmail.textContent =
-                    authUser?.email ||
-                    "เชื่อมต่อไม่สำเร็จ";
-
-            }
-
-
-            if (headerEmail) {
-
-                headerEmail.textContent =
-                    authUser?.email ||
-                    "...";
-
-            }
-
-
-            const select =
-                $("fridge-select");
-
-
-            if (select) {
-
-                select.innerHTML = `
-
-                    <option value="">
-                        โหลดตู้เย็นไม่สำเร็จ
-                    </option>
-
-                `;
-
-            }
-
-
-            setError(
-                "fridge-owners-list",
-                message
-            );
-
-
-            setError(
-                "members-list",
-                message
-            );
-
-
-            setError(
-                "sent-invitations-list",
-                message
-            );
-
-
-            setError(
-                "received-invitations-list",
-                message
-            );
-
-
-            setError(
-                "food-added-list",
-                message
-            );
-
+        if (currentUserEmail) {
+            currentUserEmail.textContent = authUser?.email || "เชื่อมต่อไม่สำเร็จ";
         }
+
+        if (headerEmail) {
+            headerEmail.textContent = authUser?.email || "...";
+        }
+
+        const select = $("fridge-select");
+
+        if (select) {
+            select.innerHTML = `<option value="">โหลดตู้เย็นไม่สำเร็จ</option>`;
+        }
+
+        setError("fridge-owners-list", message);
+        setError("members-list", message);
+        setError("sent-invitations-list", message);
+        setError("received-invitations-list", message);
+        setError("food-added-list", message);
 
     }
-);
+
+});
 
 
 /* =====================================================
    CLEANUP
 ===================================================== */
 
-window.addEventListener(
-    "beforeunload",
-    () => {
+window.addEventListener("beforeunload", () => {
 
-        if (!realtimeChannel) {
-
-            return;
-
-        }
-
-
-        try {
-
-            sb?.removeChannel(
-                realtimeChannel
-            );
-
-        }
-
-        catch (error) {
-
-            console.warn(
-                "ปิด realtime ไม่สำเร็จ:",
-                error
-            );
-
-        }
-
+    if (!realtimeChannel) {
+        return;
     }
-);
+
+    try {
+        sb?.removeChannel(realtimeChannel);
+    } catch (error) {
+        console.warn("ปิด realtime ไม่สำเร็จ:", error);
+    }
+
+});
 
 </script>
 
+<script>
+/* TUYEN: badge จำนวนแจ้งเตือน (หน้า Settings)
+ * นับจากฐานข้อมูลเหมือน notification.html และ app.js
+ *   = notify ที่ is_read = false และมี food_id
+ *   + คำเชิญใน fridge_invitations ที่ status = 'pending' ส่งถึงอีเมลของบัญชีนี้
+ */
+(function () {
+    let userId = null, userEmail = "", channel = null, timer = null;
+    let busy = false, again = false;
+
+    function escapeLike(v) {
+        return String(v ?? "").replace(/[\\%_]/g, "\\$&");
+    }
+
+    function render(count) {
+        const el = document.getElementById("tuyen-notification-count");
+        if (!el) return;
+        const total = Math.max(0, Number(count) || 0);
+        el.textContent = total > 99 ? "99+" : String(total);
+        el.hidden = total === 0;
+        el.setAttribute("aria-label", `มีการแจ้งเตือนที่ยังไม่ได้ดำเนินการ ${total} รายการ`);
+    }
+
+    async function resolveUser(client) {
+        const { data } = await client.auth.getSession();
+        const user = data?.session?.user;
+        if (!user) return null;
+        const email = String(user.email || "").trim();
+        let id = user.id;
+        if (email) {
+            const { data: db } = await client
+                .from("users").select("user_id").eq("user_email", email).maybeSingle();
+            if (db?.user_id) id = db.user_id;
+        }
+        return { id, email };
+    }
+
+    async function refresh() {
+        if (busy) { again = true; return; }
+        busy = true;
+        try {
+            do {
+                again = false;
+                const client = getSB();
+                const u = await resolveUser(client);
+                if (!u) { render(0); continue; }
+                if (String(u.id) !== String(userId)) {
+                    userId = u.id;
+                    userEmail = u.email;
+                    subscribe(client);
+                }
+
+                // แจ้งเตือนอาหารที่ยังไม่อ่าน
+                const notifyQuery = client
+                    .from("notify")
+                    .select("notify_id", { count: "exact", head: true })
+                    .eq("user_id", userId)
+                    .eq("is_read", false)
+                    .not("food_id", "is", null);
+
+                // คำเชิญที่ยังรอตอบรับ
+                const inviteQuery = userEmail
+                    ? client.from("fridge_invitations")
+                        .select("invitation_id", { count: "exact", head: true })
+                        .eq("status", "pending")
+                        .ilike("invited_email", escapeLike(userEmail))
+                    : Promise.resolve({ count: 0, error: null });
+
+                const [n, i] = await Promise.all([notifyQuery, inviteQuery]);
+                if (n.error) throw n.error;
+                if (i.error) console.warn("นับคำเชิญไม่สำเร็จ:", i.error.message);
+
+                render(Number(n.count ?? 0) + (i.error ? 0 : Number(i.count ?? 0)));
+            } while (again);
+        } catch (e) {
+            console.warn("อัปเดต badge แจ้งเตือนไม่สำเร็จ:", e?.message || e);
+        } finally { busy = false; }
+    }
+
+    function subscribe(client) {
+        if (channel) {
+            Promise.resolve(client.removeChannel(channel)).catch(() => {});
+            channel = null;
+        }
+        channel = client
+            .channel(`tuyen-badge-${userId}`)
+            .on("postgres_changes", { event: "*", schema: "public", table: "notify" }, refresh)
+            .on("postgres_changes", { event: "*", schema: "public", table: "fridge_invitations" }, refresh)
+            .subscribe();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        refresh();
+        timer = setInterval(() => {
+            if (document.visibilityState === "visible") refresh();
+        }, 10000);
+    });
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") refresh();
+    });
+    window.addEventListener("pageshow", refresh);
+    window.addEventListener("beforeunload", () => {
+        if (timer) clearInterval(timer);
+        try { if (channel) getSB().removeChannel(channel); } catch (_) {}
+    });
+})();
+</script>
+<script src="search.js"></script>
 
 </body>
 

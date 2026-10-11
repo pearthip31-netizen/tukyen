@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <link rel="stylesheet" href="search.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TUYEN - การแจ้งเตือน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/notification.css">
+    <style>
+        [hidden] { display: none !important; }
+        .tuyen-notification-badge { display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px; padding:0 6px; border-radius:9999px; background:#ef4444; color:#fff; font-size:11px; font-weight:700; line-height:1; vertical-align:middle; box-sizing:border-box; }
+        .tuyen-notification-badge[hidden] { display:none !important; }
+        .notification-food-details {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 9px;
+            text-align: left;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px;
+            margin: 12px 0;
+        }
+        .notification-food-row { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; }
+        .notification-food-label { color: #64748b; font-size: 12px; flex: 0 0 104px; }
+        .notification-food-value { color: #334155; font-size: 13px; font-weight: 400; text-align: right; overflow-wrap: anywhere; }
+        .invite-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.invite-action{border:0;border-radius:12px;padding:9px 15px;font:600 13px 'Prompt',sans-serif;cursor:pointer;transition:transform .15s,box-shadow .15s,opacity .15s}.invite-action:hover{transform:translateY(-1px);box-shadow:0 5px 14px #0f172a18}.invite-action:disabled{opacity:.55;cursor:wait;transform:none}.invite-accept{color:#fff;background:linear-gradient(135deg,#8b5cf6,#6d28d9)}.invite-reject{color:#475569;background:#f1f5f9;border:1px solid #e2e8f0}.invite-status{display:inline-flex;margin-top:8px;border-radius:999px;padding:3px 9px;background:#f3e8ff;color:#6d28d9;font-size:11px;font-weight:600}
+        .notify-new{display:inline-flex;margin-left:8px;border-radius:999px;padding:1px 8px;background:#ede9fe;color:#6d28d9;font-size:10px;font-weight:700;vertical-align:middle}
+
+        /* อ่านแล้ว: โทนเทา จางลง */
+        .notification-card.is-read{
+            background:#f1f5f9 !important;
+            border-color:#e2e8f0 !important;
+            border-left:4px solid #cbd5e1 !important;
+            box-shadow:none;
+            opacity:1;
+        }
+        .notification-card.is-read .notification-icon{background:#e2e8f0 !important;filter:grayscale(1)}
+        .notification-card.is-read .notification-title{color:#64748b}
+        .notification-card.is-read .notification-detail,
+        .notification-card.is-read .notification-date{color:#94a3b8}
+
+        .sent-heading{margin:20px 4px 8px;font-size:12px;font-weight:600;color:#64748b}
+        @media (min-width: 520px) {
+            .notification-food-details { grid-template-columns: 1fr 1fr; }
+            .notification-food-row { display: block; }
+            .notification-food-value { display: block; text-align: left; margin-top: 3px; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col">
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 px-5 lg:px-8 py-3.5 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-3 min-w-fit">
+            <img src="โลโก้ตู้เย็น.png" alt="TUYEN logo" class="w-10 h-10 rounded-xl object-cover border border-violet-100 shadow-sm bg-violet-50">
+            <div>
+                <h1 class="font-bold text-slate-900 text-lg leading-tight">TUYEN</h1>
+                <p class="text-[11px] text-slate-400">Dorm Fridge Expiry Tracker</p>
+            </div>
+        </div>
+        <nav class="hidden md:flex items-center gap-2 text-sm font-medium">
+            <a href="index.html" class="text-slate-600 hover:text-violet-600 hover:bg-violet-50 px-4 py-2 rounded-xl flex items-center gap-2">
+                <img src="โลโก้ตู้เย็น.png" alt="TUYEN logo" class="w-6 h-6 rounded-md object-cover"> ตู้เย็นของฉัน
+            </a>
+            <a href="fridge.html" class="text-slate-600 hover:text-violet-600 hover:bg-violet-50 px-4 py-2 rounded-xl">📦 โซนตู้เย็น</a>
+            <a href="notification.html" class="text-violet-600 bg-violet-50 px-4 py-2 rounded-xl inline-flex items-center gap-2" aria-current="page"><span>🔔 การแจ้งเตือน</span><span id="tuyen-notification-count" class="tuyen-notification-badge" hidden aria-label="จำนวนการแจ้งเตือน">0</span></a>
+            <a href="setting.html" class="text-slate-600 hover:text-violet-600 hover:bg-violet-50 px-4 py-2 rounded-xl">⚙️ ตั้งค่า</a>
+        </nav>
+        <div class="flex items-center gap-3">
+            <div class="relative hidden lg:block">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">🔍</span>
+                <input type="text" id="search-food" placeholder="ค้นหาอาหารในตู้..." class="pl-9 pr-4 py-2 text-xs bg-slate-100 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white w-56">
+            </div>
+            <div class="flex items-center gap-2.5 bg-violet-50 border border-violet-100 rounded-xl px-3 py-1.5">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt="profile" class="w-8 h-8 rounded-full object-cover border-2 border-violet-200 shadow-sm">
+                <div class="leading-tight hidden sm:block">
+                    <p id="user-email" class="text-xs font-semibold text-slate-700 max-w-[160px] truncate" title="">กำลังโหลดอีเมล...</p>
+                    <button type="button" id="logout-btn" class="text-[10px] text-violet-600 hover:text-violet-800 font-medium">ออกจากระบบ</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+        <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-5">
+            <div class="flex items-center gap-3">
+                <div class="notification-page-icon">🔔</div>
+                <div>
+                    <h2 class="text-xl lg:text-2xl font-bold text-slate-800">การแจ้งเตือน</h2>
+                    <p class="text-sm text-slate-500 mt-1">ตรวจสอบประวัติการแจ้งเตือนอาหารในตู้เย็นของคุณ</p>
+                </div>
+            </div>
+        </section>
+        <section class="notification-summary">
+            <div>
+                <p class="text-sm text-slate-500">รายการแจ้งเตือนทั้งหมด</p>
+                <p class="text-xs text-slate-400 mt-1">เรียงจากรายการเก่าไปใหม่</p>
+            </div>
+            <span id="notification-count" class="notification-total">0 รายการ</span>
+        </section>
+        <section id="notification-list" class="notification-list" aria-live="polite">
+            <div class="notification-empty"><div class="empty-icon">🔔</div><h3>กำลังโหลดการแจ้งเตือน...</h3><p>กรุณารอสักครู่</p></div>
+        </section>
+    </main>
+
+    <div id="notification-modal" class="notification-modal-backdrop" hidden>
+        <div class="notification-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <div class="modal-icon">🔔</div>
+            <h2 id="modal-title">ชื่อการแจ้งเตือน</h2>
+            <p class="text-xs text-slate-500 mt-2 mb-3">รายละเอียดของอาหารรายการนี้</p>
+            <div id="modal-food-details" class="notification-food-details"></div>
+            <p id="modal-date" class="notification-modal-date"></p>
+            <button type="button" id="modal-close" class="notification-modal-close">ปิดหน้าต่าง</button>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-slate-200 py-3 text-center text-[11px] text-slate-400 mt-auto">© 2026 TUYEN - Dorm Fridge Expiry Tracker.</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script>
+    (() => {
+        'use strict';
+        const $ = (id) => document.getElementById(id);
+        let rows = [];
+        let invitationRows = [];
+        let sentInvitationRows = [];
+        let markingReadIds = new Set();
+        let fridgeNames = new Map();
+        let sb = null;
+        let currentAppUserId = null;
+        let currentAccountEmail = '';
+        let notificationChannel = null;
+        let notificationPollTimer = null;
+        let badgeRequestSeq = 0;
+
+        // =====================================================
+        // BADGE (กระดิ่ง)
+        // =====================================================
+        // นับจากฐานข้อมูล Supabase เท่านั้น (สูตรเดียวกับ getNotificationCount() ใน app.js)
+        //   = แจ้งเตือนอาหาร (notify ที่ is_read = false และมี food_id) ของผู้ใช้นี้
+        //   + คำเชิญใน fridge_invitations ที่ status = 'pending' ส่งถึงอีเมลของบัญชีนี้
+        // ไม่ใช้ localStorage
+        // - แจ้งเตือนอาหาร: กดอ่านทีละอัน -> is_read = true ในฐานข้อมูล -> ลด 1
+        // - คำเชิญ: เปิดดูไม่ลด ลดเมื่อตอบรับ/ปฏิเสธสำเร็จ (status ไม่ใช่ pending) -> ลด 1
+        // - คำเชิญที่เราส่งให้คนอื่นแสดงในรายการ แต่ไม่นับในกระดิ่ง
+
+        function escapeLike(value) {
+            return String(value ?? '').replace(/[\\%_]/g, '\\$&');
+        }
+        function renderBadge(total) {
+            const badge = $('tuyen-notification-count');
+            if (!badge) return;
+            const n = Math.max(0, Number(total) || 0);
+            badge.textContent = n > 99 ? '99+' : String(n);
+            badge.hidden = n === 0;
+            badge.setAttribute('aria-label', `มีการแจ้งเตือนที่ยังไม่ได้ดำเนินการ ${n} รายการ`);
+        }
+        async function updatePageBadge() {
+            if (!sb || !currentAppUserId) return;
+            const requestId = ++badgeRequestSeq;
+            try {
+                const notifyQuery = sb
+                    .from('notify')
+                    .select('notify_id', { count: 'exact', head: true })
+                    .eq('user_id', currentAppUserId)
+                    .eq('is_read', false)
+                    // นับเฉพาะแจ้งเตือนอาหาร (food_id ไม่ว่าง) คำเชิญนับจาก fridge_invitations
+                    // ถ้านับซ้ำสองทาง ตอบรับ/ปฏิเสธ 1 ครั้งจะไม่ลดจำนวน "1" พอดี
+                    .not('food_id', 'is', null);
+                const inviteQuery = currentAccountEmail
+                    ? sb.from('fridge_invitations')
+                        .select('invitation_id', { count: 'exact', head: true })
+                        .eq('status', 'pending')
+                        .ilike('invited_email', escapeLike(currentAccountEmail))
+                    : Promise.resolve({ count: 0, error: null });
+                const [notifyResult, inviteResult] = await Promise.all([notifyQuery, inviteQuery]);
+                if (notifyResult.error) throw notifyResult.error;
+                if (inviteResult.error) console.warn('นับคำเชิญไม่สำเร็จ:', inviteResult.error.message);
+                // ผลของคำขอเก่าที่มาช้ากว่า -> ทิ้ง
+                if (requestId !== badgeRequestSeq) return;
+                renderBadge(Number(notifyResult.count ?? 0) + (inviteResult.error ? 0 : Number(inviteResult.count ?? 0)));
+            } catch (error) {
+                // นับไม่สำเร็จ -> คงตัวเลขเดิมไว้
+                console.warn('นับแจ้งเตือนไม่สำเร็จ:', error);
+            }
+        }
+
+        function getClient() {
+            // ใช้ client เดิมของโปรเจกต์ถ้ามี
+            if (typeof getSupabase === 'function') {
+                try {
+                    const c = getSupabase();
+                    if (c?.auth && typeof c.from === 'function') return c;
+                } catch (e) { console.warn('getSupabase() failed:', e); }
+            }
+            // รองรับ client ที่ config.js ประกาศเป็น global const
+            try {
+                if (typeof supabase !== 'undefined' && supabase?.auth && typeof supabase.from === 'function') return supabase;
+            } catch (e) { console.warn('Cannot access supabase variable:', e); }
+            for (const c of [window.supabaseClient, window.sb, window.supabase]) {
+                if (c?.auth && typeof c.from === 'function') return c;
+            }
+            // Fallback: สร้าง client จาก publishable/anon key ของโปรเจกต์เดิม
+            // ไม่ใช่ service-role key; session ใช้ storage key ของโปรเจกต์เดียวกัน
+            if (window.supabase && typeof window.supabase.createClient === 'function') {
+                return window.supabase.createClient(
+                    'https://cllhshpbtsyyujhaouid.supabase.co',
+                    'sb_publishable_Lp-Gu3pQd8aHOiGZ-FpVcg_dF11Ks0f'
+                );
+            }
+            throw new Error('หา Supabase client ไม่เจอ และโหลด Supabase SDK ไม่สำเร็จ');
+        }
+
+        function esc(value) {
+            return String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+        }
+        function dateText(value) {
+            if (!value) return 'ไม่ระบุวันที่';
+            const d = new Date(value);
+            if (Number.isNaN(d.getTime())) return 'ไม่ระบุวันที่';
+            return d.toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' });
+        }
+        function showError(error) {
+            console.error('Notification page error:', error);
+            const list = $('notification-list');
+            const count = $('notification-count');
+            const header = $('user-email');
+            if (header && (!header.textContent || header.textContent === 'กำลังโหลดอีเมล...')) {
+                header.textContent = 'โหลดอีเมลไม่สำเร็จ';
+                header.title = error?.message || String(error);
+            }
+            if (count) count.textContent = 'โหลดข้อมูลไม่สำเร็จ';
+            if (list) list.innerHTML = `<div class="notification-empty"><div class="empty-icon">⚠️</div><h3>โหลดการแจ้งเตือนไม่สำเร็จ</h3><p>${esc(error?.message || 'กรุณาตรวจสอบการเชื่อมต่อ')}</p></div>`;
+        }
+        async function load() {
+            sb = getClient();
+            const { data: sessionData, error: sessionError } = await sb.auth.getSession();
+            if (sessionError) throw sessionError;
+            const user = sessionData?.session?.user;
+            if (!user) {
+                $('user-email').textContent = 'ยังไม่ได้เข้าสู่ระบบ';
+                window.location.replace('login.html');
+                return;
+            }
+
+            // แสดงอีเมลบัญชี Auth โดยตรง ไม่ขึ้นกับตาราง public.users
+            const email = String(user.email || '').trim();
+            $('user-email').textContent = email || 'ไม่พบอีเมลในบัญชี';
+            $('user-email').title = email;
+            currentAccountEmail = email;
+
+            // ค้นหา user_id ของตาราง users; ปกติควรเท่ากับ auth.users.id
+            let appUserId = user.id;
+            const { data: dbUser, error: userError } = await sb
+                .from('users').select('user_id, user_email').eq('user_id', user.id).maybeSingle();
+            if (userError) console.warn('อ่าน public.users ไม่สำเร็จ; ใช้ Auth user ID แทน:', userError.message);
+            if (dbUser?.user_id) appUserId = dbUser.user_id;
+            currentAppUserId = appUserId;
+
+            const { data, error } = await sb
+                .from('notify')
+                .select(`
+                    notify_id,
+                    notify_text,
+                    notify_date,
+                    user_id,
+                    food_id,
+                    is_read,
+                    food:food!notify_food_id_fkey (
+                        food_name,
+                        manu,
+                        location,
+                        quantity,
+                        import_date,
+                        export_date,
+                        status,
+                        fridge_id
+                    )
+                `)
+                .eq('user_id', appUserId)
+                .order('notify_date', { ascending: false });
+            if (error) throw error;
+            rows = data || [];
+
+            // โหลดคำเชิญที่ส่งถึงอีเมลของบัญชีนี้ เพื่อให้ตอบรับ/ปฏิเสธได้จากหน้านี้
+            invitationRows = [];
+            const accountEmail = String(user.email || '').trim().toLowerCase();
+            if (accountEmail) {
+                const { data: invitations, error: invitationError } = await sb
+                    .from('fridge_invitations')
+                    .select('invitation_id, fridge_id, invited_email, invited_by, role, status, created_at')
+                    .ilike('invited_email', escapeLike(accountEmail))
+                    .order('created_at', { ascending: false });
+                if (invitationError) {
+                    console.warn('โหลดคำเชิญไม่สำเร็จ:', invitationError.message);
+                } else {
+                    invitationRows = (invitations || []).filter(inv => ['pending','accepted','rejected','cancelled'].includes(inv.status));
+                }
+            }
+
+            // คำเชิญที่เราส่งไปให้คนอื่น (แสดงสถานะในรายการ ไม่นับในกระดิ่ง)
+            sentInvitationRows = [];
+            const { data: sentInvitations, error: sentError } = await sb
+                .from('fridge_invitations')
+                .select('invitation_id, fridge_id, invited_email, invited_by, role, status, created_at')
+                .eq('invited_by', appUserId)
+                .order('created_at', { ascending: false });
+            if (sentError) {
+                console.warn('โหลดคำเชิญที่ส่งไม่สำเร็จ:', sentError.message);
+            } else {
+                sentInvitationRows = (sentInvitations || []).filter(inv => ['pending','accepted','rejected','cancelled'].includes(inv.status));
+            }
+
+            fridgeNames = new Map();
+            const fridgeIds = [...new Set([
+                ...rows.map(item => getFood(item)?.fridge_id),
+                ...invitationRows.map(inv => inv.fridge_id),
+                ...sentInvitationRows.map(inv => inv.fridge_id)
+            ].filter(id => id !== null && id !== undefined && id !== '').map(String))];
+            if (fridgeIds.length) {
+                const { data: fridgeData, error: fridgeError } = await sb
+                    .from('fridges')
+                    .select('fridge_id, fridge_name')
+                    .in('fridge_id', fridgeIds);
+                if (fridgeError) {
+                    console.warn('โหลดชื่อตู้เย็นไม่สำเร็จ:', fridgeError.message);
+                } else {
+                    (fridgeData || []).forEach(fridge => {
+                        fridgeNames.set(String(fridge.fridge_id), fridge.fridge_name);
+                    });
+                }
+            }
+            render();
+        }
+        function foodDateText(value) {
+            if (!value) return 'ไม่ระบุ';
+            const d = new Date(`${value}T00:00:00`);
+            if (Number.isNaN(d.getTime())) return String(value);
+            return d.toLocaleDateString('th-TH', {
+                day: 'numeric', month: 'short', year: 'numeric'
+            });
+        }
+
+        function getFood(item) {
+            // ความสัมพันธ์ many-to-one ของ food_id ควรเป็น object;
+            // รองรับ array เผื่อรูปแบบผลลัพธ์จาก API แตกต่างกัน
+            return Array.isArray(item?.food) ? (item.food[0] || null) : (item?.food || null);
+        }
+
+        function render() {
+            const list = $('notification-list');
+            const count = $('notification-count');
+            if (!list || !count) return;
+            count.textContent = `${rows.length + invitationRows.length + sentInvitationRows.length} รายการ`;
+            // กระดิ่งนับจากฐานข้อมูล (ไม่ขึ้นกับการเปิดดูรายการ)
+            updatePageBadge();
+            if (!rows.length && !invitationRows.length && !sentInvitationRows.length) {
+                list.innerHTML = '<div class="notification-empty"><div class="empty-icon">🔔</div><h3>ยังไม่มีการแจ้งเตือน</h3><p>เมื่อมีอาหารใกล้หมดอายุหรือคำเชิญเข้าตู้เย็น รายการจะแสดงที่นี่</p></div>';
+                return;
+            }
+            const foodCards = rows.map((item, i) => {
+                const food = getFood(item);
+                const foodName = food?.food_name || (item.food_id ? 'ดูรายละเอียดอาหารไม่ได้' : 'การแจ้งเตือนทั่วไป');
+                const fridgeName = food?.fridge_id != null
+                    ? (fridgeNames.get(String(food.fridge_id)) || '')
+                    : '';
+                const fridgeLabel = fridgeName ? ` (ตู้เย็น: ${fridgeName})` : '';
+                const expiryText = food?.export_date ? `📅 วันหมดอายุ: ${foodDateText(food.export_date)}` : 'กดเพื่อดูรายละเอียด';
+                return `<button type="button" class="notification-card text-left w-full ${item.is_read ? 'is-read' : 'is-unread'}" data-index="${i}">
+                    <div class="notification-icon">🔔</div>
+                    <div class="notification-content">
+                        <h3 class="notification-title">${esc(item.notify_text || 'การแจ้งเตือน')}${esc(fridgeLabel)}${item.is_read ? '' : '<span class="notify-new">ใหม่</span>'}</h3>
+                        <p class="notification-detail">${esc(foodName)}</p>
+                        <span class="notification-date">${esc(expiryText)} · ${esc(dateText(item.notify_date))}</span>
+                    </div>
+                </button>`;
+            }).join('');
+            const inviteCards = invitationRows.map(inv => {
+                const fridgeName = fridgeNames.get(String(inv.fridge_id)) || 'ตู้เย็น';
+                const statusText = ({pending:'รอตอบรับ',accepted:'ตอบรับแล้ว',rejected:'ปฏิเสธแล้ว',cancelled:'ยกเลิกแล้ว'})[inv.status] || inv.status;
+                const pending = inv.status === 'pending';
+                return `<article class="notification-card text-left w-full" style="cursor:default;display:flex;align-items:flex-start;gap:12px;padding:16px">
+                    <div class="notification-icon">📩</div><div class="notification-content" style="flex:1;min-width:0">
+                        <h3 class="notification-title">${pending ? 'คำเชิญเข้าร่วมตู้เย็น' : 'คำเชิญเข้าตู้เย็น'} <span style="font-weight:500;color:#7c3aed">(ตู้เย็น: ${esc(fridgeName)})</span></h3>
+                        <p class="notification-detail">สิทธิ์ที่ได้รับ: ${esc(inv.role === 'owner' ? 'เจ้าของ' : inv.role === 'editor' ? 'แก้ไขข้อมูล' : 'ดูข้อมูล')}</p>
+                        <span class="invite-status">${esc(statusText)}</span>
+                        <p class="notification-date">${esc(dateText(inv.created_at))}</p>
+                        ${pending ? `<div class="invite-actions"><button type="button" class="invite-action invite-accept" data-invite-action="accept" data-invitation-id="${esc(inv.invitation_id)}">✓ ตอบรับคำเชิญ</button><button type="button" class="invite-action invite-reject" data-invite-action="reject" data-invitation-id="${esc(inv.invitation_id)}">ปฏิเสธ</button></div>` : ''}
+                    </div></article>`;
+            }).join('');
+            const sentCards = sentInvitationRows.map(inv => {
+                const fridgeName = fridgeNames.get(String(inv.fridge_id)) || 'ตู้เย็น';
+                const statusText = ({pending:'รอผู้รับตอบรับ',accepted:'ผู้รับตอบรับแล้ว',rejected:'ผู้รับปฏิเสธแล้ว',cancelled:'ยกเลิกแล้ว'})[inv.status] || inv.status;
+                return `<article class="notification-card text-left w-full" style="cursor:default;display:flex;align-items:flex-start;gap:12px;padding:16px">
+                    <div class="notification-icon">📤</div><div class="notification-content" style="flex:1;min-width:0">
+                        <h3 class="notification-title">คุณส่งคำเชิญถึง ${esc(inv.invited_email)} <span style="font-weight:500;color:#7c3aed">(ตู้เย็น: ${esc(fridgeName)})</span></h3>
+                        <p class="notification-detail">สิทธิ์ที่ให้: ${esc(inv.role === 'owner' ? 'เจ้าของ' : inv.role === 'editor' ? 'แก้ไขข้อมูล' : 'ดูข้อมูล')}</p>
+                        <span class="invite-status">${esc(statusText)}</span>
+                        <p class="notification-date">${esc(dateText(inv.created_at))}</p>
+                    </div></article>`;
+            }).join('');
+            const sentSection = sentCards ? `<p class="sent-heading">คำเชิญที่คุณส่งถึงผู้อื่น</p>${sentCards}` : '';
+            list.innerHTML = inviteCards + foodCards + sentSection;
+            list.querySelectorAll('[data-index]').forEach(button => {
+                // กดเปิดอ่านแจ้งเตือนอาหารทีละอัน -> ทำเครื่องหมายอ่านแล้วเฉพาะอันนั้น (ลดจำนวน 1)
+                button.addEventListener('click', () => { const item = rows[Number(button.dataset.index)]; if (item) { openModal(item); markNotificationRead(item); } });
+            });
+            list.querySelectorAll('[data-invite-action]').forEach(button => {
+                button.addEventListener('click', () => respondInvitation(button.dataset.invitationId, button.dataset.inviteAction, button));
+            });
+        }
+
+        // ทำเครื่องหมายอ่านแล้วเฉพาะแถวนี้ ของผู้ใช้ปัจจุบัน (ไม่แตะแถวอื่น)
+        // ถ้าอัปเดตไม่สำเร็จ ไม่เปลี่ยนสถานะ จำนวนจึงไม่ลด
+        async function markNotificationRead(item) {
+            if (!item || item.is_read === true || !sb || !currentAppUserId) return;
+            const key = String(item.notify_id);
+            if (markingReadIds.has(key)) return;
+            markingReadIds.add(key);
+            try {
+                const { data, error } = await sb
+                    .from('notify')
+                    .update({ is_read: true })
+                    .eq('notify_id', item.notify_id)
+                    .eq('user_id', currentAppUserId)
+                    .select('notify_id');
+                if (error) throw error;
+                if (!data || !data.length) {
+                    console.warn('อัปเดต is_read ไม่มีแถวถูกแก้ไข (ตรวจ RLS policy UPDATE ของตาราง notify)');
+                    return;
+                }
+                item.is_read = true;
+                render(); // วาดการ์ดใหม่ + นับกระดิ่งจากฐานข้อมูล
+            } catch (error) {
+                console.warn('ทำเครื่องหมายอ่านแล้วไม่สำเร็จ:', error?.message || error);
+            } finally {
+                markingReadIds.delete(key);
+            }
+        }
+
+        async function respondInvitation(invitationId, action, button) {
+            if (!invitationId || !['accept','reject'].includes(action)) return;
+            const original = button.textContent;
+            button.disabled = true;
+            button.textContent = action === 'accept' ? 'กำลังตอบรับ...' : 'กำลังปฏิเสธ...';
+            try {
+                const { data, error } = await sb.rpc(action === 'accept' ? 'accept_fridge_invitation' : 'reject_fridge_invitation', { p_invitation_id: invitationId });
+                if (error) throw error;
+                // ตอบกลับสำเร็จแล้ว: status ของคำเชิญในฐานข้อมูลไม่ใช่ pending อีกต่อไป
+                // โหลดใหม่เพื่อให้รายการและกระดิ่งตรงกับฐานข้อมูล (ไม่เก็บสถานะใน localStorage)
+                const inv = invitationRows.find(item => String(item.invitation_id) === String(invitationId));
+                if (action === 'accept' && inv?.fridge_id != null) localStorage.setItem('tuyen_current_fridge_id', String(inv.fridge_id));
+                await load();
+                alert(action === 'accept' ? 'ตอบรับคำเชิญเรียบร้อยแล้ว' : 'ปฏิเสธคำเชิญเรียบร้อยแล้ว');
+            } catch (error) {
+                // ตอบกลับไม่สำเร็จ: ไม่แตะข้อมูล จำนวนแจ้งเตือนจึงไม่ลด
+                console.error('ตอบกลับคำเชิญไม่สำเร็จ:', error);
+                alert('ดำเนินการไม่สำเร็จ: ' + (error?.message || 'กรุณาลองใหม่'));
+                button.disabled = false;
+                button.textContent = original;
+            }
+        }
+
+        function setupNotificationRealtime() {
+            if (!sb || !currentAppUserId) return;
+
+            if (notificationChannel) {
+                sb.removeChannel(notificationChannel).catch(error =>
+                    console.warn('ปิดช่อง Realtime เดิมไม่สำเร็จ:', error)
+                );
+            }
+
+            notificationChannel = sb
+                .channel(`tuyen-notifications-${currentAppUserId}`)
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'notify',
+                    filter: `user_id=eq.${currentAppUserId}`
+                }, () => {
+                    load().catch(showError);
+                })
+                // คำเชิญใหม่ / ตอบรับ / ปฏิเสธ จากหน้าหรือแท็บอื่น (ช่องเดียวกัน ไม่เพิ่ม subscription)
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'fridge_invitations'
+                }, () => {
+                    load().catch(showError);
+                })
+                .subscribe(status => {
+                    console.log('Notification realtime:', status);
+                });
+        }
+
+        function openModal(item) {
+            if (!item) return;
+            const food = getFood(item);
+            $('modal-title').textContent = item.notify_text || 'การแจ้งเตือน';
+            const details = $('modal-food-details');
+            if (food) {
+                const fields = [
+                    ['ชื่ออาหาร', food.food_name || 'ไม่ระบุ'],
+                    ['ยี่ห้อ / ผู้ผลิต', food.manu || 'ไม่ระบุ'],
+                    ['ตำแหน่งในตู้เย็น', food.location || 'ไม่ระบุ'],
+                    ['จำนวน', food.quantity == null ? 'ไม่ระบุ' : `${food.quantity}`],
+                    ['วันที่นำเข้า', foodDateText(food.import_date)],
+                    ['วันหมดอายุ', foodDateText(food.export_date)],
+                    ['สถานะ', food.status || 'ไม่ระบุ']
+                ];
+                details.innerHTML = fields.map(([label, value]) =>
+                    `<div class="notification-food-row"><span class="notification-food-label">${esc(label)}</span><span class="notification-food-value">${esc(value)}</span></div>`
+                ).join('');
+            } else {
+                details.innerHTML = `<p class="text-sm text-slate-500">ไม่พบรายละเอียดอาหารที่เชื่อมกับการแจ้งเตือนนี้</p>`;
+            }
+            $('modal-date').textContent = `วันที่แจ้งเตือน: ${dateText(item.notify_date)}`;
+            $('notification-modal').hidden = false;
+            $('modal-close')?.focus();
+        }
+        function closeModal() { $('notification-modal').hidden = true; }
+        function bindEvents() {
+            $('modal-close')?.addEventListener('click', closeModal);
+            $('notification-modal')?.addEventListener('click', e => { if (e.target === $('notification-modal')) closeModal(); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+            $('logout-btn')?.addEventListener('click', async () => {
+                const button = $('logout-btn');
+                button.disabled = true;
+                try {
+                    const client = sb || getClient();
+                    const { error } = await client.auth.signOut();
+                    if (error) throw error;
+                    window.location.replace('login.html');
+                } catch (error) {
+                    console.error('Sign out failed:', error);
+                    alert('ออกจากระบบไม่สำเร็จ: ' + (error?.message || 'กรุณาลองใหม่'));
+                    button.disabled = false;
+                }
+            });
+        }
+        async function init() {
+            bindEvents();
+            try {
+                await load();
+                setupNotificationRealtime();
+
+                // สำรองกรณี Realtime ของตาราง notify ยังไม่ได้เปิดใน Supabase
+                if (!notificationPollTimer) {
+                    notificationPollTimer = window.setInterval(() => {
+                        if (document.visibilityState === 'visible') {
+                            load().catch(showError);
+                        }
+                    }, 10000);
+                }
+            } catch (error) { showError(error); }
+        }
+        window.addEventListener('beforeunload', () => {
+            if (notificationChannel && sb) sb.removeChannel(notificationChannel).catch(() => {});
+            if (notificationPollTimer) window.clearInterval(notificationPollTimer);
+        });
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
+        else init();
+    })();
+    </script>
+   
+    <script src="search.js"></script>
+</body>
+</html>
