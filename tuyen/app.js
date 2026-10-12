@@ -4436,43 +4436,20 @@ function showMessage(
 function showError(
     message
 ) {
-
-    const list =
-        $("food-list");
-
-
-    if (!list) {
-
-        return;
-
+    // เมื่อโหลดข้อมูลล้มเหลว ให้แสดง error state แทนการแสดงแดชบอร์ดเสมือนพร้อมใช้งาน
+    if ($("fridge-page-state")) {
+        showFridgePageState("error", message);
     }
 
+    const list = $("food-list");
+    if (!list) return;
 
     list.innerHTML = `
-
-        <div
-            class="col-span-full bg-rose-50 border border-rose-200 rounded-2xl p-5"
-        >
-
-            <p
-                class="font-semibold text-rose-700"
-            >
-                โหลดรายการอาหารไม่สำเร็จ
-            </p>
-
-
-            <p
-                class="text-xs text-rose-600 mt-1"
-            >
-                ${escapeHtml(
-                    message
-                )}
-            </p>
-
+        <div class="col-span-full bg-rose-50 border border-rose-200 rounded-2xl p-5">
+            <p class="font-semibold text-rose-700">โหลดรายการอาหารไม่สำเร็จ</p>
+            <p class="text-xs text-rose-600 mt-1">${escapeHtml(message)}</p>
         </div>
-
     `;
-
 }
 
 
