@@ -3,167 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>เข้าสู่ระบบ – TUYEN</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap"
-        rel="stylesheet"
-    >
-
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/login.css">
 </head>
-
 <body class="bg-slate-900 min-h-screen text-slate-800 flex flex-col">
-
     <header class="bg-white border-b border-slate-200 sticky top-0 z-50 px-8 py-4 flex justify-between items-center shadow-sm">
         <div class="flex items-center gap-3">
-            <img
-                src="โลโก้ตู้เย็น.png"
-                alt="TUYEN logo"
-                class="w-10 h-10 rounded-xl object-cover border border-violet-100 shadow-sm bg-violet-50"
-            >
-
-            <div>
-                <h1 class="font-bold text-slate-900 text-lg leading-tight">
-                    TUYEN
-                </h1>
-
-                <p class="text-xs text-slate-400">
-                    Dorm Fridge Expiry Tracker
-                </p>
-            </div>
+            <img src="โลโก้ตู้เย็น.png" alt="TUYEN logo" class="w-10 h-10 rounded-xl object-cover border border-violet-100 shadow-sm bg-violet-50">
+            <div><h1 class="font-bold text-slate-900 text-lg leading-tight">TUYEN</h1><p class="text-xs text-slate-400">Dorm Fridge Expiry Tracker</p></div>
         </div>
     </header>
-
     <main class="flex-1 w-full flex items-center justify-center p-6">
         <div class="w-full max-w-md">
-
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                <h2 class="text-lg font-bold text-slate-900">
-                    Welcome to TUYEN
-                </h2>
-
-                <p class="text-xs text-slate-400 mt-1 mb-6">
-                    เข้าสู่ระบบหรือสมัครสมาชิกเพื่อจัดการตู้เย็นของคุณ
-                </p>
-
+                <h2 class="text-lg font-bold text-slate-900">Welcome to TUYEN</h2>
+                <p class="text-xs text-slate-400 mt-1 mb-6">เข้าสู่ระบบหรือสมัครสมาชิกเพื่อจัดการตู้เย็นของคุณ</p>
                 <div class="flex bg-slate-100 rounded-xl p-1 mb-6 text-sm font-medium">
-                    <button
-                        id="tab-login"
-                        type="button"
-                        class="flex-1 py-2 rounded-lg text-violet-700 bg-white shadow transition"
-                    >
-                        เข้าสู่ระบบ
-                    </button>
-
-                    <button
-                        id="tab-signup"
-                        type="button"
-                        class="flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-700 transition"
-                    >
-                        สมัครสมาชิก
-                    </button>
+                    <button id="tab-login" type="button" class="flex-1 py-2 rounded-lg text-violet-700 bg-white shadow transition">เข้าสู่ระบบ</button>
+                    <button id="tab-signup" type="button" class="flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-700 transition">สมัครสมาชิก</button>
                 </div>
-
                 <form id="auth-form" class="flex flex-col gap-4">
-
-                    <div>
-                        <label
-                            for="auth-email"
-                            class="block text-xs font-semibold text-slate-600 mb-1"
-                        >
-                            อีเมล
-                        </label>
-
-                        <input
-                            id="auth-email"
-                            type="email"
-                            required
-                            autocomplete="email"
-                            placeholder="***@*******.***"
-                            class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500"
-                        >
+                    <div><label for="auth-email" class="block text-xs font-semibold text-slate-600 mb-1">อีเมล</label><input id="auth-email" type="email" required autocomplete="email" placeholder="***@*******.***" class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500"></div>
+                    <div><label for="auth-password" id="password-label" class="block text-xs font-semibold text-slate-600 mb-1">รหัสผ่าน</label>
+                        <div class="relative"><input id="auth-password" type="password" required minlength="6" autocomplete="current-password" placeholder="อย่างน้อย 6 ตัวอักษร" class="w-full px-3 py-2.5 pr-16 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500"><button type="button" id="toggle-password" class="absolute inset-y-0 right-0 px-3 text-xs font-semibold text-violet-600 hover:text-violet-800">ดู</button></div>
                     </div>
-
-                    <div>
-                        <label
-                            for="auth-password"
-                            id="password-label"
-                            class="block text-xs font-semibold text-slate-600 mb-1"
-                        >
-                            รหัสผ่าน
-                        </label>
-
-                        <div class="relative">
-                            <input
-                                id="auth-password"
-                                type="password"
-                                required
-                                minlength="6"
-                                autocomplete="current-password"
-                                placeholder="อย่างน้อย 6 ตัวอักษร"
-                                class="w-full px-3 py-2.5 pr-16 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500"
-                            >
-
-                            <button
-                                type="button"
-                                id="toggle-password"
-                                class="absolute inset-y-0 right-0 px-3 text-xs font-semibold text-violet-600 hover:text-violet-800"
-                            >
-                                ดู
-                            </button>
-                        </div>
-                    </div>
-
-                    <p
-                        id="auth-message"
-                        class="hidden text-xs font-medium rounded-xl px-3 py-2"
-                    ></p>
-
-                    <button
-                        type="submit"
-                        id="auth-submit"
-                        class="w-full bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold py-3 rounded-xl shadow-md shadow-violet-200 transition disabled:opacity-70 disabled:cursor-not-allowed"
-                    >
-                        เข้าสู่ระบบ
-                    </button>
+                    <p id="auth-message" class="hidden text-xs font-medium rounded-xl px-3 py-2"></p>
+                    <button type="submit" id="auth-submit" class="w-full bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold py-3 rounded-xl shadow-md shadow-violet-200 transition disabled:opacity-70 disabled:cursor-not-allowed">เข้าสู่ระบบ</button>
                 </form>
             </div>
-
-            <p class="text-center text-slate-500 text-xs mt-6">
-                เปิดผ่าน localhost หรือ Live Server ได้
-            </p>
+            <p class="text-center text-slate-500 text-xs mt-6">เปิดผ่าน localhost หรือ Live Server ได้</p>
         </div>
     </main>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script>
-        // ==================================================
-        // SUPABASE CONFIG
-        // ==================================================
-
-        const SUPABASE_URL =
-            "https://cllhshpbtsyyujhaouid.supabase.co";
-
-        const SUPABASE_ANON_KEY =
-            "sb_publishable_Lp-Gu3pQd8aHOiGZ-FpVcg_dF11Ks0f";
-
-        const supabaseClient =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_ANON_KEY
-            );
-
-        // ==================================================
-        // ELEMENTS
-        // ==================================================
-
+        const SUPABASE_URL = "https://cllhshpbtsyyujhaouid.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_Lp-Gu3pQd8aHOiGZ-FpVcg_dF11Ks0f";
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let mode = "login";
-
         const tabLogin = document.getElementById("tab-login");
         const tabSignup = document.getElementById("tab-signup");
         const form = document.getElementById("auth-form");
@@ -173,309 +51,125 @@
         const passwordLabel = document.getElementById("password-label");
         const togglePassword = document.getElementById("toggle-password");
 
-        // ==================================================
-        // MESSAGE
-        // ==================================================
-
         function showMessage(text, isError = true) {
             message.textContent = text;
-
-            message.className =
-                "text-xs font-medium rounded-xl px-3 py-2 " +
-                (
-                    isError
-                        ? "bg-rose-50 text-rose-600"
-                        : "bg-emerald-50 text-emerald-600"
-                );
+            message.className = "text-xs font-medium rounded-xl px-3 py-2 " + (isError ? "bg-rose-50 text-rose-600" : "bg-emerald-50 text-emerald-600");
         }
-
-        function clearMessage() {
-            message.textContent = "";
-            message.className =
-                "hidden text-xs font-medium rounded-xl px-3 py-2";
-        }
-
-        // ==================================================
-        // CHANGE MODE
-        // ==================================================
-
+        function clearMessage() { message.textContent = ""; message.className = "hidden text-xs font-medium rounded-xl px-3 py-2"; }
         function setMode(newMode) {
             mode = newMode;
-
             const isLogin = mode === "login";
-
-            passwordLabel.textContent =
-                isLogin ? "รหัสผ่าน" : "ตั้งรหัสผ่านใหม่";
-
-            passwordInput.placeholder =
-                isLogin
-                    ? "อย่างน้อย 6 ตัวอักษร"
-                    : "ตั้งรหัสผ่านอย่างน้อย 6 ตัวอักษร";
-
-            passwordInput.autocomplete =
-                isLogin ? "current-password" : "new-password";
-
-            submitBtn.textContent =
-                isLogin ? "เข้าสู่ระบบ" : "สมัครสมาชิก";
-
-            if (isLogin) {
-                tabLogin.className =
-                    "flex-1 py-2 rounded-lg text-violet-700 bg-white shadow transition";
-
-                tabSignup.className =
-                    "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-700 transition";
-            } else {
-                tabLogin.className =
-                    "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-700 transition";
-
-                tabSignup.className =
-                    "flex-1 py-2 rounded-lg text-violet-700 bg-white shadow transition";
-            }
-
+            passwordLabel.textContent = isLogin ? "รหัสผ่าน" : "ตั้งรหัสผ่านใหม่";
+            passwordInput.placeholder = isLogin ? "อย่างน้อย 6 ตัวอักษร" : "ตั้งรหัสผ่านอย่างน้อย 6 ตัวอักษร";
+            passwordInput.autocomplete = isLogin ? "current-password" : "new-password";
+            submitBtn.textContent = isLogin ? "เข้าสู่ระบบ" : "สมัครสมาชิก";
+            tabLogin.className = isLogin ? "flex-1 py-2 rounded-lg text-violet-700 bg-white shadow transition" : "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-700 transition";
+            tabSignup.className = !isLogin ? "flex-1 py-2 rounded-lg text-violet-700 bg-white shadow transition" : "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-700 transition";
             clearMessage();
         }
-
-        tabLogin.addEventListener("click", () => {
-            setMode("login");
-        });
-
-        tabSignup.addEventListener("click", () => {
-            setMode("signup");
-        });
-
-        // ==================================================
-        // PASSWORD SHOW / HIDE
-        // ==================================================
-
+        tabLogin.addEventListener("click", () => setMode("login"));
+        tabSignup.addEventListener("click", () => setMode("signup"));
         togglePassword.addEventListener("click", () => {
             const isHidden = passwordInput.type === "password";
-
-            passwordInput.type =
-                isHidden ? "text" : "password";
-
-            togglePassword.textContent =
-                isHidden ? "ซ่อน" : "ดู";
+            passwordInput.type = isHidden ? "text" : "password";
+            togglePassword.textContent = isHidden ? "ซ่อน" : "ดู";
         });
-
-        // ==================================================
-        // THAI ERRORS
-        // ==================================================
-
         function thaiError(error) {
-            const errorMessage =
-                String(error?.message || "");
-
+            const errorMessage = String(error?.message || "");
             console.error("Supabase error:", error);
-            console.error("ข้อความจริง:", errorMessage);
-            console.error("Error code:", error?.code);
-
-            if (/invalid login credentials/i.test(errorMessage)) {
-                return "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
-            }
-
-            if (/email not confirmed/i.test(errorMessage)) {
-                return "อีเมลนี้ยังไม่ได้ยืนยัน กรุณาตรวจสอบอีเมล";
-            }
-
-            if (
-                /already registered/i.test(errorMessage) ||
-                /already exists/i.test(errorMessage)
-            ) {
-                return "อีเมลนี้สมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบแทน";
-            }
-
-            if (
-                /at least 6 characters/i.test(errorMessage) ||
-                /password.*6/i.test(errorMessage)
-            ) {
-                return "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร";
-            }
-
-            if (/invalid email/i.test(errorMessage)) {
-                return "รูปแบบอีเมลไม่ถูกต้อง";
-            }
-
-            if (/network|fetch/i.test(errorMessage)) {
-                return "เชื่อมต่อ Supabase ไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ต";
-            }
-
+            if (/invalid login credentials/i.test(errorMessage)) return "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
+            if (/email not confirmed/i.test(errorMessage)) return "อีเมลนี้ยังไม่ได้ยืนยัน กรุณาตรวจสอบอีเมล";
+            if (/already registered|already exists/i.test(errorMessage)) return "อีเมลนี้สมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบแทน";
+            if (/at least 6 characters|password.*6/i.test(errorMessage)) return "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร";
+            if (/invalid email/i.test(errorMessage)) return "รูปแบบอีเมลไม่ถูกต้อง";
+            if (/network|fetch/i.test(errorMessage)) return "เชื่อมต่อ Supabase ไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ต";
             return errorMessage || "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
         }
-
-        // ==================================================
-        // CREATE / UPDATE PROFILE
-        // ==================================================
-
         async function createUserProfile(user) {
             if (!user) return;
-
-            const { error } =
-                await supabaseClient
-                    .from("users")
-                    .upsert(
-                        {
-                            user_id: user.id,
-                            user_email: user.email,
-                            name: user.email.split("@")[0]
-                        },
-                        {
-                            onConflict: "user_id"
-                        }
-                    );
-
-            if (error) {
-                console.warn(
-                    "เพิ่มข้อมูลใน public.users ไม่สำเร็จ:",
-                    error.message
-                );
-            }
+            const { error } = await supabaseClient.from("users").upsert({ user_id: user.id, user_email: user.email, name: (user.email || "ผู้ใช้").split("@")[0] }, { onConflict: "user_id" });
+            if (error) console.warn("เพิ่มข้อมูลใน public.users ไม่สำเร็จ:", error.message);
         }
-
-        // ==================================================
-        // LOGIN
-        // ==================================================
-
         async function login(email, password) {
-            const { data, error } =
-                await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-            if (error) {
-                throw error;
-            }
-
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) throw error;
             await createUserProfile(data.user);
-
             return data;
         }
-
-        // ==================================================
-        // SIGN UP
-        // ==================================================
-
         async function register(email, password) {
-            const { data, error } =
-                await supabaseClient.auth.signUp({
-                    email: email,
-                    password: password
-                });
-
-            if (error) {
-                throw error;
-            }
-
-            /*
-                Supabase อาจไม่ส่ง error เมื่อใช้ email ซ้ำ
-                แต่ส่ง user ที่ไม่มี identities กลับมาแทน
-            */
-            if (
-                data.user &&
-                Array.isArray(data.user.identities) &&
-                data.user.identities.length === 0
-            ) {
-                throw new Error("User already registered");
-            }
-
-            if (data.session && data.user) {
-                await createUserProfile(data.user);
-            }
-
+            const { data, error } = await supabaseClient.auth.signUp({ email, password });
+            if (error) throw error;
+            if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) throw new Error("User already registered");
+            if (data.session && data.user) await createUserProfile(data.user);
             return data;
         }
 
-        // ==================================================
-        // SUBMIT
-        // ==================================================
+        // เลือกหน้าแรกจากตู้เย็นที่ผู้ใช้เป็นสมาชิก active อยู่
+        async function getLandingPage(user) {
+            const { data: fridges, error: fridgeError } = await supabaseClient
+                .from("fridges").select("fridge_id, fridge_name, created_by, created_at").order("created_at", { ascending: true });
+            if (fridgeError) throw fridgeError;
+            if (!Array.isArray(fridges) || fridges.length === 0) return "indexnew.html";
+            const { data: memberships, error: memberError } = await supabaseClient
+                .from("fridge_members").select("fridge_id, role, status").eq("user_id", user.id).eq("status", "active");
+            if (memberError) throw memberError;
+            const memberIds = new Set((memberships || []).map(row => String(row.fridge_id)));
+            const accessibleFridge = fridges.some(fridge => memberIds.has(String(fridge.fridge_id)));
+            return accessibleFridge ? "index.html" : "indexnew.html";
+        }
+        function resetOnboardingForNewLogin() {
+            try { sessionStorage.removeItem("tuyen_onboarding_ack"); } catch (error) {}
+        }
+        async function goToLandingPage(user) {
+            resetOnboardingForNewLogin();
+            const target = await getLandingPage(user);
+            window.location.replace(target);
+        }
 
-        form.addEventListener("submit", async (event) => {
+        form.addEventListener("submit", async event => {
             event.preventDefault();
-
-            const email =
-                document
-                    .getElementById("auth-email")
-                    .value
-                    .trim()
-                    .toLowerCase();
-
+            const email = document.getElementById("auth-email").value.trim().toLowerCase();
             const password = passwordInput.value;
-
             clearMessage();
-
             submitBtn.disabled = true;
-            submitBtn.textContent =
-                mode === "login"
-                    ? "กำลังเข้าสู่ระบบ..."
-                    : "กำลังสมัครสมาชิก...";
-
+            submitBtn.textContent = mode === "login" ? "กำลังเข้าสู่ระบบ..." : "กำลังสมัครสมาชิก...";
             try {
                 if (mode === "login") {
-                    await login(email, password);
-
-                    showMessage(
-                        "เข้าสู่ระบบสำเร็จ กำลังเข้าสู่หน้าหลัก...",
-                        false
-                    );
-
-                    setTimeout(() => {
-                        window.location.href = "index.html";
-                    }, 700);
-
+                    const data = await login(email, password);
+                    showMessage("เข้าสู่ระบบสำเร็จ กำลังตรวจสอบข้อมูลตู้เย็น...", false);
+                    await goToLandingPage(data.user);
                 } else {
                     const data = await register(email, password);
-
-                    if (data.session) {
-                        showMessage(
-                            "สมัครสมาชิกสำเร็จ กำลังเข้าสู่หน้าหลัก...",
-                            false
-                        );
-
-                        setTimeout(() => {
-                            window.location.href = "index.html";
-                        }, 700);
-
+                    if (data.session && data.user) {
+                        showMessage("สมัครสมาชิกสำเร็จ กำลังตรวจสอบข้อมูลตู้เย็น...", false);
+                        await goToLandingPage(data.user);
                     } else {
-                        showMessage(
-                            "สมัครสมาชิกสำเร็จ กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ",
-                            false
-                        );
-
+                        showMessage("สมัครสมาชิกสำเร็จ กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ", false);
                         setMode("login");
                     }
                 }
-
             } catch (error) {
                 showMessage(thaiError(error), true);
-
             } finally {
                 submitBtn.disabled = false;
-
-                submitBtn.textContent =
-                    mode === "login"
-                        ? "เข้าสู่ระบบ"
-                        : "สมัครสมาชิก";
+                submitBtn.textContent = mode === "login" ? "เข้าสู่ระบบ" : "สมัครสมาชิก";
             }
         });
 
-        // ==================================================
-        // CHECK CURRENT SESSION
-        // ==================================================
-
+        // ถ้ามี session อยู่แล้ว ให้ตรวจตู้เย็นก่อนเลือกหน้าเสมอ
         (async () => {
-            const { data, error } =
-                await supabaseClient.auth.getSession();
-
-            if (error) {
-                console.error("ตรวจสอบ session ไม่สำเร็จ:", error);
-                return;
-            }
-
-            if (data.session) {
-                window.location.href = "index.html";
+            const { data, error } = await supabaseClient.auth.getSession();
+            if (error) { console.error("ตรวจสอบ session ไม่สำเร็จ:", error); return; }
+            if (data.session?.user) {
+                try {
+                    const target = await getLandingPage(data.session.user);
+                    window.location.replace(target);
+                } catch (checkError) {
+                    console.error("ตรวจสอบตู้เย็นไม่สำเร็จ:", checkError);
+                    // หากตรวจสอบไม่ได้ ไม่เดาว่าผู้ใช้ไม่มีตู้เย็น ให้คงอยู่หน้า login
+                }
             }
         })();
     </script>
-
 </body>
 </html>
