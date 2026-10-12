@@ -378,6 +378,9 @@ document.addEventListener(
 
 function bindEvents() {
 
+    $("home-create-fridge-form")?.addEventListener("submit", handleHomeCreateFridge);
+    $("fridge-retry-btn")?.addEventListener("click", initialize);
+
     // -------------------------
     // เพิ่มอาหาร
     // -------------------------
@@ -573,6 +576,8 @@ function bindEvents() {
 
 async function initialize() {
 
+    showFridgePageState("loading");
+
     try {
 
         const sb =
@@ -655,9 +660,7 @@ async function initialize() {
             !currentUser?.user_id
         ) {
 
-            showError(
-                "ไม่พบ user_id ของผู้ใช้งาน"
-            );
+            showFridgePageState("error", "ไม่พบ user_id ของผู้ใช้งาน");
 
             return;
 
@@ -683,15 +686,13 @@ async function initialize() {
 
 
         if (!currentFridgeId) {
-
-            showError(
-                "ยังไม่มีตู้เย็นที่สามารถเข้าถึงได้"
-            );
-
+            foods = [];
+            showFridgePageState("no-fridge");
+            updateStats(foods);
             return;
-
         }
 
+        showFridgePageState("dashboard");
 
         // -------------------------
         // โหลดอาหาร
@@ -725,9 +726,9 @@ async function initialize() {
         }
 
 
-        showError(
-            error?.message ||
-            "ไม่สามารถเปิดระบบได้"
+        showFridgePageState(
+            "error",
+            error?.message || "ไม่สามารถเปิดระบบได้"
         );
 
     }
@@ -1493,15 +1494,19 @@ async function loadFoods() {
     if (
         !currentFridgeId
     ) {
-
-        showError(
-            "ยังไม่มีตู้เย็นที่สามารถเข้าถึงได้"
-        );
-
+        showFridgePageState("no-fridge");
         return;
-
     }
 
+    const foodListElement = $("food-list");
+    if (foodListElement) {
+        foodListElement.innerHTML = `
+            <div class="col-span-full bg-white/95 rounded-2xl border border-slate-200 p-8 text-center" role="status" aria-live="polite">
+                <div class="text-3xl mb-3" aria-hidden="true">⏳</div>
+                <p class="text-sm text-slate-500">กำลังโหลดรายการอาหาร...</p>
+            </div>
+        `;
+    }
 
     try {
 
@@ -3113,45 +3118,27 @@ function renderFoods() {
     // Empty
     // -------------------------
 
-    if (
-        filtered.length ===
-        0
-    ) {
+    if (foods.length === 0) {
 
         list.innerHTML = `
-
-            <div
-                class="col-span-full bg-white rounded-2xl border border-slate-200 p-10 text-center"
-            >
-
-                <div
-                    class="text-4xl mb-3"
-                >
-                    🧊
-                </div>
-
-
-                <p
-                    class="font-semibold text-slate-600"
-                >
-                    ยังไม่มีรายการอาหาร
-                </p>
-
-
-                <p
-                    class="text-xs text-slate-400 mt-1"
-                >
-                    กด “+ เพิ่มรายการอาหาร”
-                    เพื่อเพิ่มอาหารในตู้เย็น
-                </p>
-
+            <div class="col-span-full bg-white rounded-2xl border border-slate-200 p-10 text-center">
+                <div class="text-4xl mb-3" aria-hidden="true">🧊</div>
+                <p class="font-semibold text-slate-600">ตู้เย็นนี้ยังไม่มีรายการอาหาร</p>
+                <p class="text-xs text-slate-400 mt-1">กด “+ เพิ่มรายการอาหาร” เพื่อเริ่มเพิ่มอาหารในตู้เย็น</p>
             </div>
-
         `;
 
-    }
+    } else if (filtered.length === 0) {
 
-    else {
+        list.innerHTML = `
+            <div class="col-span-full bg-white rounded-2xl border border-slate-200 p-10 text-center">
+                <div class="text-4xl mb-3" aria-hidden="true">🔎</div>
+                <p class="font-semibold text-slate-600">ไม่พบอาหารที่ตรงกับเงื่อนไข</p>
+                <p class="text-xs text-slate-400 mt-1">ลองเปลี่ยนคำค้นหาหรือเลือกตัวกรองอื่น</p>
+            </div>
+        `;
+
+    } else {
 
         list.innerHTML =
             filtered
@@ -4292,6 +4279,117 @@ function setText(
 
 
 // =====================================================
+// HOME FRIDGE PAGE STATE
+// =====================================================
+
+function showFridgePageState(state, message = "") {
+    const panel = $("fridge-page-state");
+    const loading = $("fridge-state-loading");
+    const empty = $("fridge-state-empty");
+    const errorPanel = $("fridge-state-error");
+    const stats = $("food-statistics");
+    const foodSection = $("food-section");
+    const addFoodButton = $("add-food-btn");
+    const dashboardVisible = state === "dashboard";
+
+    panel?.classList.toggle("hidden", dashboardVisible);
+    loading?.classList.toggle("hidden", state !== "loading");
+    empty?.classList.toggle("hidden", state !== "no-fridge");
+    errorPanel?.classList.toggle("hidden", state !== "error");
+    stats?.classList.toggle("hidden", !dashboardVisible);
+    foodSection?.classList.toggle("hidden", !dashboardVisible);
+
+    if (addFoodButton) {
+        addFoodButton.disabled = !dashboardVisible || !currentFridgeId;
+    }
+
+    if (state === "error") {
+        const errorMessage = $("fridge-state-error-message");
+        if (errorMessage) {
+            errorMessage.textContent = String(message || "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ");
+        }
+    }
+}
+
+function showHomeFridgeMessage(message, success = false) {
+    const element = $("home-create-fridge-message");
+    if (!element) return;
+
+    element.textContent = message;
+    element.className = success
+        ? "mt-3 text-sm rounded-xl px-4 py-2 bg-emerald-50 text-emerald-700"
+        : "mt-3 text-sm rounded-xl px-4 py-2 bg-rose-50 text-rose-700";
+    element.classList.remove("hidden");
+}
+
+let isCreatingHomeFridge = false;
+
+async function handleHomeCreateFridge(event) {
+    event.preventDefault();
+    if (isCreatingHomeFridge) return;
+
+    const input = $("home-fridge-name");
+    const button = $("home-create-fridge-submit");
+    const name = String(input?.value || "").trim();
+
+    if (!name) {
+        showHomeFridgeMessage("กรุณาระบุชื่อตู้เย็น");
+        input?.focus();
+        return;
+    }
+
+    if (name.length > 100) {
+        showHomeFridgeMessage("ชื่อตู้เย็นต้องไม่เกิน 100 ตัวอักษร");
+        input?.focus();
+        return;
+    }
+
+    if (!currentUser?.user_id) {
+        showHomeFridgeMessage("ไม่พบข้อมูลผู้ใช้ กรุณาเข้าสู่ระบบใหม่");
+        return;
+    }
+
+    isCreatingHomeFridge = true;
+    if (button) {
+        button.disabled = true;
+        button.textContent = "กำลังสร้าง...";
+    }
+
+    try {
+        const sb = getSB();
+        const { data, error } = await sb.rpc("create_fridge", {
+            p_fridge_name: name
+        });
+
+        if (error) throw error;
+        if (!data) throw new Error("ไม่พบ fridge_id ของตู้ที่สร้าง");
+
+        // Reuse the existing RPC and current-fridge selection flow from setting.html.
+        localStorage.setItem(CURRENT_FRIDGE_STORAGE_KEY, String(data));
+        const fridge = await getCurrentFridgeForUser();
+
+        if (!fridge || !currentFridgeId) {
+            throw new Error("สร้างตู้เย็นแล้ว แต่ยังตรวจสอบสิทธิ์การเข้าถึงไม่ได้ กรุณาลองโหลดใหม่");
+        }
+
+        input.value = "";
+        showFridgePageState("dashboard");
+        await loadFoods();
+        setupRealtime();
+    } catch (error) {
+        console.error("สร้างตู้เย็นจากหน้าแรกไม่สำเร็จ:", error);
+        showHomeFridgeMessage("สร้างตู้เย็นไม่สำเร็จ: " + (error?.message || "เกิดข้อผิดพลาด"));
+    } finally {
+        isCreatingHomeFridge = false;
+        if (button) {
+            button.disabled = false;
+            button.textContent = "＋ สร้างตู้เย็น";
+        }
+    }
+}
+
+
+// =====================================================
 // SHOW MESSAGE
 // =====================================================
 
@@ -4338,43 +4436,20 @@ function showMessage(
 function showError(
     message
 ) {
-
-    const list =
-        $("food-list");
-
-
-    if (!list) {
-
-        return;
-
+    // เมื่อโหลดข้อมูลล้มเหลว ให้แสดง error state แทนการแสดงแดชบอร์ดเสมือนพร้อมใช้งาน
+    if ($("fridge-page-state")) {
+        showFridgePageState("error", message);
     }
 
+    const list = $("food-list");
+    if (!list) return;
 
     list.innerHTML = `
-
-        <div
-            class="col-span-full bg-rose-50 border border-rose-200 rounded-2xl p-5"
-        >
-
-            <p
-                class="font-semibold text-rose-700"
-            >
-                โหลดรายการอาหารไม่สำเร็จ
-            </p>
-
-
-            <p
-                class="text-xs text-rose-600 mt-1"
-            >
-                ${escapeHtml(
-                    message
-                )}
-            </p>
-
+        <div class="col-span-full bg-rose-50 border border-rose-200 rounded-2xl p-5">
+            <p class="font-semibold text-rose-700">โหลดรายการอาหารไม่สำเร็จ</p>
+            <p class="text-xs text-rose-600 mt-1">${escapeHtml(message)}</p>
         </div>
-
     `;
-
 }
 
 
