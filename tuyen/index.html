@@ -188,7 +188,8 @@
             <button
                 id="add-food-btn"
                 type="button"
-                class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-5 py-2.5 rounded-xl font-semibold shadow-md shadow-violet-200 hover:shadow-lg transition"
+                disabled
+                class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-5 py-2.5 rounded-xl font-semibold shadow-md shadow-violet-200 hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 ＋ เพิ่มรายการอาหาร
             </button>
@@ -196,11 +197,62 @@
         </section>
 
         <!-- ================================================= -->
+        <!-- FRIDGE PAGE STATE -->
+        <!-- ================================================= -->
+
+        <section id="fridge-page-state" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 sm:p-12 text-center">
+            <div id="fridge-state-loading" class="flex flex-col items-center">
+                <div class="text-5xl mb-4" aria-hidden="true">🧊</div>
+                <h3 class="text-lg font-bold text-slate-800">กำลังตรวจสอบตู้เย็นของคุณ</h3>
+                <p class="text-sm text-slate-500 mt-2">กรุณารอสักครู่ ระบบกำลังตรวจสอบสิทธิ์การเข้าถึง</p>
+            </div>
+
+            <div id="fridge-state-empty" class="hidden flex flex-col items-center">
+                <div class="text-6xl mb-4" aria-hidden="true">🧊</div>
+                <h3 class="text-xl font-bold text-slate-900">ยินดีต้อนรับสู่ TUYEN</h3>
+                <p class="text-sm text-slate-500 mt-2 max-w-xl">
+                    ตอนนี้คุณยังไม่มีตู้เย็นที่เข้าถึงได้ สร้างตู้เย็นแรกของคุณเพื่อเริ่มจัดการอาหารและวันหมดอายุ
+                </p>
+
+                <form id="home-create-fridge-form" class="w-full max-w-xl grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 mt-6">
+                    <input
+                        id="home-fridge-name"
+                        type="text"
+                        maxlength="100"
+                        required
+                        autocomplete="off"
+                        placeholder="เช่น ตู้เย็นหอพัก"
+                        aria-label="ชื่อตู้เย็นใหม่"
+                        class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    >
+                    <button
+                        id="home-create-fridge-submit"
+                        type="submit"
+                        class="bg-violet-600 hover:bg-violet-700 text-white text-sm px-5 py-3 rounded-xl font-semibold shadow-md shadow-violet-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        ＋ สร้างตู้เย็น
+                    </button>
+                </form>
+                <p id="home-create-fridge-message" class="hidden mt-3 text-sm rounded-xl px-4 py-2" role="status" aria-live="polite"></p>
+            </div>
+
+            <div id="fridge-state-error" class="hidden flex flex-col items-center">
+                <div class="text-5xl mb-4" aria-hidden="true">⚠️</div>
+                <h3 class="text-lg font-bold text-rose-700">ไม่สามารถโหลดข้อมูลตู้เย็นได้</h3>
+                <p id="fridge-state-error-message" class="text-sm text-rose-600 mt-2"></p>
+                <button id="fridge-retry-btn" type="button" class="mt-5 bg-violet-600 hover:bg-violet-700 text-white text-sm px-5 py-2.5 rounded-xl font-semibold">
+                    ลองอีกครั้ง
+                </button>
+            </div>
+        </section>
+
+        <!-- ================================================= -->
         <!-- QUICK ALERT + STATISTICS -->
         <!-- ================================================= -->
 
         <section
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+            id="food-statistics"
+            class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
         >
 
             <!-- QUICK ALERT -->
@@ -339,7 +391,8 @@
         <!-- ================================================= -->
 
         <section
-            class="bg-[#3E3E75] border border-slate-500 rounded-2xl p-5 sm:p-6 shadow-xl"
+            id="food-section"
+            class="hidden bg-[#3E3E75] border border-slate-500 rounded-2xl p-5 sm:p-6 shadow-xl"
         >
 
             <div
